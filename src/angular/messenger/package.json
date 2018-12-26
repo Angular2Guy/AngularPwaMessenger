@@ -2,6 +2,7 @@
   "name": "messenger",
   "version": "0.0.0",
   "scripts": {
+  	"http-server": "http-server -p 4300 -c-1 dist",
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --prod --aot --base-href /de/ --output-path dist/de/ --i18n-locale de --deploy-url /de/ --i18nFile=./i18n/messages.de.xlf && ng build --prod --aot --base-href /en/ --deploy-url /en/ --output-path dist/en/ --i18n-locale en --i18nFile=./i18n/messages.xlf",
@@ -25,8 +26,10 @@
     "@angular/material": "^7.2.0",
     "@angular/platform-browser": "~7.1.0",
     "@angular/platform-browser-dynamic": "~7.1.0",
+    "@angular/pwa": "^0.11.4",
     "@angular/router": "~7.1.0",
-    "core-js": "^2.5.4",
+    "@angular/service-worker": "~7.1.0",
+    "core-js": "^2.5.4",    
     "material-design-icons": "^3.0.1",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
@@ -56,6 +59,7 @@
     "cpx": "^1.5.0",
     "mkdirp": "^0.5.1",
     "phantomjs-prebuilt": "~2.1.14",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "http-server": "^0.11.1"
   }
 }
