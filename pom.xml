@@ -97,11 +97,11 @@
 					<failOnError>false</failOnError>
 					<filesets>
 						<fileset>
-							<directory>src/angular/trader/dist</directory>
+							<directory>src/angular/messenger/dist</directory>
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 						<fileset>
-							<directory>src/angular/trader/node_modules</directory>
+							<directory>src/angular/messenger/node_modules</directory>
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 					</filesets>

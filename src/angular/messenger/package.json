@@ -3,23 +3,31 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
+    "start": "ng serve --proxy-config proxy.conf.json",
+    "build": "ng build --prod --aot --base-href /de/ --output-path dist/de/ --i18n-locale de --deploy-url /de/ --i18nFile=./i18n/messages.de.xlf && ng build --prod --aot --base-href /en/ --deploy-url /en/ --output-path dist/en/ --i18n-locale en --i18nFile=./i18n/messages.xlf",
+    "test": "ng test --browsers PhantomJS --watch=false",
+    "test-junit": "ng test --browsers PhantomJS --reporters junit --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prebuild": "rimraf ./dist && mkdirp ./dist",
+    "postbuild": "npm run deploy",
+    "predeploy": "rimraf ../../main/resources/static/de && mkdirp ../../main/resources/static/de && rimraf ../../main/resources/static/en && mkdirp ../../main/resources/static/en",
+    "deploy": "cpx 'dist/**' ../../main/resources/static/"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~7.1.0",
+    "@angular/cdk": "^7.2.0",
     "@angular/common": "~7.1.0",
     "@angular/compiler": "~7.1.0",
     "@angular/core": "~7.1.0",
     "@angular/forms": "~7.1.0",
+    "@angular/material": "^7.2.0",
     "@angular/platform-browser": "~7.1.0",
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
     "core-js": "^2.5.4",
+    "material-design-icons": "^3.0.1",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
@@ -43,6 +51,11 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "~3.1.6"
+    "typescript": "~3.1.6",
+    "karma-junit-reporter": "~1.2.0",
+    "cpx": "^1.5.0",
+    "mkdirp": "^0.5.1",
+    "phantomjs-prebuilt": "~2.1.14",
+    "rimraf": "^2.6.1"
   }
 }
