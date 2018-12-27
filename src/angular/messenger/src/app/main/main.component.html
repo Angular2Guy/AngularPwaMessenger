@@ -1,6 +1,6 @@
 <mat-sidenav-container class="container" [ngStyle]="{'height.px': windowHeight}">
   <mat-sidenav opened mode="side" class="contact-list">
-  	<app-contacts></app-contacts>
+  	<app-contacts [contacts]="contacts" (selContact)="selectContact($event)"></app-contacts>
   </mat-sidenav>
   <mat-sidenav-content opened mode="side">
   	<app-messages></app-messages>

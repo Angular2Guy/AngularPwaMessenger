@@ -1,6 +1,6 @@
 <mat-nav-list>
-	<mat-list-item *ngFor="let contact of contacts">
-		<img matListAvatar  src="assets/icons/smiley-640.jpg">
-		<span>{{contact.name}}</span>
+	<mat-list-item *ngFor="let contact of contacts" (click)="select(contact)">
+		<img matListAvatar  [src]="contact.base64Avatar">
+		<span class="contact-name">{{contact.name}}</span>
 	</mat-list-item>
 </mat-nav-list>

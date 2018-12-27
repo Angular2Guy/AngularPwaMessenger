@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Contact } from '../model/contact';
 
 @Component({
@@ -7,19 +7,18 @@ import { Contact } from '../model/contact';
   styleUrls: ['./contacts.component.scss']
 })
 export class ContactsComponent implements OnInit {
+  @Input()
   contacts: Contact[] = [];
+  @Output()
+  selContact = new EventEmitter<Contact>();
 
   constructor() { }
 
-  ngOnInit() {
-    this.contacts.push({
-      name: "Max",
-      base64Avatar: ""
-    },
-    {
-      name: "Moritz",
-      base64Avatar: ""
-    });
+  ngOnInit() {    
+  }
+  
+  select(contact: Contact) {
+    this.selContact.emit(contact);    
   }
 
 }
