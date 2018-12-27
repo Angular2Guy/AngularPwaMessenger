@@ -16,10 +16,12 @@ export class MainComponent implements OnInit {
   ngOnInit() {
    this.windowHeight = window.innerHeight -20; 
    this.contacts.push({
+     id: 1,
      name: "Max",
      base64Avatar: "assets/icons/smiley-640.jpg"
    },
    {
+     id: 2,
      name: "Moritz",
      base64Avatar: "assets/icons/smiley-640.jpg"
    });
