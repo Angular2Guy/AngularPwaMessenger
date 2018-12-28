@@ -1,4 +1,7 @@
-<p>
-  messages works!<br/>
-  messages works!<br/>
-</p>
+<div *ngFor="let message of messages">
+	<div *ngIf="receiver != null"
+		[class.receiver]="message.toId === receiver.id"
+		[class.sender]="message.fromId === receiver.id">
+		{{message.text}}
+	</div>
+</div>
