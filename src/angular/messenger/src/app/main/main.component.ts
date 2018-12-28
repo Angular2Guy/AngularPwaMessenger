@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
+import { LocaldbService } from '../services/localdb.service';
 
 @Component({
   selector: 'app-main',
@@ -12,21 +13,24 @@ export class MainComponent implements OnInit {
   contacts: Contact[] = [];
   myContact: Contact;
   messages: Message[] = [];
-
-  constructor() { }
+  
+  constructor(private localdbService: LocaldbService) { }
 
   ngOnInit() {
    this.windowHeight = window.innerHeight -20;
-   this.contacts.push({
-     id: 1,
+   const mycontacts:Contact[] = [];
+   mycontacts.push({
+     id: "1",
      name: "Max",
      base64Avatar: "assets/icons/smiley-640.jpg"
    },
    {
-     id: 2,
+     id: "2",
      name: "Moritz",
      base64Avatar: "assets/icons/smiley-640.jpg"
    });
+   mycontacts.forEach(contact => this.localdbService.storeContact(contact).then((result) => console.log(result)));
+   this.localdbService.loadContacts().then(result => result.each(contact => this.contacts.push(contact)));
   }
 
   @HostListener('window:resize', ['$event'])
@@ -44,16 +48,16 @@ export class MainComponent implements OnInit {
       this.messages.pop()
     }    
     this.messages.push({
-      fromId: 1,
-      toId: 2,
+      fromId: "1",
+      toId: "2",
       timestamp: new Date().getTime(),
       text: "Hello1",
       send: true,
       received: true
     },
     {
-      fromId: 2,
-      toId: 1,
+      fromId: "2",
+      toId: "1",
       timestamp: new Date().getTime(),
       text: "Hello2",
       send: true,

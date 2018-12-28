@@ -1,6 +1,7 @@
 export interface Message {
-  fromId: number;
-  toId: number;
+  id?: number;
+  fromId: string;
+  toId: string;
   timestamp: number,
   text: string,
   send: boolean,
