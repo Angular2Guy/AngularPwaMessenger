@@ -2,6 +2,13 @@
 	<div *ngIf="receiver != null"
 		[class.receiver]="message.toId === receiver.id"
 		[class.sender]="message.fromId === receiver.id">
-		{{message.text}}
-	</div>
+		{{message.text}}</div>	
 </div>
+<mat-form-field class="message-input">
+	<div class="myInput"> 
+		<textarea matInput placeholder="Your Message"></textarea>
+		<div class="send-icon">
+			<i class="material-icons">send</i>
+		</div>
+	</div> 
+</mat-form-field>

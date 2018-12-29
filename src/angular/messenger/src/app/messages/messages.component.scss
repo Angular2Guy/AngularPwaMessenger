@@ -4,3 +4,17 @@
 .sender {
 	text-align: left;
 }
+.message-input {
+	width: 100%;			
+	
+}
+.myInput {
+	display: flex;
+	align-items: center;
+}
+.send-icon{
+	padding: 10px;
+	margin: 10px;
+	border-radius: 50%;
+	background-color: red;
+}

@@ -29,7 +29,7 @@ export class MainComponent implements OnInit {
      name: "Moritz",
      base64Avatar: "assets/icons/smiley-640.jpg"
    });
-   mycontacts.forEach(contact => this.localdbService.storeContact(contact).then((result) => console.log(result)));
+//   mycontacts.forEach(contact => this.localdbService.storeContact(contact).then((result) => console.log(result)));
    this.localdbService.loadContacts().then(result => result.each(contact => this.contacts.push(contact)));
   }
 
