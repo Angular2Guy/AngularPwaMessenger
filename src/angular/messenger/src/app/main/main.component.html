@@ -3,6 +3,6 @@
   	<app-contacts [contacts]="contacts" (selContact)="selectContact($event)"></app-contacts>
   </mat-sidenav>
   <mat-sidenav-content opened mode="side">
-  	<app-messages [messages]="messages" [receiver]="myContact"></app-messages>
+  	<app-messages [messages]="messages" [receiver]="myContact" (sendMsg)="sendMessage($event)"></app-messages>
   </mat-sidenav-content>
 </mat-sidenav-container>

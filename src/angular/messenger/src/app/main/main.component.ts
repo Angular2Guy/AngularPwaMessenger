@@ -41,8 +41,13 @@ export class MainComponent implements OnInit {
       } );
     mycontacts.forEach( contact => this.localdbService.storeContact( contact ).then( ( result ) => console.log( result ) ) );
     this.localdbService.loadContacts().then( result => {
-      result.filter( contact => !contact.own ).each( contact => this.contacts.push( contact ) );
-      result.filter( contact => contact.own ).each( contact => this.ownContact = contact );
+        result.each( contact => {
+          if(contact.own) {
+            this.ownContact = contact;
+          } else {
+            this.contacts.push( contact );
+          }
+      });      
     } );
     const myMessages: Message[] = [];
     myMessages.push( {
@@ -74,6 +79,19 @@ export class MainComponent implements OnInit {
     this.addMessages();
   }
 
+  sendMessage(msgStr: string) {    
+    const msg:Message = {
+      fromId: this.ownContact.id,
+      toId: this.myContact.id,
+      timestamp: new Date().getTime(),      
+      text: msgStr,
+      send: false,
+      received: false
+    };
+    this.localdbService.storeMessage(msg).then(result => console.log(result));
+    this.addMessages();
+  }
+  
   private addMessages() {
     while ( this.messages.length > 0 ) {
       this.messages.pop()

@@ -1,7 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Message } from '../model/message';
 import { Contact } from '../model/contact';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { LocaldbService } from '../services/localdb.service';
 
 @Component({
   selector: 'app-messages',
@@ -13,10 +14,12 @@ export class MessagesComponent implements OnInit {
   messages: Message;
   @Input()
   receiver: Contact;
+  @Output()
+  sendMsg = new EventEmitter<string>();
   
   messageForm: FormGroup;
   
-  constructor(fb: FormBuilder) { 
+  constructor(private fb: FormBuilder) { 
     this.messageForm = fb.group({
       message: ['', Validators.required],
     });
@@ -25,8 +28,7 @@ export class MessagesComponent implements OnInit {
   ngOnInit() {
   }
   
-  sendMsg() {
-    console.log(this.messageForm.valid);
-    console.log(this.messageForm.controls['message'].value);
+  sendMessage() {    
+    this.sendMsg.emit(this.messageForm.controls['message'].value);    
   }
 }
