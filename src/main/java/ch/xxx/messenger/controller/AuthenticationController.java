@@ -25,40 +25,40 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/rest/auth")
-public class AuthenticationController {	
+public class AuthenticationController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private ReactiveMongoOperations operations;
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
-	
+
 	@GetMapping("/authorize")
-	public Mono<AuthCheck> postAuthorize(@RequestBody AuthCheck authcheck, @RequestHeader Map<String,String> header) {						
+	public Mono<AuthCheck> postAuthorize(@RequestBody AuthCheck authcheck, @RequestHeader Map<String, String> header) {
 		String tokenRoles = WebUtils.getTokenRoles(header, jwtTokenProvider);
-		if(tokenRoles.contains(Role.USERS.name()) && !tokenRoles.contains(Role.GUEST.name())) {
+		if (tokenRoles.contains(Role.USERS.name()) && !tokenRoles.contains(Role.GUEST.name())) {
 			return Mono.just(new AuthCheck(authcheck.getPath(), true));
 		} else {
 			return Mono.just(new AuthCheck(authcheck.getPath(), false));
-		}		
-	}	
+		}
+	}
 
 	@PostMapping("/signin")
 	public Mono<MyUser> postUserSignin(@RequestBody MyUser myUser) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
 		MyUser user = this.operations.findOne(query, MyUser.class).switchIfEmpty(Mono.just(new MyUser())).block();
-		if (user.getUsername() == null) {			
-			String encryptedPassword = this.passwordEncoder.encode(user.getPassword());
+		if (user.getUsername() == null) {
+			String encryptedPassword = this.passwordEncoder.encode(myUser.getPassword());
 			myUser.setPassword(encryptedPassword);
 			this.operations.save(myUser).block();
 			return Mono.just(myUser);
 		}
 		return Mono.just(new MyUser());
-	}	
+	}
 
 	@PostMapping("/login")
-	public Mono<MyUser> postUserLogin(@RequestBody MyUser myUser) {		
+	public Mono<MyUser> postUserLogin(@RequestBody MyUser myUser) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
 		return this.operations.findOne(query, MyUser.class).switchIfEmpty(Mono.just(new MyUser()))
@@ -67,14 +67,14 @@ public class AuthenticationController {
 
 	private MyUser loginHelp(MyUser user, String passwd) {
 		if (user.getUsername() != null) {
-			String encryptedPassword = this.passwordEncoder.encode(user.getPassword());
-			if (user.getPassword().equals(encryptedPassword)) {				
-				String jwtToken = this.jwtTokenProvider.createToken(user.getUsername(), Arrays.asList(Role.USERS), Optional.empty());
+			if (this.passwordEncoder.matches(passwd, user.getPassword())) {
+				String jwtToken = this.jwtTokenProvider.createToken(user.getUsername(), Arrays.asList(Role.USERS),
+						Optional.empty());
 				user.setToken(jwtToken);
 				user.setPassword("XXX");
 				return user;
 			}
 		}
 		return new MyUser();
-}
+	}
 }
