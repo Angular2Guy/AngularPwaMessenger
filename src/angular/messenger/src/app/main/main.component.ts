@@ -2,6 +2,11 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { LoginComponent } from '../login/login.component';
+import { MyUser } from '../model/myUser';
+import { JwttokenService } from '../services/jwttoken.service';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component( {
   selector: 'app-main',
@@ -14,8 +19,11 @@ export class MainComponent implements OnInit {
   contacts: Contact[] = [];
   myContact: Contact;
   messages: Message[] = [];
+  myUser: MyUser = null;
 
-  constructor( private localdbService: LocaldbService ) { }
+  constructor( private localdbService: LocaldbService, 
+               private jwttokenService: JwttokenService,
+               public dialog: MatDialog ) { }
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 20;
@@ -74,6 +82,23 @@ export class MainComponent implements OnInit {
     this.windowHeight = event.target.innerHeight - 20;
   }
 
+  openLoginDialog(): void {
+    let dialogRef = this.dialog.open(LoginComponent, {
+      width: '500px',
+      data: { myUser: this.myUser}
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {        
+      this.myUser = typeof result === 'undefined' || result === null ? null : result;
+      this.jwttokenService.jwtToken = this.myUser === null ? null : this.myUser.token;
+    });
+  }
+  
+  logout(): void {
+    this.myUser = null;
+    this.jwttokenService.jwtToken = null;
+  }
+  
   selectContact( contact: Contact ) {
     this.myContact = contact;
     this.addMessages();

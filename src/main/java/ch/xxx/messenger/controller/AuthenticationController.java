@@ -33,7 +33,7 @@ public class AuthenticationController {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
-	@GetMapping("/authorize")
+	@PostMapping("/authorize")
 	public Mono<AuthCheck> postAuthorize(@RequestBody AuthCheck authcheck, @RequestHeader Map<String, String> header) {
 		String tokenRoles = WebUtils.getTokenRoles(header, jwtTokenProvider);
 		if (tokenRoles.contains(Role.USERS.name()) && !tokenRoles.contains(Role.GUEST.name())) {

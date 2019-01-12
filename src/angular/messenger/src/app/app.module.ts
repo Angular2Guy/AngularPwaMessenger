@@ -2,9 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatListModule} from '@angular/material/list';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatListModule,MatTabsModule,MatButtonModule, MatDialogModule,MatFormFieldModule,MatInputModule, MatToolbarModule } from '@angular/material';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,25 +11,37 @@ import { environment } from '../environments/environment';
 import { MainComponent } from './main/main.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { MessagesComponent } from './messages/messages.component';
+import { LoginComponent } from './login/login.component';
 
 
 @NgModule({
+  entryComponents: [
+    LoginComponent
+  ],  
   declarations: [
     AppComponent,
     MainComponent,
     ContactsComponent,
-    MessagesComponent
+    MessagesComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    MatSidenavModule,
-    MatListModule,
+    BrowserAnimationsModule,
+    MatSidenavModule,    
+    MatToolbarModule,
+    MatTabsModule,
+    MatButtonModule, 
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
     BrowserAnimationsModule,
     MatInputModule,
     MatFormFieldModule,
+    MatListModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],
