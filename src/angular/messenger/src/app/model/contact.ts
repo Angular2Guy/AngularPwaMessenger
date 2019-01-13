@@ -1,6 +1,7 @@
 export interface Contact {
-  id: string;
+  id?: number;
   name: string;
   base64Avatar: string;
-  own: boolean;
+  userId: number;
+  publicKey: string;
 }

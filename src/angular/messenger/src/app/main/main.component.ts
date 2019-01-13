@@ -27,54 +27,54 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 20;
-    const mycontacts: Contact[] = [];
-    mycontacts.push(
-      {
-        id: "1",
-        name: "Sven",
-        base64Avatar: "assets/icons/smiley-640.jpg",
-        own: true
-      },
-      {
-        id: "2",
-        name: "Max",
-        base64Avatar: "assets/icons/smiley-640.jpg",
-        own: false
-      },
-      {
-        id: "3",
-        name: "Moritz",
-        base64Avatar: "assets/icons/smiley-640.jpg",
-        own: false
-      } );
-    mycontacts.forEach( contact => this.localdbService.storeContact( contact ).then( ( result ) => console.log( result ) ) );
-    this.localdbService.loadContacts().then( result => {
-        result.each( contact => {
-          if(contact.own) {
-            this.ownContact = contact;
-          } else {
-            this.contacts.push( contact );
-          }
-      });      
-    } );
-    const myMessages: Message[] = [];
-    myMessages.push( {
-      fromId: "1",
-      toId: "2",
-      timestamp: new Date().getTime(),
-      text: "Hello1",
-      send: true,
-      received: true
-    },
-      {
-        fromId: "2",
-        toId: "1",
-        timestamp: new Date().getTime(),
-        text: "Hello2",
-        send: true,
-        received: true
-      } );
-    myMessages.forEach(msg => this.localdbService.storeMessage(msg).then(result => console.log(result)));    
+//    const mycontacts: Contact[] = [];
+//    mycontacts.push(
+//      {
+//        id: 1,
+//        name: "Sven",
+//        base64Avatar: "assets/icons/smiley-640.jpg",
+//        userId: 1
+//      },
+//      {
+//        id: 2,
+//        name: "Max",
+//        base64Avatar: "assets/icons/smiley-640.jpg",
+//        userId: 1
+//      },
+//      {
+//        id: 3,
+//        name: "Moritz",
+//        base64Avatar: "assets/icons/smiley-640.jpg",
+//        userId: 1
+//      } );
+//    mycontacts.forEach( contact => this.localdbService.storeContact( contact ).then( ( result ) => console.log( result ) ) );
+//    this.localdbService.loadContacts().then( result => {
+//        result.each( contact => {
+//          if(contact.userId === this.myUser.id) { 
+//            this.ownContact = contact;
+//          } else {
+//            this.contacts.push( contact );
+//          }
+//      });      
+//    } );
+//    const myMessages: Message[] = [];
+//    myMessages.push( {
+//      fromId: 1,
+//      toId: 2,
+//      timestamp: new Date().getTime(),
+//      text: "Hello1",
+//      send: true,
+//      received: true
+//    },
+//      {
+//        fromId: 2,
+//        toId: 1,
+//        timestamp: new Date().getTime(),
+//        text: "Hello2",
+//        send: true,
+//        received: true
+//      } );
+//    myMessages.forEach(msg => this.localdbService.storeMessage(msg).then(result => console.log(result)));    
   }
 
   @HostListener( 'window:resize', ['$event'] )

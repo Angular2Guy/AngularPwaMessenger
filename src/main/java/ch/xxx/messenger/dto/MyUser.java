@@ -27,6 +27,8 @@ public class MyUser implements UserDetails {
 	private String email;	
 	@JsonProperty
 	private String token;
+	@JsonProperty
+	private String base64Avatar;
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -102,6 +104,14 @@ public class MyUser implements UserDetails {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public String getBase64Avatar() {
+		return base64Avatar;
+	}
+
+	public void setBase64Avatar(String base64Avatar) {
+		this.base64Avatar = base64Avatar;
 	}
 
 }
