@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.dto.AuthCheck;
-import ch.xxx.messenger.dto.MyUser;
+import ch.xxx.messenger.dto.MsgUser;
 import ch.xxx.messenger.jwt.JwtTokenProvider;
 import ch.xxx.messenger.jwt.Role;
 import ch.xxx.messenger.utils.WebUtils;
@@ -44,28 +44,28 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/signin")
-	public Mono<MyUser> postUserSignin(@RequestBody MyUser myUser) {
+	public Mono<MsgUser> postUserSignin(@RequestBody MsgUser myUser) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
-		MyUser user = this.operations.findOne(query, MyUser.class).switchIfEmpty(Mono.just(new MyUser())).block();
+		MsgUser user = this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).block();
 		if (user.getUsername() == null) {
 			String encryptedPassword = this.passwordEncoder.encode(myUser.getPassword());
 			myUser.setPassword(encryptedPassword);
 			this.operations.save(myUser).block();
 			return Mono.just(myUser);
 		}
-		return Mono.just(new MyUser());
+		return Mono.just(new MsgUser());
 	}
 
 	@PostMapping("/login")
-	public Mono<MyUser> postUserLogin(@RequestBody MyUser myUser) {
+	public Mono<MsgUser> postUserLogin(@RequestBody MsgUser myUser) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
-		return this.operations.findOne(query, MyUser.class).switchIfEmpty(Mono.just(new MyUser()))
+		return this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser()))
 				.map(user1 -> loginHelp(user1, myUser.getPassword()));
 	}
 
-	private MyUser loginHelp(MyUser user, String passwd) {
+	private MsgUser loginHelp(MsgUser user, String passwd) {
 		if (user.getUsername() != null) {
 			if (this.passwordEncoder.matches(passwd, user.getPassword())) {
 				String jwtToken = this.jwtTokenProvider.createToken(user.getUsername(), Arrays.asList(Role.USERS),
@@ -75,6 +75,6 @@ public class AuthenticationController {
 				return user;
 			}
 		}
-		return new MyUser();
+		return new MsgUser();
 	}
 }

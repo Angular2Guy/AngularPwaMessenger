@@ -9,12 +9,14 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class MyUser implements UserDetails {
+@Document
+public class MsgUser implements UserDetails {
 
 	private static final long serialVersionUID = 3477333851877579761L;
 

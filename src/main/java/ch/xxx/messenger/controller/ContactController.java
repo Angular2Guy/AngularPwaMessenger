@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.dto.Contact;
-import ch.xxx.messenger.dto.MyUser;
+import ch.xxx.messenger.dto.MsgUser;
 import ch.xxx.messenger.jwt.JwtTokenProvider;
 import ch.xxx.messenger.jwt.Role;
 import ch.xxx.messenger.utils.Tuple;
@@ -35,7 +35,7 @@ public class ContactController {
 	public Flux<Contact> getFindContacts(@RequestBody Contact contact,  @RequestHeader Map<String, String> header) {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
 		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
-			return operations.find(new Query().addCriteria(Criteria.where("username").regex(String.format(".*%s.*", contact.getName()))), MyUser.class)
+			return operations.find(new Query().addCriteria(Criteria.where("username").regex(String.format(".*%s.*", contact.getName()))), MsgUser.class)
 					.map(myUser -> new Contact(myUser.getUsername(), myUser.getBase64Avatar(), myUser.getBase64PublicKey()));
 		}
 		return Flux.empty();
@@ -46,9 +46,9 @@ public class ContactController {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
 		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
 			return operations
-					.findOne(new Query().addCriteria(Criteria.where("username").is(tokenTuple.getA())), MyUser.class)
+					.findOne(new Query().addCriteria(Criteria.where("username").is(tokenTuple.getA())), MsgUser.class)
 					.flatMapMany(myUser -> operations
-							.find(new Query().addCriteria(Criteria.where("_id").in(myUser.getContacts())), MyUser.class)
+							.find(new Query().addCriteria(Criteria.where("_id").in(myUser.getContacts())), MsgUser.class)
 							.map(myUser1 -> new Contact(myUser1.getUsername(), myUser1.getBase64Avatar(),
 									myUser1.getBase64PublicKey())));
 
@@ -57,13 +57,13 @@ public class ContactController {
 	}
 
 	@PutMapping("/mycontact")
-	public Mono<MyUser> putContact(@RequestBody Contact contact, @RequestHeader Map<String, String> header) {
+	public Mono<MsgUser> putContact(@RequestBody Contact contact, @RequestHeader Map<String, String> header) {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
 		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
-			operations.findOne(new Query().addCriteria(Criteria.where("username").is(tokenTuple.getA())), MyUser.class)
+			operations.findOne(new Query().addCriteria(Criteria.where("username").is(tokenTuple.getA())), MsgUser.class)
 					.flatMap(me -> operations
 							.findOne(new Query().addCriteria(Criteria.where("username").is(contact.getName())),
-									MyUser.class)
+									MsgUser.class)
 							.flatMap(newContact -> {
 								if (!me.getContacts().contains(newContact.get_id())) {
 									me.getContacts().add(newContact.get_id());
