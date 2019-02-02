@@ -1,11 +1,14 @@
 package ch.xxx.messenger.dto;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,16 +22,23 @@ public class MyUser implements UserDetails {
 	private ObjectId _id;
 	@JsonProperty
 	private Date createdAt = new Date();	
+	@Indexed( unique=true)
 	@JsonProperty
 	private String username;
 	@JsonProperty
 	private String password;
+	@Indexed( unique=true)
 	@JsonProperty
 	private String email;	
 	@JsonProperty
 	private String token;
 	@JsonProperty
 	private String base64Avatar;
+	@JsonProperty
+	private String base64PublicKey;
+	@JsonProperty
+	private List<ObjectId> contacts = new ArrayList<>();
+	
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -112,6 +122,22 @@ public class MyUser implements UserDetails {
 
 	public void setBase64Avatar(String base64Avatar) {
 		this.base64Avatar = base64Avatar;
+	}
+
+	public List<ObjectId> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<ObjectId> contacts) {
+		this.contacts = contacts;
+	}
+
+	public String getBase64PublicKey() {
+		return base64PublicKey;
+	}
+
+	public void setBase64PublicKey(String base64PublicKey) {
+		this.base64PublicKey = base64PublicKey;
 	}
 
 }

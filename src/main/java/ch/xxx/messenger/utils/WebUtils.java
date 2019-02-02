@@ -1,6 +1,5 @@
 package ch.xxx.messenger.utils;
 
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -21,10 +20,6 @@ import io.jsonwebtoken.Jws;
 
 public class WebUtils {
 
-	public static final String LASTOBCALLBF = "LAST_ORDERBOOK_CALL_BITFINEX";
-	public static final String LASTOBCALLBS = "LAST_ORDERBOOK_CALL_BITSTAMP";
-	public static final String LASTOBCALLIB = "LAST_ORDERBOOK_CALL_ITBIT";
-	public static final String SECURITYCONTEXT = "SPRING_SECURITY_CONTEXT";
 	public static final String AUTHORIZATION = "authorization";
 	public static final String TOKENAUTHKEY = "auth";
 	public static final String TOKENLASTMSGKEY = "lastmsg";
@@ -47,31 +42,45 @@ public class WebUtils {
 		return WebClient.builder().clientConnector(connector).baseUrl(url).build();
 	}
 
-	public static Optional<String> extractToken(Map<String,String> headers) {
+	public static Optional<String> extractToken(Map<String, String> headers) {
 		String authStr = headers.get(AUTHORIZATION);
 		return extractToken(Optional.ofNullable(authStr));
 	}
-	
-	private static Optional<String> extractToken(Optional<String> authStr) {		
-		if(authStr.isPresent()) {
+
+	private static Optional<String> extractToken(Optional<String> authStr) {
+		if (authStr.isPresent()) {
 			authStr = Optional.ofNullable(authStr.get().startsWith(BEARER) ? authStr.get().substring(7) : null);
 		}
 		return authStr;
 	}
-	
-	public static String getTokenRoles(Map<String,String> headers, JwtTokenProvider jwtTokenProvider) {
+
+	public static String getTokenRoles(Map<String, String> headers, JwtTokenProvider jwtTokenProvider) {
 		Optional<String> tokenStr = extractToken(headers);
 		Optional<Jws<Claims>> claims = jwtTokenProvider.getClaims(tokenStr);
-		if(claims.isPresent() && new Date().before(claims.get().getBody().getExpiration())) {
+		if (claims.isPresent() && new Date().before(claims.get().getBody().getExpiration())) {
 			return claims.get().getBody().get(TOKENAUTHKEY).toString();
 		}
 		return "";
 	}
-	
-	public static boolean checkToken(HttpServletRequest request, JwtTokenProvider jwtTokenProvider) {
-		Optional<String> tokenStr = WebUtils.extractToken(Optional.ofNullable(request.getHeader(WebUtils.AUTHORIZATION)));		
+
+	public static Tuple<String, String> getTokenUserRoles(Map<String, String> headers,
+			JwtTokenProvider jwtTokenProvider) {
+		Optional<String> tokenStr = extractToken(headers);
 		Optional<Jws<Claims>> claims = jwtTokenProvider.getClaims(tokenStr);
-		if(claims.isPresent() && new Date().before(claims.get().getBody().getExpiration()) && claims.get().getBody().get(TOKENAUTHKEY).toString().contains(Role.USERS.name()) && !claims.get().getBody().get(TOKENAUTHKEY).toString().contains(Role.GUEST.name())) {
+		if (claims.isPresent() && new Date().before(claims.get().getBody().getExpiration())) {
+			return new Tuple<String, String>(claims.get().getBody().getSubject(),
+					claims.get().getBody().get(TOKENAUTHKEY).toString());
+		}
+		return new Tuple<String, String>(null, null);
+	}
+
+	public static boolean checkToken(HttpServletRequest request, JwtTokenProvider jwtTokenProvider) {
+		Optional<String> tokenStr = WebUtils
+				.extractToken(Optional.ofNullable(request.getHeader(WebUtils.AUTHORIZATION)));
+		Optional<Jws<Claims>> claims = jwtTokenProvider.getClaims(tokenStr);
+		if (claims.isPresent() && new Date().before(claims.get().getBody().getExpiration())
+				&& claims.get().getBody().get(TOKENAUTHKEY).toString().contains(Role.USERS.name())
+				&& !claims.get().getBody().get(TOKENAUTHKEY).toString().contains(Role.GUEST.name())) {
 			return true;
 		}
 		return false;
