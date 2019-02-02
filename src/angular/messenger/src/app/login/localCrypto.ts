@@ -1,3 +1,15 @@
+/**
+ *    Copyright 2018 Sven Loesekann
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 import { Tuple } from '../common/tuple';
 
 export class LocalCrypto {
@@ -15,23 +27,12 @@ export class LocalCrypto {
         return window.crypto.subtle.deriveKey(
             { "name": 'PBKDF2',
               "salt": saltBuffer,
-              // don't get too ambitious, or at least remember
-              // that low-power phones will access your app
               "iterations": 128,
               "hash": 'SHA-256'
             },
             key,
-
-            // Note: for this demo we don't actually need a cipher suite,
-            // but the api requires that it must be specified.
-            // For AES the length required to be 128 or 256 bits (not bytes)
             { "name": 'AES-CBC', "length": 256 },
-
-            // Whether or not the key is extractable (less secure) or not (more secure)
-            // when false, the key can only be passed as a web crypto object, not inspected
             true,
-
-            // this web crypto object will only be allowed for these functions
             [ "encrypt", "decrypt" ]
           )
         }).then((webKey) => {
