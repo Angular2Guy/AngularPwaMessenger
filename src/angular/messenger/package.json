@@ -57,6 +57,7 @@
     "tslint": "~5.11.0",
     "typescript": "~3.1.6",
     "karma-junit-reporter": "~1.2.0",
+    "karma-phantomjs-launcher": "~1.0.4",
     "cpx": "^1.5.0",
     "mkdirp": "^0.5.1",
     "phantomjs-prebuilt": "~2.1.14",
