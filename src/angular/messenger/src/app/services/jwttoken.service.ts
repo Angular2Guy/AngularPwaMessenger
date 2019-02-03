@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 })
 export class JwttokenService {
   private _jwtToken: string = null;
+  private _localLogin: boolean = false;
   
   constructor() { }
   
@@ -26,5 +27,13 @@ export class JwttokenService {
   
   set jwtToken(token: string) {
     this._jwtToken = !token ? null : token;
+  }
+  
+  get localLogin():boolean {
+    return this._localLogin;
+  }
+  
+  set localLogin(localLogin: boolean) {
+    this._localLogin = localLogin;
   }
 }

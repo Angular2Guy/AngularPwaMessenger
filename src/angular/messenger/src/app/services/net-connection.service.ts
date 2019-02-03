@@ -18,13 +18,17 @@ import { Observable } from 'rxjs';
 } )
 export class NetConnectionService {
   private _connectionMonitor: Observable<boolean>;
+  private _connectionStatus: boolean;
 
   constructor() {
+    this._connectionStatus = navigator.onLine;
     this._connectionMonitor = new Observable( ( observer ) => {
       window.addEventListener( 'offline', ( e ) => {
+        this._connectionStatus = false;
         observer.next( false );
       } );
       window.addEventListener( 'online', ( e ) => {
+        this._connectionStatus = true;
         observer.next( true );
       } );
     } );
@@ -32,5 +36,9 @@ export class NetConnectionService {
   
   get connectionMonitor(): Observable<boolean> {
     return this._connectionMonitor;
+  }
+  
+  get connetionStatus(): boolean {
+    return this._connectionStatus;
   }
 }

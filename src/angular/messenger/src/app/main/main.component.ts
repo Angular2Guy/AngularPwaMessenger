@@ -101,8 +101,7 @@ export class MainComponent implements OnInit {
     });
   
     dialogRef.afterClosed().subscribe(result => {        
-      this.myUser = typeof result === 'undefined' || result === null ? null : result;
-      this.jwttokenService.jwtToken = this.myUser === null ? null : this.myUser.token;
+      this.myUser = typeof result === 'undefined' || result === null ? null : result;      
     });
   }
   

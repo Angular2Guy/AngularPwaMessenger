@@ -52,4 +52,8 @@ export class LocaldbService extends Dexie {
   storeUser(user: LocalUser): Promise<number> {
     return this.transaction('rw', this.users, () => this.users.add(user));
   }
+  
+  loadUser(user: LocalUser): Promise<Dexie.Collection<LocalUser, number>> {
+    return this.transaction('rw', this.users, () => this.users.filter(dbuser => dbuser.username === user.username));
+  }
 }

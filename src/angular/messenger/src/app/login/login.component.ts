@@ -20,6 +20,7 @@ import { LocaldbService } from '../services/localdb.service';
 import { LocalUser } from '../model/localUser';
 import { JwttokenService } from '../services/jwttoken.service';
 import { LocalCrypto } from './localCrypto';
+import { NetConnectionService } from '../services/net-connection.service';
 
 
 @Component( {
@@ -33,12 +34,14 @@ export class LoginComponent implements OnInit {
   loginFailed = false;
   signinFailed = false;
   pwMatching = true;
+  private connected = false;
 
   constructor( public dialogRef: MatDialogRef<MainComponent>,
     @Inject( MAT_DIALOG_DATA ) public data: any,
     private authenticationService: AuthenticationService,
     private localdbService: LocaldbService,
-    private jwttockenService: JwttokenService,
+    private jwttokenService: JwttokenService,
+    private netConnectionService: NetConnectionService,
     fb: FormBuilder ) {
     this.signinForm = fb.group( {
       username: ['', Validators.required],
@@ -51,11 +54,12 @@ export class LoginComponent implements OnInit {
     this.loginForm = fb.group( {
       username: ['', Validators.required],
       password: ['', Validators.required]
-    } );
+    } );    
   }
 
   ngOnInit() {
-
+    this.connected = this.netConnectionService.connetionStatus;
+    this.netConnectionService.connectionMonitor.subscribe( conn => this.connected = conn );
   }
 
   validate( group: FormGroup ) {
@@ -86,44 +90,79 @@ export class LoginComponent implements OnInit {
     let myUser = new MyUser();
     myUser.username = this.loginForm.get( 'username' ).value;
     myUser.password = this.loginForm.get( 'password' ).value;
-    //      console.log(myUser);
-    if ( this.jwttockenService.jwtToken )
-      this.authenticationService.postLogin( myUser ).subscribe( us => this.login( us ), err => console.log( err ) );
-  }
-
-  signin( us: MyUser ): void {
-    this.data.myUser = null;
-    if ( us.username !== null ) {
-      LocalCrypto.generateKey( this.signinForm.get( 'password' ).value, null ).then( ( result ) => {
-        const localUser: LocalUser = {
-          base64Avatar: us.base64Avatar,
-          createdAt: us.createdAt,
-          email: us.email,
-          hash: result.a,
-          salt: result.b,
-          username: us.username,
-          publicKey: ''
+    //      console.log(myUser);    
+    if ( this.connected ) {
+      this.authenticationService.postLogin( myUser ).subscribe( us => {
+        let myLocalUser: LocalUser = {
+          base64Avatar: null,
+          createdAt: null,
+          email: null,
+          hash: null,
+          publicKey: null,
+          salt: null,
+          username: us.username
         };
-        this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
-      }, ( rejected ) => console.log( rejected ) );
-      this.signinFailed = false;
-      this.dialogRef.close();
+        this.localdbService.loadUser( myLocalUser ).then( localUserList =>
+          localUserList.first().then( myLocalUser => this.login( us, myLocalUser ) ) );
+        return;
+      }
+        , err => console.log( err ) );
     } else {
-      this.signinFailed = true;
+      let myLocalUser: LocalUser = {
+        base64Avatar: null,
+        createdAt: null,
+        email: null,
+        hash: null,
+        publicKey: null,
+        salt: null,
+        username: myUser.username
+      };
+      myUser.password = null;
+      this.localdbService.loadUser( myLocalUser ).then( localUserList =>
+        localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
     }
   }
 
-  login( us: MyUser ): void {
-    this.data.myUser = us;
-    if ( us.username !== null ) {
-      this.loginFailed = false;
-      this.dialogRef.close( this.data.myUser );
-    } else {
-      this.loginFailed = true;
-    }
+
+signin( us: MyUser ): void {
+  this.data.myUser = null;
+  if( us.username !== null ) {
+  LocalCrypto.generateKey( this.signinForm.get( 'password' ).value, null ).then( ( result ) => {
+    const localUser: LocalUser = {
+      base64Avatar: us.base64Avatar,
+      createdAt: us.createdAt,
+      email: us.email,
+      hash: result.a,
+      salt: result.b,
+      username: us.username,
+      publicKey: ''
+    };
+    this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
+  }, ( rejected ) => console.log( rejected ) );
+  this.signinFailed = false;
+  this.dialogRef.close();
+} else {
+  this.signinFailed = true;
+}
   }
 
-  onCancelClick(): void {
-    this.dialogRef.close();
+login( us: MyUser, localUser: LocalUser ): void {
+  this.data.myUser = us;
+  if( us.username !== null || localUser.username !== null) {
+  this.netConnectionService.connectionMonitor.subscribe( online => {
+    if ( online ) {
+      this.jwttokenService.jwtToken = us.token;
+    }
+  } );
+  this.jwttokenService.localLogin = true;
+  this.loginFailed = false;
+  this.dialogRef.close( this.data.myUser );
+} else {
+  this.loginFailed = true;
+}
   }
+
+onCancelClick(): void {
+  this.dialogRef.close();
+}
 }
