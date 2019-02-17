@@ -22,7 +22,7 @@ import { JwttokenService } from './jwttoken.service';
 })
 export class AuthenticationService {
   private reqOptionsArgs = { headers: new HttpHeaders().set( 'Content-Type', 'application/json' ) };
-  private authUrl = '/rest/auth';
+  private readonly authUrl = '/rest/auth';
   constructor(private http: HttpClient, private jwttokenService: JwttokenService) { }
   
   postLogin(user: MyUser): Observable<MyUser> {

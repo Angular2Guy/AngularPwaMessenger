@@ -132,6 +132,6 @@ export class MainComponent implements OnInit {
     while ( this.messages.length > 0 ) {
       this.messages.pop()
     }    
-    this.localdbService.loadMessages(this.myContact).then(msgs => msgs.each(msg => this.messages.push(msg)));
+    this.localdbService.loadMessages(this.myContact).then(msgs => msgs.forEach(msg => this.messages.push(msg)));
   }
 }

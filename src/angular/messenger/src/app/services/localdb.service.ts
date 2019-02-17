@@ -27,26 +27,32 @@ export class LocaldbService extends Dexie {
   constructor() {
     super( "LocaldbService" );
     this.version( 1 ).stores({
-      contacts: '++id, name, base64Avatar, userId',
+      contacts: '++id, name, base64Avatar, userId, sync',
       messages: '++id, fromId, toId, timestamp, text, send, received',
       users: '++id, createdAt, username, password, email, base64Avatar'
     });
   }
   
   storeContact(contact: Contact): Promise<number> {
-    return this.transaction('rw', this.contacts, () => this.contacts.add(contact));
+    return this.transaction('rw', this.contacts, () => this.contacts.put(contact, contact.id));
   }
   
-  loadContacts(): Promise<Dexie.Collection<Contact, number>> {    
-    return this.transaction('r', this.contacts, () => this.contacts.orderBy('name'));
+  loadContacts(): Promise<Contact[]> {    
+    return this.transaction('r', this.contacts, () => this.contacts.orderBy('name').toArray());
+  }
+  
+  loadContactsToSync(): Promise<Contact[]> {
+    return this.transaction('r', this.contacts, () => this.contacts.filter(con => con.sync === true).toArray());
   }
   
   storeMessage(message: Message): Promise<number> {
     return this.transaction('rw', this.messages, () => this.messages.add(message));
   }
   
-  loadMessages(contact: Contact): Promise<Dexie.Collection<Message, number>> {
-    return this.transaction('rw', this.messages, () => this.messages.orderBy('timestamp').filter(msg => (msg.toId === contact.id || msg.fromId === contact.id)));
+  loadMessages(contact: Contact): Promise<Message[]> {
+    return this.transaction('rw', this.messages, () => this.messages
+            .orderBy('timestamp')
+            .filter(msg => (msg.toId === contact.id || msg.fromId === contact.id)).toArray());
   }
   
   storeUser(user: LocalUser): Promise<number> {

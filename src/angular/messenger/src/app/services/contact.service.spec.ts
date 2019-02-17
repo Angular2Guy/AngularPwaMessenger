@@ -10,11 +10,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-export interface Contact {
-  id?: number;
-  name: string;
-  base64Avatar: string;
-  userId: number;
-  base64PublicKey: string;
-  sync: boolean;
-}
+import { TestBed } from '@angular/core/testing';
+
+import { ContactService } from './contact.service';
+
+//describe('ContactService', () => {
+//  beforeEach(() => TestBed.configureTestingModule({}));
+//
+//  it('should be created', () => {
+//    const service: ContactService = TestBed.get(ContactService);
+//    expect(service).toBeTruthy();
+//  });
+//});
