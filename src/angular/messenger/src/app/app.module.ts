@@ -15,7 +15,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { MatListModule,MatTabsModule,MatButtonModule, MatDialogModule,MatFormFieldModule,MatInputModule, MatToolbarModule } from '@angular/material';
+import { MatListModule,MatTabsModule,MatButtonModule, MatDialogModule,MatFormFieldModule,MatInputModule, MatToolbarModule, MatAutocompleteModule } from '@angular/material';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -25,6 +25,7 @@ import { MainComponent } from './main/main.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { MessagesComponent } from './messages/messages.component';
 import { LoginComponent } from './login/login.component';
+import { AddContactsComponent } from './add-contacts/add-contacts.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { LoginComponent } from './login/login.component';
     MainComponent,
     ContactsComponent,
     MessagesComponent,
-    LoginComponent
+    LoginComponent,
+    AddContactsComponent
   ],
   imports: [
     BrowserModule,
@@ -56,6 +58,7 @@ import { LoginComponent } from './login/login.component';
     MatInputModule,
     MatFormFieldModule,
     MatListModule,
+    MatAutocompleteModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],

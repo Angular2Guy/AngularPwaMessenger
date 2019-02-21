@@ -93,7 +93,7 @@ export class MainComponent implements OnInit {
   onResize( event: any ) {
     this.windowHeight = event.target.innerHeight - 20;
   }
-
+  
   openLoginDialog(): void {
     let dialogRef = this.dialog.open(LoginComponent, {
       width: '500px',
