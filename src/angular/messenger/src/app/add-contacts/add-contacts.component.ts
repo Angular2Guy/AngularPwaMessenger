@@ -27,5 +27,9 @@ export class AddContactsComponent implements OnInit {
 
       return this.options.filter(option => option.toLowerCase().includes(filterValue));
     }
+    
+    addContact() {
+        
+    }
 
 }
