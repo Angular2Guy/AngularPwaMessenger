@@ -31,7 +31,7 @@ export class NetConnectionService {
         this._connectionStatus = true;
         observer.next( true );
       } );
-    } );
+    } );    
   }
   
   get connectionMonitor(): Observable<boolean> {

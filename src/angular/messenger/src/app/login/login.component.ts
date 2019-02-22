@@ -151,11 +151,9 @@ export class LoginComponent implements OnInit {
   login( us: MyUser, localUser: LocalUser ): void {    
     LocalCrypto.generateKey(us.password, localUser.salt).then(tuple => {
       if ( (us.username !== null || localUser.username !== null) && localUser.hash === tuple.a) {
-        this.netConnectionService.connectionMonitor.subscribe( online => {
-          if ( online ) {
+          if (this.connected ) {
             this.jwttokenService.jwtToken = us.token;
-          }
-        } );
+          }        
         this.jwttokenService.localLogin = true;
         this.loginFailed = false;
         us.password = null;

@@ -17,6 +17,9 @@ public class Contact {
 	private String base64Avatar;	
 	private String base64PublicKey;
 
+	public Contact() {
+	}
+	
 	public Contact(String name, String base64Avatar, String publicKey) {
 		super();
 		this.name = name;
@@ -31,6 +34,15 @@ public class Contact {
 	}
 	public String getBase64PublicKey() {
 		return base64PublicKey;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setBase64Avatar(String base64Avatar) {
+		this.base64Avatar = base64Avatar;
+	}
+	public void setBase64PublicKey(String base64PublicKey) {
+		this.base64PublicKey = base64PublicKey;
 	}
 	  
 }

@@ -47,7 +47,10 @@ public class ContactController {
 	public Flux<Contact> getFindContacts(@RequestBody Contact contact,  @RequestHeader Map<String, String> header) {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
 		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
-			return operations.find(new Query().addCriteria(Criteria.where("username").regex(String.format(".*%s.*", contact.getName()))), MsgUser.class)
+			return operations.find(new Query()
+					.addCriteria(Criteria.where("username")
+					.regex(String.format(".*%s.*", contact.getName()))), MsgUser.class)
+					.take(50)
 					.map(myUser -> new Contact(myUser.getUsername(), myUser.getBase64Avatar(), myUser.getBase64PublicKey()));
 		}
 		return Flux.empty();

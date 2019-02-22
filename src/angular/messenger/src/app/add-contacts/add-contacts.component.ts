@@ -13,35 +13,37 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
+import { ContactService } from '../services/contact.service';
+import { Contact } from '../model/contact';
 
-@Component({
-  selector: 'app-add-contacts',
-  templateUrl: './add-contacts.component.html',
-  styleUrls: ['./add-contacts.component.scss']
-})
+@Component( {
+    selector: 'app-add-contacts',
+    templateUrl: './add-contacts.component.html',
+    styleUrls: ['./add-contacts.component.scss']
+} )
 export class AddContactsComponent implements OnInit {
 
     myControl = new FormControl();
-    options: string[] = ['One', 'Two', 'Three'];
-    filteredOptions: Observable<string[]>;
+    options: string[] = [];
+    filteredOptions: Observable<Contact[]>;
+    contactsLoading = false;
+
+    constructor( private contactService: ContactService ) { }
 
     ngOnInit() {
-      this.filteredOptions = this.myControl.valueChanges
-        .pipe(
-          startWith(''),
-          map(value => this._filter(value))
-        );
+        this.filteredOptions = this.myControl.valueChanges
+            .pipe(
+                debounceTime( 400 ),
+                distinctUntilChanged(),
+                tap( () => this.contactsLoading = true ),
+                switchMap( name => this.contactService.findContacts( name ) ),
+                tap( () => this.contactsLoading = false )
+            );
     }
 
-    private _filter(value: string): string[] {
-      const filterValue = value.toLowerCase();
-
-      return this.options.filter(option => option.toLowerCase().includes(filterValue));
-    }
-    
     addContact() {
-        
+
     }
 
 }

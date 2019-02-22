@@ -66,7 +66,13 @@ export class ContactService {
       return result;
   }
   
-  findContact(conName: string): Observable<Contact[]> {
-      return this.http.get<Contact[]>(this.contactUrl+'/findcontacts');
+  findContacts(conName: string): Observable<Contact[]> {
+      const con: Contact = {
+              name: conName, 
+              base64Avatar: null,
+              userId: null,
+              base64PublicKey: null,
+              sync: false};
+      return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.createHeader());
   }
 }
