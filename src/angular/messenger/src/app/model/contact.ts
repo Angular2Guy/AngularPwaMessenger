@@ -15,4 +15,5 @@ export interface Contact {
   name: string;
   base64Avatar: string;
   base64PublicKey: string;
+  userId: string;
 }

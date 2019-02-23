@@ -16,15 +16,17 @@ public class Contact {
 	private String name;
 	private String base64Avatar;	
 	private String base64PublicKey;
+	private String userId;
 
 	public Contact() {
 	}
 	
-	public Contact(String name, String base64Avatar, String publicKey) {
+	public Contact(String name, String base64Avatar, String publicKey, String userId) {
 		super();
 		this.name = name;
 		this.base64Avatar = base64Avatar;
 		this.base64PublicKey = publicKey;
+		this.userId = userId;
 	}
 	public String getName() {
 		return name;
@@ -44,5 +46,10 @@ public class Contact {
 	public void setBase64PublicKey(String base64PublicKey) {
 		this.base64PublicKey = base64PublicKey;
 	}
-	  
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 }

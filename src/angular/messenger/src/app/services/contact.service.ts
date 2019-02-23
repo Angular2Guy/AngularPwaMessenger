@@ -70,7 +70,8 @@ export class ContactService {
       const con: Contact = {
               name: conName, 
               base64Avatar: null,             
-              base64PublicKey: null};
+              base64PublicKey: null,
+              userId: null};
       return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.createHeader());
   }
 }
