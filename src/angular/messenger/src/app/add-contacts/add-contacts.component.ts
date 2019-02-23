@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
@@ -25,7 +25,7 @@ import { LocaldbService } from '../services/localdb.service';
     styleUrls: ['./add-contacts.component.scss']
 } )
 export class AddContactsComponent implements OnInit {
-
+    @Output() addNewContact = new EventEmitter<Contact>();
     myControl = new FormControl();
     options: string[] = [];
     filteredOptions: Contact[] = [];
@@ -52,7 +52,11 @@ export class AddContactsComponent implements OnInit {
 
     addContact() {
         if(this.filteredOptions.length === 1 && this.connected) {
-            this.localdbService.storeContact(this.filteredOptions[0]).then(() => console.log('Contact stored:'+this.filteredOptions[0].name));
+            if(!this.filteredOptions[0].base64Avatar) {
+                this.filteredOptions[0].base64Avatar = 'assets/icons/smiley-640.jpg';
+            }
+            this.localdbService.storeContact(this.filteredOptions[0])
+                .then(() => this.addNewContact.emit(this.filteredOptions[0]));
         }
     }
 }

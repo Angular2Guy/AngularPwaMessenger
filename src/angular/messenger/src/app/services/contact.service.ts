@@ -29,12 +29,12 @@ export class ContactService {
           private netConService: NetConnectionService,
           private jwttokenService: JwttokenService) { }
   
-  syncContactDb() {
-      const myReqOptionsArgs = this.createHeader();
-      this.http.get<Contact[]>(this.contactUrl+'/mycontacts', myReqOptionsArgs)
-          .pipe(flatMap(con => con))
-          .subscribe(myCon => this.localdbService.storeContact(myCon).then(result => console.log('Contact updated: '+myCon.name)));
-  }
+//  syncContactDb() {
+//      const myReqOptionsArgs = this.createHeader();
+//      this.http.get<Contact[]>(this.contactUrl+'/mycontacts', myReqOptionsArgs)
+//          .pipe(flatMap(con => con))
+//          .subscribe(myCon => this.localdbService.storeContact(myCon).then(result => console.log('Contact updated: '+myCon.name)));
+//  }
   
 //  syncContactsToServer() {
 //      from(this.localdbService.loadContactsToSync()).pipe(
@@ -55,16 +55,16 @@ export class ContactService {
      return from(this.localdbService.loadContacts());
   }
   
-  saveContact(contact: Contact): Observable<number> {
-      let result: Observable<number> = null;
-      if(this.netConService.connetionStatus) {
-          result = this.http.put<number>(this.contactUrl+'/mycontact', contact, this.createHeader()).pipe(
-                  tap(() => from(this.localdbService.storeContact(contact))));
-      } else {
-          result = from(this.localdbService.storeContact(contact));
-      }
-      return result;
-  }
+//  saveContact(contact: Contact): Observable<number> {
+//      let result: Observable<number> = null;
+//      if(this.netConService.connetionStatus) {
+//          result = this.http.put<number>(this.contactUrl+'/mycontact', contact, this.createHeader()).pipe(
+//                  tap(() => from(this.localdbService.storeContact(contact))));
+//      } else {
+//          result = from(this.localdbService.storeContact(contact));
+//      }
+//      return result;
+//  }
   
   findContacts(conName: string): Observable<Contact[]> {
       const con: Contact = {

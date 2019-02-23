@@ -134,4 +134,8 @@ export class MainComponent implements OnInit {
     }    
     this.localdbService.loadMessages(this.myContact).then(msgs => msgs.forEach(msg => this.messages.push(msg)));
   }
+  
+  addNewContact(contact: Contact) {      
+      this.contacts.push(contact);
+  }
 }
