@@ -36,14 +36,14 @@ export class ContactService {
           .subscribe(myCon => this.localdbService.storeContact(myCon).then(result => console.log('Contact updated: '+myCon.name)));
   }
   
-  syncContactsToServer() {
-      from(this.localdbService.loadContactsToSync()).pipe(
-              flatMap(con => con),
-              tap(myCon => this.http.put(this.contactUrl+'/mycontact', myCon, this.createHeader()))
-              ).subscribe(myCon1 => {
-                  myCon1.sync = true;
-                  this.localdbService.storeContact(myCon1).then(() => console.log('Contact synced to Server:'+myCon1.name));});
-  }
+//  syncContactsToServer() {
+//      from(this.localdbService.loadContactsToSync()).pipe(
+//              flatMap(con => con),
+//              tap(myCon => this.http.put(this.contactUrl+'/mycontact', myCon, this.createHeader()))
+//              ).subscribe(myCon1 => {
+//                  myCon1.sync = true;
+//                  this.localdbService.storeContact(myCon1).then(() => console.log('Contact synced to Server:'+myCon1.name));});
+//  }
   
   private createHeader() {
       return { headers: new HttpHeaders()
@@ -69,10 +69,8 @@ export class ContactService {
   findContacts(conName: string): Observable<Contact[]> {
       const con: Contact = {
               name: conName, 
-              base64Avatar: null,
-              userId: null,
-              base64PublicKey: null,
-              sync: false};
+              base64Avatar: null,             
+              base64PublicKey: null};
       return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.createHeader());
   }
 }

@@ -27,7 +27,7 @@ export class LocaldbService extends Dexie {
   constructor() {
     super( "LocaldbService" );
     this.version( 1 ).stores({
-      contacts: '++id, name, base64Avatar, userId, sync',
+      contacts: '++id, name, base64Avatar, userId',
       messages: '++id, fromId, toId, timestamp, text, send, received',
       users: '++id, createdAt, username, password, email, base64Avatar'
     });
@@ -39,10 +39,6 @@ export class LocaldbService extends Dexie {
   
   loadContacts(): Promise<Contact[]> {    
     return this.transaction('r', this.contacts, () => this.contacts.orderBy('name').toArray());
-  }
-  
-  loadContactsToSync(): Promise<Contact[]> {
-    return this.transaction('r', this.contacts, () => this.contacts.filter(con => con.sync === true).toArray());
   }
   
   storeMessage(message: Message): Promise<number> {

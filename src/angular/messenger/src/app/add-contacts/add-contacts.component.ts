@@ -16,6 +16,8 @@ import { Observable } from 'rxjs';
 import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
 import { ContactService } from '../services/contact.service';
 import { Contact } from '../model/contact';
+import { NetConnectionService } from '../services/net-connection.service';
+import { LocaldbService } from '../services/localdb.service';
 
 @Component( {
     selector: 'app-add-contacts',
@@ -26,24 +28,31 @@ export class AddContactsComponent implements OnInit {
 
     myControl = new FormControl();
     options: string[] = [];
-    filteredOptions: Observable<Contact[]>;
+    filteredOptions: Contact[] = [];
     contactsLoading = false;
+    connected = false;
 
-    constructor( private contactService: ContactService ) { }
+    constructor( 
+            private contactService: ContactService,
+            private netConService: NetConnectionService,
+            private localdbService: LocaldbService) { }
 
     ngOnInit() {
-        this.filteredOptions = this.myControl.valueChanges
+        this.connected = this.netConService.connetionStatus;
+        this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
+        this.myControl.valueChanges
             .pipe(
                 debounceTime( 400 ),
                 distinctUntilChanged(),
                 tap( () => this.contactsLoading = true ),
                 switchMap( name => this.contactService.findContacts( name ) ),
                 tap( () => this.contactsLoading = false )
-            );
+            ).subscribe(contacts => this.filteredOptions = contacts);
     }
 
     addContact() {
-
+        if(this.filteredOptions.length === 1 && this.connected) {
+            this.localdbService.storeContact(this.filteredOptions[0]).then(() => console.log('Contact stored:'+this.filteredOptions[0].name));
+        }
     }
-
 }
