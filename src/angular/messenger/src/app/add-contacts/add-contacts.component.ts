@@ -10,10 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
+import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap, filter, flatMap } from 'rxjs/operators';
 import { ContactService } from '../services/contact.service';
 import { Contact } from '../model/contact';
 import { NetConnectionService } from '../services/net-connection.service';
@@ -26,6 +26,7 @@ import { LocaldbService } from '../services/localdb.service';
 } )
 export class AddContactsComponent implements OnInit {
     @Output() addNewContact = new EventEmitter<Contact>();
+    @Input() userName: string;
     myControl = new FormControl();
     options: string[] = [];
     filteredOptions: Contact[] = [];
@@ -37,7 +38,7 @@ export class AddContactsComponent implements OnInit {
             private netConService: NetConnectionService,
             private localdbService: LocaldbService) { }
 
-    ngOnInit() {
+    ngOnInit() {            
         this.connected = this.netConService.connetionStatus;
         this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
         this.myControl.valueChanges
@@ -46,6 +47,7 @@ export class AddContactsComponent implements OnInit {
                 distinctUntilChanged(),
                 tap( () => this.contactsLoading = true ),
                 switchMap( name => this.contactService.findContacts( name ) ),
+                map(contacts => contacts.filter(con => con.name !== this.userName)),
                 tap( () => this.contactsLoading = false )
             ).subscribe(contacts => this.filteredOptions = contacts);
     }
