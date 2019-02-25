@@ -29,7 +29,7 @@ export class LocaldbService extends Dexie {
     this.version( 1 ).stores({
       contacts: '++id, name, base64Avatar, userId',
       messages: '++id, fromId, toId, timestamp, text, send, received',
-      users: '++id, createdAt, username, password, email, base64Avatar'
+      users: '++id, createdAt, username, password, email, base64Avatar, userId'
     });
   }
   

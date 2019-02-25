@@ -100,7 +100,8 @@ export class LoginComponent implements OnInit {
           hash: null,
           publicKey: null,
           salt: null,
-          username: us.username
+          username: us.username,
+          userId: null
         };
         this.localdbService.loadUser( myLocalUser ).then( localUserList =>
           localUserList.first().then( myLocalUser => {
@@ -118,7 +119,8 @@ export class LoginComponent implements OnInit {
         hash: null,
         publicKey: null,
         salt: null,
-        username: myUser.username
+        username: myUser.username,
+        userId: null
       };      
       this.localdbService.loadUser( myLocalUser ).then( localUserList =>
         localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
@@ -137,7 +139,8 @@ export class LoginComponent implements OnInit {
           hash: result.a,
           salt: result.b,
           username: us.username,
-          publicKey: ''
+          publicKey: '',
+          userId: us.userId
         };
         this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
       }, ( rejected ) => console.log( rejected ) );

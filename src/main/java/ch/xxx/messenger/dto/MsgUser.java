@@ -51,6 +51,8 @@ public class MsgUser implements UserDetails {
 	@JsonProperty
 	private String base64PublicKey;
 	@JsonProperty
+	private String userId;
+	@JsonProperty
 	private List<ObjectId> contacts = new ArrayList<>();
 	
 	
@@ -152,6 +154,14 @@ public class MsgUser implements UserDetails {
 
 	public void setBase64PublicKey(String base64PublicKey) {
 		this.base64PublicKey = base64PublicKey;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }

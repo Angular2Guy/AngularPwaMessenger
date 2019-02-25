@@ -19,4 +19,5 @@ export interface LocalUser {
   email: string;
   base64Avatar: string;
   publicKey: string;
+  userId: string;
 }

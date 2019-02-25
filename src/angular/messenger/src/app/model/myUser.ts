@@ -21,4 +21,5 @@ export class MyUser {
   token: string;
   base64Avatar: string;
   publicKey: string;
+  userId: string;
 }
