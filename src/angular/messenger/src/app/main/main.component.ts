@@ -100,7 +100,7 @@ export class MainComponent implements OnInit {
       data: { myUser: this.myUser}
     });
   
-    dialogRef.afterClosed().subscribe(result => {         
+    dialogRef.afterClosed().subscribe(result => {        
       this.myUser = typeof result === 'undefined' || result === null ? null : result;      
     });
   }

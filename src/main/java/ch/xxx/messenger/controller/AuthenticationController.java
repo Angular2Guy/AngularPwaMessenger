@@ -62,8 +62,7 @@ public class AuthenticationController {
 		if (user.getUsername() == null) {
 			String encryptedPassword = this.passwordEncoder.encode(myUser.getPassword());
 			myUser.setPassword(encryptedPassword);
-			this.operations.save(myUser).block();
-			myUser.setUserId(myUser.get_id().toString());
+			this.operations.save(myUser).block();			
 			return Mono.just(myUser);
 		}
 		return Mono.just(new MsgUser());
@@ -74,6 +73,8 @@ public class AuthenticationController {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
 		return this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser()))
+				.map(user1 -> { user1.setUserId(user1.get_id().toString());
+								return user1;})
 				.map(user1 -> loginHelp(user1, myUser.getPassword()));
 	}
 

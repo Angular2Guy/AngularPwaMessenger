@@ -26,7 +26,7 @@ import { LocaldbService } from '../services/localdb.service';
 } )
 export class AddContactsComponent implements OnInit {
     @Output() addNewContact = new EventEmitter<Contact>();
-    @Input() userName: string;
+    @Input() userId: string;
     myControl = new FormControl();
     options: string[] = [];
     filteredOptions: Contact[] = [];
@@ -38,7 +38,7 @@ export class AddContactsComponent implements OnInit {
             private netConService: NetConnectionService,
             private localdbService: LocaldbService) { }
 
-    ngOnInit() {            
+    ngOnInit() {             
         this.connected = this.netConService.connetionStatus;
         this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
         this.myControl.valueChanges
@@ -47,7 +47,7 @@ export class AddContactsComponent implements OnInit {
                 distinctUntilChanged(),
                 tap( () => this.contactsLoading = true ),
                 switchMap( name => this.contactService.findContacts( name ) ),
-                map(contacts => contacts.filter(con => con.name !== this.userName)),
+                map(contacts => contacts.filter(con => con.userId !== this.userId)),
                 tap( () => this.contactsLoading = false )
             ).subscribe(contacts => this.filteredOptions = contacts);
     }
