@@ -58,7 +58,11 @@ export class AddContactsComponent implements OnInit {
                 this.filteredOptions[0].base64Avatar = 'assets/icons/smiley-640.jpg';
             }
             this.localdbService.storeContact(this.filteredOptions[0])
-                .then(() => this.addNewContact.emit(this.filteredOptions[0]));
+                .then(() => {
+                    this.addNewContact.emit(this.filteredOptions[0]);
+                    this.myControl.reset();
+                    this.filteredOptions = [];
+                });
         }
     }
 }
