@@ -62,7 +62,8 @@ public class AuthenticationController {
 		if (user.getUsername() == null) {
 			String encryptedPassword = this.passwordEncoder.encode(myUser.getPassword());
 			myUser.setPassword(encryptedPassword);
-			this.operations.save(myUser).block();			
+			this.operations.save(myUser).block();	
+			myUser.setUserId(myUser.get_id().toString());
 			return Mono.just(myUser);
 		}
 		return Mono.just(new MsgUser());
