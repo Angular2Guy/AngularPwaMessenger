@@ -27,7 +27,7 @@ export class MessagesComponent implements OnInit {
   @Input()
   receiver: Contact;
   @Output()
-  sendMsg = new EventEmitter<string>();
+  sendMsg = new EventEmitter<Message>();
   
   messageForm: FormGroup;
   
@@ -40,7 +40,16 @@ export class MessagesComponent implements OnInit {
   ngOnInit() {
   }
   
-  sendMessage() {    
-    this.sendMsg.emit(this.messageForm.controls['message'].value);    
+  sendMessage() {   
+    if(this.messageForm.valid)  { 
+        const msg: Message = {
+                fromId: null,
+                toId: this.receiver.userId,
+                text: this.messageForm.controls['message'].value,
+                send: false,
+                received: false
+        };
+        this.sendMsg.emit(msg);
+    }
   }
 }

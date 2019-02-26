@@ -101,7 +101,15 @@ export class MainComponent implements OnInit {
     });
   
     dialogRef.afterClosed().subscribe(result => {        
-      this.myUser = typeof result === 'undefined' || result === null ? null : result;      
+      this.myUser = typeof result === 'undefined' || result === null ? null : result;
+      if(this.myUser !== null) {
+          this.ownContact = {
+              name: this.myUser.username,
+              base64Avatar: this.myUser.base64Avatar,
+              base64PublicKey: this.myUser.publicKey,
+              userId: this.myUser.userId
+          };
+      }
     });
   }
   
@@ -115,15 +123,8 @@ export class MainComponent implements OnInit {
     this.addMessages();
   }
 
-  sendMessage(msgStr: string) {    
-    const msg:Message = {
-      fromId: this.ownContact.id,
-      toId: this.myContact.id,
-      timestamp: new Date().getTime(),      
-      text: msgStr,
-      send: false,
-      received: false
-    };
+  sendMessage(msg: Message) {    
+    msg.fromId = this.ownContact.userId;
     this.localdbService.storeMessage(msg).then(result => console.log(result));
     this.addMessages();
   }

@@ -48,7 +48,7 @@ export class LocaldbService extends Dexie {
   loadMessages(contact: Contact): Promise<Message[]> {
     return this.transaction('rw', this.messages, () => this.messages
             .orderBy('timestamp')
-            .filter(msg => (msg.toId === contact.id || msg.fromId === contact.id)).toArray());
+            .filter(msg => (msg.toId === contact.userId || msg.fromId === contact.userId)).toArray());
   }
   
   storeUser(user: LocalUser): Promise<number> {
