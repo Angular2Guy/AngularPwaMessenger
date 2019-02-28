@@ -125,8 +125,15 @@ export class MainComponent implements OnInit {
 
   sendMessage(msg: Message) {    
     msg.fromId = this.ownContact.userId;
-    this.localdbService.storeMessage(msg).then(result => console.log(result));
-    this.addMessages();
+    this.localdbService.storeMessage(msg).then(result => {
+        this.addMessages();
+        this.syncMsgs();
+    });    
+    
+  }
+  
+  private syncMsgs() {
+      
   }
   
   private addMessages() {
