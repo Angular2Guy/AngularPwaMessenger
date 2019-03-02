@@ -40,8 +40,8 @@ public class MessageController {
 							Criteria.where("fromId").in(syncMsgs.getContactIds())
 							.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
 							.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))), Message.class)
-					.doOnNext(msg -> {
-						msg.setReceived(true);
+					.doOnEach(msg -> {					
+						msg.get().setReceived(true);
 						this.operations.save(msg);					
 					});							
 		}
