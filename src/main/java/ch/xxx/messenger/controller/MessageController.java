@@ -38,7 +38,12 @@ public class MessageController {
 			return operations
 					.find(new Query().addCriteria(
 							Criteria.where("fromId").in(syncMsgs.getContactIds())
-							.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId()))), Message.class);							
+							.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
+							.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))), Message.class)
+					.doOnNext(msg -> {
+						msg.setReceived(true);
+						this.operations.save(msg);					
+					});							
 		}
 		return Flux.empty();
 	}
