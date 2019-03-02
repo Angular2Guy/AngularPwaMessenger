@@ -19,6 +19,7 @@ import { LoginComponent } from '../login/login.component';
 import { MyUser } from '../model/myUser';
 import { JwttokenService } from '../services/jwttoken.service';
 import { AuthenticationService } from '../services/authentication.service';
+import { NetConnectionService } from '../services/net-connection.service';
 
 @Component( {
   selector: 'app-main',
@@ -35,10 +36,16 @@ export class MainComponent implements OnInit {
 
   constructor( private localdbService: LocaldbService, 
                private jwttokenService: JwttokenService,
+               private netConnectionService: NetConnectionService,
                public dialog: MatDialog ) { }
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 20;
+    this.netConnectionService.connectionMonitor.subscribe(online => {
+        if(online) {
+            this.syncMsgs();
+        }
+    });
 //    const mycontacts: Contact[] = [];
 //    mycontacts.push(
 //      {
@@ -133,7 +140,16 @@ export class MainComponent implements OnInit {
   }
   
   private syncMsgs() {
-      
+      if(this.netConnectionService.connetionStatus) {
+          
+      }
+  }
+  
+  private getLastSyncDate(): Date {
+      const sortedMsg = this.messages
+      .filter(i => !(typeof i.timestamp === "undefined") && !(i.timestamp === null)) 
+      .sort((i1, i2) => i1.timestamp.getTime() - i2.timestamp.getTime());
+      return sortedMsg[sortedMsg.length -1].timestamp;      
   }
   
   private addMessages() {

@@ -52,6 +52,13 @@ export class LocaldbService extends Dexie {
 //            .toArray()
             );
   }
+ 
+  toSyncMessages(contact: Contact): Promise<Message[]> {
+      return this.transaction('rw', this.messages, () => this.messages
+              .filter(msg => msg.fromId === contact.userId)
+              .filter(msg => msg.timestamp === null || typeof msg.timestamp === "undefined")
+              .toArray());     
+  }
   
   storeUser(user: LocalUser): Promise<number> {
     return this.transaction('rw', this.users, () => this.users.add(user));

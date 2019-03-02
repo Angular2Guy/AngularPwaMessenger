@@ -14,7 +14,7 @@ export interface Message {
   id?: number;
   fromId: string;
   toId: string;
-  timestamp?: number,
+  timestamp?: Date,
   text: string,
   send: boolean,
   received: boolean
