@@ -141,15 +141,25 @@ export class MainComponent implements OnInit {
   private syncMsgs() {
       if(this.netConnectionService.connetionStatus) {
           const contactIds = this.contacts.map(con => con.userId);
-          const syncMsgs: SyncMsgs = {
+          const syncMsgs1: SyncMsgs = {
                ownId: this.ownContact.userId,
                contactIds: contactIds,
                lastUpdate: this.getLastSyncDate()
           }; 
-          this.messageService.findMessages(syncMsgs).subscribe(msgs => {
+          this.messageService.findMessages(syncMsgs1).subscribe(msgs => {
               this.messages.concat(msgs);
               msgs.forEach(msg => this.localdbService.storeMessage(msg).then());              
+          });          
+          this.localdbService.toSyncMessages(this.ownContact).then(msgs => {
+              const syncMsgs2: SyncMsgs = {
+                      ownId: this.ownContact.userId,
+                      msgs: msgs          
+              };
+              this.messageService.sendMessages(syncMsgs2).subscribe(myMsgs => 
+                  myMsgs.forEach(msg => this.localdbService.updateMessage(msg).then()
+              ));
           });
+          
       }
   }
   
@@ -164,7 +174,7 @@ export class MainComponent implements OnInit {
     while ( this.messages.length > 0 ) {
       this.messages.pop()
     }    
-    this.localdbService.loadMessages(this.myContact).then(msgs => msgs.forEach(msg => this.messages.push(msg)));
+    this.localdbService.loadMessages(this.myContact).then(msgs => this.messages.concat(msgs));
   }
   
   addNewContact(contact: Contact) {      

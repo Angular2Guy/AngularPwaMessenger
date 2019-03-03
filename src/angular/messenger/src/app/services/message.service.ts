@@ -21,4 +21,8 @@ export class MessageService {
   findMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
       return this.http.post<Message[]>(this.contactUrl+'/findMsgs', syncMsgs, this.utils.createHeader());
   }
+  
+  sendMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
+      return this.http.post<Message[]>(this.contactUrl+'/storeMsgs', syncMsgs,this.utils.createHeader());
+  }
 }

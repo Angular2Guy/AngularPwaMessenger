@@ -45,6 +45,12 @@ export class LocaldbService extends Dexie {
     return this.transaction('rw', this.messages, () => this.messages.add(message));
   }
   
+  updateMessage(message: Message): Promise<number> {
+      return this.transaction('rw', this.messages, 
+              () => this.messages.filter(msg => msg.fromId === message.fromId && msg.toId === message.toId))
+              .then(msgs => this.messages.update(msgs[0].id, message));
+  }
+  
   loadMessages(contact: Contact): Promise<Message[]> {
     return this.transaction('rw', this.messages, () => this.messages
             .filter(msg => (msg.toId === contact.userId || msg.fromId === contact.userId))
