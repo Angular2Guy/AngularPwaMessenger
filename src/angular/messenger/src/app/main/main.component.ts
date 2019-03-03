@@ -17,9 +17,11 @@ import { LocaldbService } from '../services/localdb.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { LoginComponent } from '../login/login.component';
 import { MyUser } from '../model/myUser';
+import { SyncMsgs } from '../model/syncMsgs';
 import { JwttokenService } from '../services/jwttoken.service';
 import { AuthenticationService } from '../services/authentication.service';
 import { NetConnectionService } from '../services/net-connection.service';
+import { MessageService } from '../services/message.service';
 
 @Component( {
   selector: 'app-main',
@@ -37,15 +39,12 @@ export class MainComponent implements OnInit {
   constructor( private localdbService: LocaldbService, 
                private jwttokenService: JwttokenService,
                private netConnectionService: NetConnectionService,
+               private messageService: MessageService,
                public dialog: MatDialog ) { }
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 20;
-    this.netConnectionService.connectionMonitor.subscribe(online => {
-        if(online) {
-            this.syncMsgs();
-        }
-    });
+    this.netConnectionService.connectionMonitor.subscribe(online => this.syncMsgs());
 //    const mycontacts: Contact[] = [];
 //    mycontacts.push(
 //      {
@@ -141,7 +140,16 @@ export class MainComponent implements OnInit {
   
   private syncMsgs() {
       if(this.netConnectionService.connetionStatus) {
-          
+          const contactIds = this.contacts.map(con => con.userId);
+          const syncMsgs: SyncMsgs = {
+               ownId: this.ownContact.userId,
+               contactIds: contactIds,
+               lastUpdate: this.getLastSyncDate()
+          }; 
+          this.messageService.findMessages(syncMsgs).subscribe(msgs => {
+              this.messages.concat(msgs);
+              msgs.forEach(msg => this.localdbService.storeMessage(msg).then());              
+          });
       }
   }
   

@@ -18,6 +18,7 @@ import { JwttokenService } from './jwttoken.service';
 import { Contact } from '../model/contact';
 import { flatMap,tap, map, switchMap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
+import { Utils } from '../common/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,7 @@ export class ContactService {
   private readonly contactUrl = '/rest/contact';
   constructor(private localdbService: LocaldbService,           
           private http: HttpClient, 
-          private netConService: NetConnectionService,
-          private jwttokenService: JwttokenService) { }
+          private utils: Utils) { }
   
 //  syncContactDb() {
 //      const myReqOptionsArgs = this.createHeader();
@@ -45,11 +45,11 @@ export class ContactService {
 //                  this.localdbService.storeContact(myCon1).then(() => console.log('Contact synced to Server:'+myCon1.name));});
 //  }
   
-  private createHeader() {
-      return { headers: new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', this.jwttokenService.jwtToken)};
-  }
+//  private createHeader() {
+//      return { headers: new HttpHeaders()
+//      .set('Content-Type', 'application/json')
+//      .set('Authorization', this.jwttokenService.jwtToken)};
+//  }
   
   loadContacts(): Observable<Contact[]> {
      return from(this.localdbService.loadContacts());
@@ -72,6 +72,6 @@ export class ContactService {
               base64Avatar: null,             
               base64PublicKey: null,
               userId: null};
-      return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.createHeader());
+      return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.utils.createHeader());
   }
 }
