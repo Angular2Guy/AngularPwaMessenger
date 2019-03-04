@@ -12,7 +12,11 @@
  */
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { JwttokenService } from '../services/jwttoken.service';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+    providedIn: 'root'
+  })
 export class Utils {
     constructor(private jwttokenService: JwttokenService) {}
     
