@@ -125,7 +125,8 @@ export class MainComponent implements OnInit {
     while ( this.messages.length > 0 ) {
       this.messages.pop()
     }    
-    this.localdbService.loadMessages(this.myContact).then(msgs => this.messages.concat(msgs));
+    this.localdbService.loadMessages(this.myContact)
+        .then(msgs => this.messages = this.messages.concat(msgs));
   }
   
   addNewContact(contact: Contact) {      
