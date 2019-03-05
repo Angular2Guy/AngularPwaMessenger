@@ -35,15 +35,16 @@ public class MessageController {
 	public Flux<Message> getFindMessages(@RequestBody SyncMsgs syncMsgs, @RequestHeader Map<String, String> header) {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
 		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
-			return operations
-					.find(new Query().addCriteria(
-							Criteria.where("fromId").in(syncMsgs.getContactIds())
+			return operations.find(
+					new Query().addCriteria(Criteria.where("fromId").in(syncMsgs.getContactIds())
 							.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
-							.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))), Message.class)
-					.doOnEach(msg -> {					
-						msg.get().setReceived(true);
-						this.operations.save(msg);					
-					});							
+									.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))),
+					Message.class).doOnEach(msg -> {
+						if (msg.hasValue()) {
+							msg.get().setReceived(true);
+							this.operations.save(msg);
+						}
+					});
 		}
 		return Flux.empty();
 	}

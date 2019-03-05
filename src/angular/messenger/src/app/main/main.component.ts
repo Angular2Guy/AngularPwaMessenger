@@ -118,7 +118,7 @@ export class MainComponent implements OnInit {
       const sortedMsg = this.messages
       .filter(i => !(typeof i.timestamp === "undefined") && !(i.timestamp === null)) 
       .sort((i1, i2) => i1.timestamp.getTime() - i2.timestamp.getTime());
-      return sortedMsg[sortedMsg.length -1].timestamp;      
+      return sortedMsg.length === 0 ? new Date('2000-01-01') : sortedMsg[sortedMsg.length -1].timestamp;      
   }
   
   private addMessages() {
