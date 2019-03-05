@@ -18,7 +18,7 @@ import { JwttokenService } from './jwttoken.service';
 import { Contact } from '../model/contact';
 import { flatMap,tap, map, switchMap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
-import { Utils } from '../common/utils';
+import { Utils } from '../services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,42 +29,9 @@ export class ContactService {
           private http: HttpClient, 
           private utils: Utils) { }
   
-//  syncContactDb() {
-//      const myReqOptionsArgs = this.createHeader();
-//      this.http.get<Contact[]>(this.contactUrl+'/mycontacts', myReqOptionsArgs)
-//          .pipe(flatMap(con => con))
-//          .subscribe(myCon => this.localdbService.storeContact(myCon).then(result => console.log('Contact updated: '+myCon.name)));
-//  }
-  
-//  syncContactsToServer() {
-//      from(this.localdbService.loadContactsToSync()).pipe(
-//              flatMap(con => con),
-//              tap(myCon => this.http.put(this.contactUrl+'/mycontact', myCon, this.createHeader()))
-//              ).subscribe(myCon1 => {
-//                  myCon1.sync = true;
-//                  this.localdbService.storeContact(myCon1).then(() => console.log('Contact synced to Server:'+myCon1.name));});
-//  }
-  
-//  private createHeader() {
-//      return { headers: new HttpHeaders()
-//      .set('Content-Type', 'application/json')
-//      .set('Authorization', this.jwttokenService.jwtToken)};
-//  }
-  
   loadContacts(): Observable<Contact[]> {
      return from(this.localdbService.loadContacts());
   }
-  
-//  saveContact(contact: Contact): Observable<number> {
-//      let result: Observable<number> = null;
-//      if(this.netConService.connetionStatus) {
-//          result = this.http.put<number>(this.contactUrl+'/mycontact', contact, this.createHeader()).pipe(
-//                  tap(() => from(this.localdbService.storeContact(contact))));
-//      } else {
-//          result = from(this.localdbService.storeContact(contact));
-//      }
-//      return result;
-//  }
   
   findContacts(conName: string): Observable<Contact[]> {
       const con: Contact = {

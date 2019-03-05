@@ -5,7 +5,7 @@ import { JwttokenService } from './jwttoken.service';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { Observable } from 'rxjs';
-import { Utils } from '../common/utils';
+import { Utils } from '../services/utils.service';
 import { SyncMsgs } from '../model/syncMsgs';
 
 @Injectable({
