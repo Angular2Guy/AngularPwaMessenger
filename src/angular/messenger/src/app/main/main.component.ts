@@ -67,6 +67,8 @@ export class MainComponent implements OnInit {
               base64PublicKey: this.myUser.publicKey,
               userId: this.myUser.userId
           };
+          this.contacts = [];
+          this.myContact = null;
       }
     });
   }
