@@ -80,14 +80,13 @@ export class MainComponent implements OnInit {
   
   selectContact( contact: Contact ) {
     this.myContact = contact;
-    this.addMessages();
+    this.addMessages().then(() => this.syncMsgs());
   }
 
   sendMessage(msg: Message) {    
     msg.fromId = this.ownContact.userId;
     this.localdbService.storeMessage(msg).then(result => {
-        this.addMessages();
-        this.syncMsgs();
+        this.addMessages().then(() => this.syncMsgs());        
     });    
     
   }
@@ -123,11 +122,11 @@ export class MainComponent implements OnInit {
       return sortedMsg.length === 0 ? new Date('2000-01-01') : sortedMsg[sortedMsg.length -1].timestamp;      
   }
   
-  private addMessages() {
+  private addMessages(): Promise<Message[]> {
     while ( this.messages.length > 0 ) {
       this.messages.pop()
     }    
-    this.localdbService.loadMessages(this.myContact)
+    return this.localdbService.loadMessages(this.myContact)
         .then(msgs => this.messages = this.messages.concat(msgs));
   }
   
