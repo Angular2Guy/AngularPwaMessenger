@@ -43,13 +43,13 @@ export class MainComponent implements OnInit {
                public dialog: MatDialog ) { }
 
   ngOnInit() {
-    this.windowHeight = window.innerHeight - 20;
+    this.windowHeight = window.innerHeight - 84;
     this.netConnectionService.connectionMonitor.subscribe(online => this.syncMsgs());    
   }
 
   @HostListener( 'window:resize', ['$event'] )
   onResize( event: any ) {
-    this.windowHeight = event.target.innerHeight - 20;
+    this.windowHeight = event.target.innerHeight - 84;
   }
   
   openLoginDialog(): void {
@@ -118,7 +118,7 @@ export class MainComponent implements OnInit {
   private getLastSyncDate(): Date {
       const sortedMsg = this.messages
       .filter(i => !(typeof i.timestamp === "undefined") && !(i.timestamp === null)) 
-      .sort((i1, i2) => i1.timestamp.getTime() - i2.timestamp.getTime());
+      .sort((i1, i2) => new Date(i1.timestamp).getTime() - new Date(i2.timestamp).getTime());
       return sortedMsg.length === 0 ? new Date('2000-01-01') : sortedMsg[sortedMsg.length -1].timestamp;      
   }
   

@@ -1,7 +1,7 @@
 <div *ngFor="let message of messages">
 	<div *ngIf="receiver != null"
-		[class.receiver]="message.toId === receiver.id"
-		[class.sender]="message.fromId === receiver.id">
+		[class.receiver]="message.fromId === receiver.userId"
+		[class.sender]="message.toId === receiver.userId">
 		{{message.text}}</div>
 </div>
 <form [formGroup]="messageForm" novalidate>
