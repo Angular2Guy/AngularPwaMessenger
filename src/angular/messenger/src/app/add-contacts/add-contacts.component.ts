@@ -27,6 +27,7 @@ import { LocaldbService } from '../services/localdb.service';
 export class AddContactsComponent implements OnInit {
     @Output() addNewContact = new EventEmitter<Contact>();
     @Input() userId: string;
+    @Input() myContacts: Contact[];
     myControl = new FormControl();
     options: string[] = [];
     filteredOptions: Contact[] = [];
@@ -48,10 +49,17 @@ export class AddContactsComponent implements OnInit {
                 tap( () => this.contactsLoading = true ),
                 switchMap( name => this.contactService.findContacts( name ) ),
                 map(contacts => contacts.filter(con => con.userId !== this.userId)),
+                map(contacts => this.filterContacts(contacts)),
                 tap( () => this.contactsLoading = false )
             ).subscribe(contacts => this.filteredOptions = contacts);
     }
 
+    private filterContacts(contacts: Contact[]): Contact[] {
+        return contacts.filter(con => 
+          this.myContacts.filter(myCon => 
+            myCon.userId === con.userId).length === 0);
+    }
+    
     addContact() {
         if(this.filteredOptions.length === 1 && this.connected) {
             if(!this.filteredOptions[0].base64Avatar) {
