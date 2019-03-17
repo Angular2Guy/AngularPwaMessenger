@@ -23,7 +23,7 @@ import { LocaldbService } from '../services/localdb.service';
 })
 export class MessagesComponent implements OnInit {
   @Input()
-  messages: Message;
+  messages: Message[];
   @Input()
   receiver: Contact;
   @Output()
@@ -49,6 +49,7 @@ export class MessagesComponent implements OnInit {
                 send: false,
                 received: false
         };
+        this.messageForm.reset();        
         this.sendMsg.emit(msg);
     }
   }
