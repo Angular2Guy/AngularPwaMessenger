@@ -100,7 +100,7 @@ export class MainComponent implements OnInit {
                lastUpdate: this.getLastSyncDate()
           }; 
           this.messageService.findMessages(syncMsgs1).subscribe(msgs => {
-              this.messages.concat(msgs);
+              this.messages = this.messages.concat(msgs);
               msgs.forEach(msg => this.localdbService.storeMessage(msg).then());              
           });          
           this.localdbService.toSyncMessages(this.ownContact).then(msgs => {
