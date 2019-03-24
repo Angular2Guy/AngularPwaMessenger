@@ -49,7 +49,9 @@ public class MsgUser implements UserDetails {
 	@JsonProperty
 	private String base64Avatar;
 	@JsonProperty
-	private String base64PublicKey;
+	private String publicKey;
+	@JsonProperty
+	private String privateKey;
 	@JsonProperty
 	private String userId;
 	@JsonProperty
@@ -148,20 +150,28 @@ public class MsgUser implements UserDetails {
 		this.contacts = contacts;
 	}
 
-	public String getBase64PublicKey() {
-		return base64PublicKey;
-	}
-
-	public void setBase64PublicKey(String base64PublicKey) {
-		this.base64PublicKey = base64PublicKey;
-	}
-
 	public String getUserId() {
 		return userId;
 	}
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	public String getPrivateKey() {
+		return privateKey;
+	}
+
+	public void setPrivateKey(String privateKey) {
+		this.privateKey = privateKey;
 	}
 
 }

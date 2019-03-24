@@ -21,6 +21,7 @@ import { LocalUser } from '../model/localUser';
 import { JwttokenService } from '../services/jwttoken.service';
 import { LocalCrypto } from './localCrypto';
 import { NetConnectionService } from '../services/net-connection.service';
+import { CryptoService } from '../services/crypto.service';
 
 
 @Component( {
@@ -42,6 +43,7 @@ export class LoginComponent implements OnInit {
     private localdbService: LocaldbService,
     private jwttokenService: JwttokenService,
     private netConnectionService: NetConnectionService,
+    private cryptoService: CryptoService,
     fb: FormBuilder ) {
     this.signinForm = fb.group( {
       username: ['', Validators.required],
@@ -99,6 +101,7 @@ export class LoginComponent implements OnInit {
           email: null,
           hash: null,
           publicKey: null,
+          privateKey: null,
           salt: null,
           username: us.username,
           userId: null
@@ -118,6 +121,7 @@ export class LoginComponent implements OnInit {
         email: null,
         hash: null,
         publicKey: null,
+        privateKey: null,
         salt: null,
         username: myUser.username,
         userId: null
@@ -140,6 +144,7 @@ export class LoginComponent implements OnInit {
           salt: result.b,
           username: us.username,
           publicKey: '',
+          privateKey: '',
           userId: us.userId
         };
         this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );

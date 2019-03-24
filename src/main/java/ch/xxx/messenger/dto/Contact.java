@@ -15,7 +15,7 @@ package ch.xxx.messenger.dto;
 public class Contact {
 	private String name;
 	private String base64Avatar;	
-	private String base64PublicKey;
+	private String publicKey;
 	private String userId;
 
 	public Contact() {
@@ -25,17 +25,15 @@ public class Contact {
 		super();
 		this.name = name;
 		this.base64Avatar = base64Avatar;
-		this.base64PublicKey = publicKey;
+		this.publicKey = publicKey;
 		this.userId = userId;
 	}
+	
 	public String getName() {
 		return name;
 	}
 	public String getBase64Avatar() {
 		return base64Avatar;
-	}
-	public String getBase64PublicKey() {
-		return base64PublicKey;
 	}
 	public void setName(String name) {
 		this.name = name;
@@ -43,13 +41,19 @@ public class Contact {
 	public void setBase64Avatar(String base64Avatar) {
 		this.base64Avatar = base64Avatar;
 	}
-	public void setBase64PublicKey(String base64PublicKey) {
-		this.base64PublicKey = base64PublicKey;
-	}
 	public String getUserId() {
 		return userId;
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+	}
+	
 }
