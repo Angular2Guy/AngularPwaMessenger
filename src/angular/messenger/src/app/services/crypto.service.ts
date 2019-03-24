@@ -26,7 +26,7 @@ export class CryptoService {
 
   constructor() { }  
   
-  public generateKeys(password: string): PromiseLike<Tuple<JsonWebKey, ArrayBuffer>> {
+  public generateKeys(password: string): PromiseLike<Tuple<string, string>> {
     return window.crypto.subtle.generateKey({
       name: "RSA-OAEP",
       modulusLength: 4096,
@@ -35,10 +35,10 @@ export class CryptoService {
     }, true, ["encrypt", "decrypt"]).then((value) => this.createKeyTuple(password, value));
   }
   
-  private createKeyTuple(password: string, cryptoKeyPair: CryptoKeyPair): PromiseLike<Tuple<JsonWebKey, ArrayBuffer>> {    
-    let jwkPubKey: JsonWebKey = null;    
+  private createKeyTuple(password: string, cryptoKeyPair: CryptoKeyPair): PromiseLike<Tuple<string, string>> {    
+    let jwkPubKey: string = null;    
     return window.crypto.subtle.exportKey("jwk", cryptoKeyPair.publicKey).then(value => {
-      jwkPubKey = value;
+      jwkPubKey = JSON.stringify(value);
       const enc = new TextEncoder();
       return window.crypto.subtle.importKey(
         "raw",
@@ -68,7 +68,7 @@ export class CryptoService {
           })
           .then(value => {
             console.log(value);
-            return new Tuple(jwkPubKey, value);
+            return new Tuple(jwkPubKey, this.convertArrayBufferViewtoString(new Uint8Array(value)));
           });
       });            
     });
