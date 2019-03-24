@@ -68,25 +68,18 @@ export class CryptoService {
           })
           .then(value => {
             console.log(value);
-            return new Tuple(jwkPubKey, this.convertArrayBufferViewtoString(new Uint8Array(value)));
+            return new Tuple(jwkPubKey, new TextDecoder().decode(value));
           });
       });            
     });
   }
   
-  private convertArrayBufferViewtoString( buffer: Uint8Array ) {
-    let str = "";
-    for ( let iii = 0; iii < buffer.byteLength; iii++ ) {
-      str += String.fromCharCode( buffer[iii] );
-    }
-    return str;
+  public encryptText(msgText: string, keyStr: string): PromiseLike<string> {
+    const encMsg = new TextEncoder().encode(msgText);
+    return window.crypto.subtle.importKey('jwk', JSON.parse(keyStr), {name: "RSA-OAEP",hash: "SHA-256"}, false, ['encrypt'])
+      .then(value => window.crypto.subtle.encrypt("RSA-OAEP", value, encMsg))
+      .then(value => new TextDecoder().decode(value));
   }
-
-  private convertStringToArrayBufferView( str: string ): Uint8Array {
-    var bytes = new Uint8Array( str.length );
-    for ( var iii = 0; iii < str.length; iii++ ) {
-      bytes[iii] = str.charCodeAt( iii );
-    }
-    return bytes;
-  }
+    
+  
 }

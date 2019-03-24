@@ -15,6 +15,10 @@ import { TestBed } from '@angular/core/testing';
 import { CryptoService } from './crypto.service';
 
 describe('CryptoService', () => {
+  let privateKey: string = null;
+  let publicKey: string = null;
+  const privateKeyPwd = 'hallo123';
+
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
@@ -24,10 +28,20 @@ describe('CryptoService', () => {
   
   it('keys should be created', (done: DoneFn) => {
     const service: CryptoService = TestBed.get(CryptoService);
-    service.generateKeys('hallo123').then(value => {
+    service.generateKeys(privateKeyPwd).then(value => {
       expect(value.a).toBeDefined('value.a missing');
       expect(value.b).toBeDefined('value.b missing');
+      privateKey = value.b;
+      publicKey = value.a;
       done();
     });
+  });
+  
+  it('encrypt text', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.encryptText('testText', publicKey).then(value => {
+      expect(value).toBeDefined('encryption failed');
+      done();
+    });    
   });
 });
