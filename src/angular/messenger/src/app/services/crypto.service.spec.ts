@@ -44,4 +44,12 @@ describe('CryptoService', () => {
       done();
     });    
   });
+  
+//  it('decrypt text', (done: DoneFn) => {
+//    const service: CryptoService = TestBed.get(CryptoService);
+//    service.decryptText('abcdefgh', privateKey, privateKeyPwd).then(value => {
+//      expect(value).toBeDefined('decryption failed');
+//      done();
+//    });    
+//  });
 });
