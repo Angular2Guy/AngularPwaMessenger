@@ -30,30 +30,36 @@ export class CryptoService {
     }, true, ["encrypt", "decrypt"] ).then( ( value ) => this.createKeyTuple( password, value ) );
   }
 
-  private createKeyTuple( password: string, cryptoKeyPair: CryptoKeyPair): PromiseLike<Tuple<string, string>> {
+  private createKeyTuple( password: string, cryptoKeyPair: CryptoKeyPair ): PromiseLike<Tuple<string, string>> {
     let jwkPubKey: string = null;
+    let wrapKey: CryptoKey = null;
     return window.crypto.subtle.exportKey( "jwk", cryptoKeyPair.publicKey ).then( value => {
-      jwkPubKey = JSON.stringify( value );      
-      const mySalt = new TextDecoder().decode(window.crypto.getRandomValues( new Uint8Array( 16 ) ));
+      jwkPubKey = JSON.stringify( value );
+      const mySalt = new TextDecoder().decode( window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
       return this.createWrapKey( password, mySalt )
         .then( value => {
-          const algo: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode(mySalt) };
+          wrapKey = value;
+          const algo: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( mySalt ) };
           return window.crypto.subtle.wrapKey( "jwk", cryptoKeyPair.privateKey, value, algo );
         } )
-        .then( value => {   
-          const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode(mySalt) };
-          const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
-          window.crypto.subtle.unwrapKey("jwk", value, cryptoKeyPair.privateKey, algo1, algo2, true, ['decrypt'])
-            .then(value => 
-              console.log(value)
-            );
-          const privateKey: PrivateKey = {key: new TextDecoder().decode( value ), salt: mySalt};
-          return new Tuple( jwkPubKey,  JSON.stringify(privateKey));
+        .then( value => {
+//          const wrappedKey = this.str2ab(this.ab2str(value));
+//          console.log( wrappedKey );
+//          console.log( value );          
+//          const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( mySalt ) };
+//          const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
+//          window.crypto.subtle.unwrapKey( "jwk", wrappedKey, wrapKey, algo1, algo2, true, ['decrypt'] )
+//            .then( value =>
+//              console.log( value )
+//            );
+//          console.log(value);
+          const privateKey: PrivateKey = { key: this.ab2str(value ), salt: mySalt };
+          return new Tuple( jwkPubKey, JSON.stringify( privateKey ) );
         } );
     } );
   }
 
-  private createWrapKey( password: string, salt: string ): PromiseLike<CryptoKey> {        
+  private createWrapKey( password: string, salt: string ): PromiseLike<CryptoKey> {
     return window.crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode( password ),
@@ -65,7 +71,7 @@ export class CryptoService {
         return window.crypto.subtle.deriveKey(
           {
             "name": "PBKDF2",
-            salt: new TextEncoder().encode(salt),
+            salt: new TextEncoder().encode( salt ),
             "iterations": 100000,
             "hash": "SHA-256"
           },
@@ -74,30 +80,43 @@ export class CryptoService {
           true,
           ["wrapKey", "unwrapKey"]
         );
-      } ).then(value => {
-        window.crypto.subtle.exportKey( "jwk",value).then(myValue => console.log(myValue));        
+      } ).then( value => {
+//        window.crypto.subtle.exportKey( "jwk", value ).then( myValue => console.log( myValue ) );
         return value;
-      });
+      } );
+  }
+
+  private ab2str( buf: ArrayBuffer ): string {
+    return String.fromCharCode.apply( null, new Uint8Array( buf ) );
+  }
+
+  private str2ab( str: string ): ArrayBuffer {
+    let buf = new ArrayBuffer( str.length );
+    let bufView = new Uint8Array( buf );
+    for ( let i = 0, strLen = str.length; i < strLen; i++ ) {
+      bufView[i] = str.charCodeAt( i );
+    }
+    return buf;
   }
 
   public encryptText( msgText: string, keyStr: string ): PromiseLike<string> {
     const encMsg = new TextEncoder().encode( msgText );
     return window.crypto.subtle.importKey( 'jwk', JSON.parse( keyStr ), { name: "RSA-OAEP", hash: "SHA-256" }, false, ['encrypt'] )
       .then( value => window.crypto.subtle.encrypt( "RSA-OAEP", value, encMsg ) )
-      .then( value => new TextDecoder().decode( value ) );
+      .then( value => this.ab2str(value ) );
   }
 
   public decryptText( encText: string, keyStr: string, keyPwd: string ) {
-    const keyJson: PrivateKey = JSON.parse(keyStr);
-    const encKey = new TextEncoder().encode( keyJson.key );
-    return this.createWrapKey( keyPwd, keyJson.salt).then( value => {      
-      const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode(keyJson.salt) };
+    const keyJson: PrivateKey = JSON.parse( keyStr );
+    const encKey = this.str2ab(keyJson.key );
+//    console.log(encText);
+    return this.createWrapKey( keyPwd, keyJson.salt ).then( value => {
+      const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( keyJson.salt ) };
       const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
       return window.crypto.subtle.unwrapKey( 'jwk', encKey, value, algo1, algo2, false, ["decrypt"] );
-    } ).then(value => window.crypto.subtle.decrypt({name: "RSA-OAEP"}, value, encKey), reject => {
-      console.log(reject);
-      return reject;
-    })
-    .then(value => new TextDecoder().decode(value));
+    } ).then( value => {
+      const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
+      return window.crypto.subtle.decrypt( algo2, value, this.str2ab(encText) );})
+      .then( value => new TextDecoder().decode( value ));
   }
 }

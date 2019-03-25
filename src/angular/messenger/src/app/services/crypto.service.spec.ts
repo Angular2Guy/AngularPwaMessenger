@@ -18,6 +18,7 @@ describe('CryptoService', () => {
   let privateKey: string = null;
   let publicKey: string = null;
   const privateKeyPwd = 'hallo123';
+  let encText: string = null;
 
   beforeEach(() => TestBed.configureTestingModule({}));
 
@@ -41,15 +42,16 @@ describe('CryptoService', () => {
     const service: CryptoService = TestBed.get(CryptoService);
     service.encryptText('testText', publicKey).then(value => {
       expect(value).toBeDefined('encryption failed');
+      encText = value;
       done();
     });    
   });
   
-//  it('decrypt text', (done: DoneFn) => {
-//    const service: CryptoService = TestBed.get(CryptoService);
-//    service.decryptText('abcdefgh', privateKey, privateKeyPwd).then(value => {
-//      expect(value).toBeDefined('decryption failed');
-//      done();
-//    });    
-//  });
+  it('decrypt text', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.decryptText(encText, privateKey, privateKeyPwd).then(value => {
+      expect(value).toBeDefined('decryption failed');
+      done();
+    });    
+  });
 });
