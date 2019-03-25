@@ -31,8 +31,8 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-//    browsers: ['Chromium','PhantomJS'],
-    browsers: ['Chromium'],
+//    browsers: ['Chromium'],
+    browsers: ['Chrome'],
     singleRun: false
   });
 };

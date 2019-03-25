@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --prod --aot --base-href /de/ --output-path dist/de/ --i18n-locale de --deploy-url /de/ --i18nFile=./i18n/messages.de.xlf && ng build --prod --aot --base-href /en/ --deploy-url /en/ --output-path dist/en/ --i18n-locale en --i18nFile=./i18n/messages.xlf",
-    "test": "ng test --browsers Chromium --watch=false",
+    "test": "ng test --browsers Chrome --watch=false",
     "test-junit": "ng test --browsers PhantomJS --reporters junit --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e",
