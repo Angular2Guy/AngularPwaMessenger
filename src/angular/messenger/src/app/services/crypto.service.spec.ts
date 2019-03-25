@@ -51,6 +51,7 @@ describe('CryptoService', () => {
     const service: CryptoService = TestBed.get(CryptoService);
     service.decryptText(encText, privateKey, privateKeyPwd).then(value => {
       expect(value).toBeDefined('decryption failed');
+      expect(value).toBe('testText', 'text not the same');
       done();
     });    
   });
