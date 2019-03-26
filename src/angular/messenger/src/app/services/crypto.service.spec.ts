@@ -55,4 +55,18 @@ describe('CryptoService', () => {
       done();
     });    
   });
+  
+  it('login check', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    const password = 'hallo123';
+    let pwHash: string = null;
+    service.generateKey(password, null).then(value => {
+      pwHash = value.a;
+      return value;
+    }).then(value => service.generateKey(password, value.b))
+    .then(value => {
+      expect(value.a).toBe(pwHash, 'hashes not equal');
+      done();
+    });
+  });
 });

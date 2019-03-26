@@ -19,9 +19,10 @@ import { AuthenticationService } from '../services/authentication.service';
 import { LocaldbService } from '../services/localdb.service';
 import { LocalUser } from '../model/localUser';
 import { JwttokenService } from '../services/jwttoken.service';
-import { LocalCrypto } from './localCrypto';
+//import { LocalCrypto } from './localCrypto';
 import { NetConnectionService } from '../services/net-connection.service';
 import { CryptoService } from '../services/crypto.service';
+import { Tuple } from '../common/tuple';
 
 
 @Component( {
@@ -135,7 +136,11 @@ export class LoginComponent implements OnInit {
   signin( us: MyUser ): void {
     this.data.myUser = null;
     if ( us.username !== null ) {
-      LocalCrypto.generateKey( this.signinForm.get( 'password' ).value, null ).then( ( result ) => {
+      let keypair: Tuple<string,string> = null;
+      this.cryptoService.generateKeys(this.signinForm.get( 'password' ).value).then(result => { 
+          keypair = result;
+          return this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null );})
+      .then( ( result ) => {
         const localUser: LocalUser = {
           base64Avatar: us.base64Avatar,
           createdAt: us.createdAt,
@@ -143,8 +148,8 @@ export class LoginComponent implements OnInit {
           hash: result.a,
           salt: result.b,
           username: us.username,
-          publicKey: '',
-          privateKey: '',
+          publicKey: keypair.a,
+          privateKey: keypair.b,
           userId: us.userId
         };
         this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
@@ -157,7 +162,7 @@ export class LoginComponent implements OnInit {
   }
 
   login( us: MyUser, localUser: LocalUser ): void {    
-    LocalCrypto.generateKey(us.password, localUser.salt).then(tuple => {
+    this.cryptoService.generateKey(us.password, localUser.salt).then(tuple => {
       if ( (us.username !== null || localUser.username !== null) && localUser.hash === tuple.a) {
           if (this.connected ) {
             this.jwttokenService.jwtToken = us.token;
