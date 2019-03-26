@@ -41,18 +41,7 @@ export class CryptoService {
           const algo: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( mySalt ) };
           return window.crypto.subtle.wrapKey( "jwk", cryptoKeyPair.privateKey, value, algo );
         } )
-        .then( value => {
-          //          const wrappedKey = this.str2ab(this.ab2str(value));
-          //          console.log( wrappedKey );
-          //          console.log( value );          
-          //          const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( mySalt ) };
-          //          const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
-          //          window.crypto.subtle.unwrapKey( "jwk", wrappedKey, wrapKey, algo1, algo2, true, ['decrypt'] )
-          //            .then( value =>
-          //              console.log( value )
-          //            );
-          //          console.log(value);
-          //          console.log(btoa(this.ab2str(value )));
+        .then( value => {        
           const privateKey: PrivateKey = { key: this.ab2str( value ), salt: mySalt };
           return new Tuple( jwkPubKey, JSON.stringify( privateKey ) );
         } );
@@ -153,6 +142,6 @@ export class CryptoService {
     } ).then( ( buffer ) => {
       return new Tuple( this.ab2str( buffer ), this.ab2str(saltBuffer) );
     } );
-  }
+  } 
   
 }

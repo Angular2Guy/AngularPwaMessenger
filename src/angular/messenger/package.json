@@ -7,7 +7,7 @@
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --prod --aot --base-href /de/ --output-path dist/de/ --i18n-locale de --deploy-url /de/ --i18nFile=./i18n/messages.de.xlf && ng build --prod --aot --base-href /en/ --deploy-url /en/ --output-path dist/en/ --i18n-locale en --i18nFile=./i18n/messages.xlf",
     "test": "ng test --browsers ChromeHeadless --watch=false",
-    "test-local": "ng test --browsers Chromium",
+    "test-local": "ng test --browsers Chromium --watch=true",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "prebuild": "rimraf ./dist && mkdirp ./dist",
