@@ -53,7 +53,8 @@ export class CryptoService {
 //              console.log( value )
 //            );
 //          console.log(value);
-          const privateKey: PrivateKey = { key: this.ab2str(value ), salt: mySalt };
+//          console.log(btoa(this.ab2str(value )));
+          const privateKey: PrivateKey = { key: btoa(this.ab2str(value )), salt: mySalt };
           return new Tuple( jwkPubKey, JSON.stringify( privateKey ) );
         } );
     } );
@@ -108,14 +109,14 @@ export class CryptoService {
 
   public decryptText( encText: string, keyStr: string, keyPwd: string ) {
     const keyJson: PrivateKey = JSON.parse( keyStr );
-    const encKey = this.str2ab(keyJson.key );
+    const encKey = this.str2ab(atob(keyJson.key ));
 //    console.log(encText);
     return this.createWrapKey( keyPwd, keyJson.salt ).then( value => {
       const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( keyJson.salt ) };
       const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
       return window.crypto.subtle.unwrapKey( 'jwk', encKey, value, algo1, algo2, false, ["decrypt"] );
     } ).then( value => {
-      const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
+      const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };      
       return window.crypto.subtle.decrypt( algo2, value, this.str2ab(encText) );})
       .then( value => new TextDecoder().decode( value ));
   }
