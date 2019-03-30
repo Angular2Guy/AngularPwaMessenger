@@ -23,4 +23,5 @@ export class MyUser {
   publicKey: string;
   privateKey: string;
   userId: string;
+  salt: string;
 }

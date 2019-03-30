@@ -93,4 +93,21 @@ describe('CryptoService', () => {
       done();
     });
   });
+  
+  it('password hash1', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.hashPW('hallo123').then(value => {
+      expect(value).toBe('8MPNb8SyPq6V453hlDeS9izO/YNxWLacY6668wQe00U=', 'hashcode not matching');
+      done();
+    });
+  });
+  
+  it('password hash2', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.hashPW('hallo1234').then(value => {
+      expect(value).toBe('s+GkvLqE+vsSGJP5x7jdLHM1msXVS8UnYPK/NZ8+kBc=', 'hashcode not matching');
+      done();
+    });
+  });
+  
 });

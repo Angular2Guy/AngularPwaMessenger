@@ -132,7 +132,7 @@ export class MainComponent implements OnInit {
 //    return this.localdbService.loadMessages( this.myContact ).then( msgs => {
 //      const promises: PromiseLike<Message>[] = [];
 //      msgs.forEach( msg => {
-//        promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+//        promises.push( this.cryptoService.decryptTextAes(msg.text, this.myUser., text) decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
 //          msg.text = value;          
 //          return msg;
 //        } ) );

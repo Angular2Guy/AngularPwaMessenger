@@ -184,4 +184,8 @@ export class CryptoService {
         .then(result => new TextDecoder().decode(result));      
     });
   }
+  
+  public hashPW(password: string): PromiseLike<string> {
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(password)).then(value => this.ab2str(value));
+  }
 }

@@ -115,7 +115,7 @@ export class LoginComponent implements OnInit {
         };
         this.localdbService.loadUser( myLocalUser ).then( localUserList =>
           localUserList.first().then( myLocalUser => {
-            us.password = myUser.password;            
+            us.password = myUser.password;
             this.login( us, myLocalUser );
           } ) );
         return;
@@ -139,7 +139,7 @@ export class LoginComponent implements OnInit {
   }
 
 
-  signin( us: MyUser): void {
+  signin( us: MyUser ): void {
     this.data.myUser = null;
     if ( us.username !== null ) {
       this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null )
@@ -172,9 +172,12 @@ export class LoginComponent implements OnInit {
         }
         this.jwttokenService.localLogin = true;
         this.loginFailed = false;
-//        us.password = null;
-        this.data.myUser = us;
-        this.dialogRef.close( this.data.myUser );
+        this.cryptoService.hashPW( us.password ).then( value => {
+          us.password = value;
+          us.salt = localUser.salt;
+          this.data.myUser = us;
+          this.dialogRef.close( this.data.myUser );
+        } );
       } else {
         this.loginFailed = true;
       }
