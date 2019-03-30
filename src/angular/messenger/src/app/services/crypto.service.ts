@@ -34,11 +34,11 @@ export class CryptoService {
     let wrapKey: CryptoKey = null;
     return window.crypto.subtle.exportKey( "jwk", cryptoKeyPair.publicKey ).then( value => {
       jwkPubKey = JSON.stringify( value );
-      const mySalt = new TextDecoder().decode( window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
+      const mySalt = this.ab2str( window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
       return this.createWrapKey( password, mySalt )
         .then( value => {
           wrapKey = value;
-          const algo: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( mySalt ) };
+          const algo: AesGcmParams = { name: "AES-GCM", iv: this.str2ab( mySalt ) };
           return window.crypto.subtle.wrapKey( "jwk", cryptoKeyPair.privateKey, value, algo );
         } )
         .then( value => {        
@@ -60,7 +60,7 @@ export class CryptoService {
         return window.crypto.subtle.deriveKey(
           {
             "name": "PBKDF2",
-            salt: new TextEncoder().encode( salt ),
+            salt: this.str2ab( salt ),
             "iterations": 100000,
             "hash": "SHA-256"
           },
@@ -104,7 +104,7 @@ export class CryptoService {
     const encKey = this.str2ab(keyJson.key );
     //    console.log(encText);
     return this.createWrapKey( keyPwd, keyJson.salt ).then( value => {
-      const algo1: AesGcmParams = { name: "AES-GCM", iv: new TextEncoder().encode( keyJson.salt ) };
+      const algo1: AesGcmParams = { name: "AES-GCM", iv: this.str2ab( keyJson.salt ) };
       const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
       return window.crypto.subtle.unwrapKey( 'jwk', encKey, value, algo1, algo2, false, ["decrypt"] );
     } ).then( value => {
