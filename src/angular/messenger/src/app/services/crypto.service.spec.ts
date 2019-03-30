@@ -19,6 +19,7 @@ describe('CryptoService', () => {
   let publicKey: string = null;
   const privateKeyPwd = 'hallo123';
   let encText: string = null;
+  let loginSalt: string = null;
 
   beforeEach(() => TestBed.configureTestingModule({}));
 
@@ -62,10 +63,33 @@ describe('CryptoService', () => {
     let pwHash: string = null;
     service.generateKey(password, null).then(value => {
       pwHash = value.a;
+      loginSalt = value.b;
       return value;
     }).then(value => service.generateKey(password, value.b))
     .then(value => {
       expect(value.a).toBe(pwHash, 'hashes not equal');
+      done();
+    });
+  });
+  
+  it('aes encrypt', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    const password = 'hallo123';
+    const text = 'testText';
+    service.encryptTextAes(password, loginSalt, text).then(value => {
+      expect(value).toBeDefined('aes encryption failed');
+      encText = value;
+      done();
+    });
+  });
+  
+  it('aes decrypt', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    const password = 'hallo123';
+    const text = encText;
+    service.decryptTextAes(password, loginSalt, text).then(value => {
+      expect(value).toBe('testText', 'aes decryption failed');
+      encText = value;
       done();
     });
   });

@@ -143,5 +143,45 @@ export class CryptoService {
       return new Tuple( this.ab2str( buffer ), this.ab2str(saltBuffer) );
     } );
   } 
+   
+  private keycreator(password: string, salt: string, text: string): PromiseLike<CryptoKey> {
+    const saltBuffer = this.str2ab( salt );    
+    const passphraseKey = new TextEncoder().encode( password );    
+    return window.crypto.subtle.importKey(
+      'raw',
+      passphraseKey,
+      'PBKDF2',
+      false,
+      ['deriveBits', 'deriveKey']
+    ).then( ( key ) => {
+      return window.crypto.subtle.deriveKey(
+        {
+          "name": 'PBKDF2',
+          "salt": saltBuffer,
+          "iterations": 100000,
+          "hash": 'SHA-256'
+        },
+        key,
+        { "name": 'AES-CBC', "length": 256 },
+        true,
+        ["encrypt", "decrypt"]
+      )
+    } );
+  }
   
+  public encryptTextAes(password: string, salt: string, text: string): PromiseLike<string> {
+    const saltBuffer = this.str2ab( salt );
+    return this.keycreator(password, salt, text).then(  webKey  => {
+      return window.crypto.subtle.encrypt({ name: 'AES-CBC', iv: saltBuffer }, webKey, new TextEncoder().encode(text))
+        .then(result => this.ab2str(result));
+    });
+  }
+  
+  public decryptTextAes(password: string, salt: string, text: string): PromiseLike<string> {
+    const saltBuffer = this.str2ab( salt );    
+    return this.keycreator(password, salt, text).then(  webKey  => {
+      return window.crypto.subtle.decrypt({ "name": 'AES-CBC', iv: saltBuffer }, webKey, this.str2ab(text))
+        .then(result => new TextDecoder().decode(result));      
+    });
+  }
 }
