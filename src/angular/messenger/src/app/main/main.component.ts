@@ -22,6 +22,7 @@ import { JwttokenService } from '../services/jwttoken.service';
 import { AuthenticationService } from '../services/authentication.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { MessageService } from '../services/message.service';
+import { CryptoService } from '../services/crypto.service';
 
 @Component( {
   selector: 'app-main',
@@ -36,101 +37,120 @@ export class MainComponent implements OnInit {
   messages: Message[] = [];
   myUser: MyUser = null;
 
-  constructor( private localdbService: LocaldbService, 
-               private jwttokenService: JwttokenService,
-               private netConnectionService: NetConnectionService,
-               private messageService: MessageService,
-               public dialog: MatDialog ) { }
+  constructor( private localdbService: LocaldbService,
+    private jwttokenService: JwttokenService,
+    private netConnectionService: NetConnectionService,
+    private messageService: MessageService,
+    public dialog: MatDialog,
+    private cryptoService: CryptoService ) { }
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
-    this.netConnectionService.connectionMonitor.subscribe(online => this.syncMsgs());    
+    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );
   }
 
   @HostListener( 'window:resize', ['$event'] )
   onResize( event: any ) {
     this.windowHeight = event.target.innerHeight - 84;
   }
-  
+
   openLoginDialog(): void {
-    let dialogRef = this.dialog.open(LoginComponent, {
+    let dialogRef = this.dialog.open( LoginComponent, {
       width: '500px',
-      data: { myUser: this.myUser}
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {        
+      data: { myUser: this.myUser }
+    } );
+
+    dialogRef.afterClosed().subscribe( result => {
       this.myUser = typeof result === 'undefined' || result === null ? null : result;
-      if(this.myUser !== null) {
-          this.ownContact = {
-              name: this.myUser.username,
-              base64Avatar: this.myUser.base64Avatar,
-              base64PublicKey: this.myUser.publicKey,
-              userId: this.myUser.userId
-          };
-          this.contacts = [];
-          this.myContact = null;
+      if ( this.myUser !== null ) {
+        this.ownContact = {
+          name: this.myUser.username,
+          base64Avatar: this.myUser.base64Avatar,
+          publicKey: this.myUser.publicKey,
+          userId: this.myUser.userId
+        };
+        this.contacts = [];
+        this.myContact = null;
       }
-    });
+    } );
   }
-  
+
   logout(): void {
     this.myUser = null;
     this.jwttokenService.jwtToken = null;
   }
-  
+
   selectContact( contact: Contact ) {
     this.myContact = contact;
-    this.addMessages().then(() => this.syncMsgs());
+    this.addMessages().then( () => this.syncMsgs() );
   }
 
-  sendMessage(msg: Message) {    
-    msg.fromId = this.ownContact.userId;
-    this.localdbService.storeMessage(msg).then(result => {
-        this.addMessages().then(() => this.syncMsgs());        
-    });    
-    
+  sendMessage( msg: Message ) {
+    msg.fromId = this.ownContact.userId;  
+    const orgText = msg.text;
+    this.localdbService.storeMessage( msg ).then( result => {
+      this.addMessages().then( () => this.syncMsgs() );
+    } );
+
   }
-  
+
   private syncMsgs() {
-      if(this.netConnectionService.connetionStatus) {
-          const contactIds = this.contacts.map(con => con.userId);
-          const syncMsgs1: SyncMsgs = {
-               ownId: this.ownContact.userId,
-               contactIds: contactIds,
-               lastUpdate: this.getLastSyncDate()
-          }; 
-          this.messageService.findMessages(syncMsgs1).subscribe(msgs => {
-              this.messages = this.messages.concat(msgs);
-              msgs.forEach(msg => this.localdbService.storeMessage(msg).then());              
-          });          
-          this.localdbService.toSyncMessages(this.ownContact).then(msgs => {
-              const syncMsgs2: SyncMsgs = {
-                      ownId: this.ownContact.userId,
-                      msgs: msgs          
-              };
-              this.messageService.sendMessages(syncMsgs2).subscribe(myMsgs => 
-                  myMsgs.forEach(msg => this.localdbService.updateMessage(msg).then()
-              ));
-          });          
-      }
+    if ( this.netConnectionService.connetionStatus ) {
+      const contactIds = this.contacts.map( con => con.userId );
+      const syncMsgs1: SyncMsgs = {
+        ownId: this.ownContact.userId,
+        contactIds: contactIds,
+        lastUpdate: this.getLastSyncDate()
+      };
+      this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
+        this.messages = this.messages.concat( msgs );
+        msgs.forEach( msg => this.localdbService.storeMessage( msg ).then() );
+      } );
+      this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
+        const syncMsgs2: SyncMsgs = {
+          ownId: this.ownContact.userId,
+          msgs: msgs
+        };
+        this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
+          myMsgs.forEach( msg => this.localdbService.updateMessage( msg ).then()
+          ) );
+      } );
+    }
   }
-  
+
   private getLastSyncDate(): Date {
-      const sortedMsg = this.messages
-      .filter(i => !(typeof i.timestamp === "undefined") && !(i.timestamp === null)) 
-      .sort((i1, i2) => new Date(i1.timestamp).getTime() - new Date(i2.timestamp).getTime());
-      return sortedMsg.length === 0 ? new Date('2000-01-01') : sortedMsg[sortedMsg.length -1].timestamp;      
+    const sortedMsg = this.messages
+      .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
+      .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
+    return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : sortedMsg[sortedMsg.length - 1].timestamp;
   }
-  
+
   private addMessages(): Promise<Message[]> {
-    while ( this.messages.length > 0 ) {
+//    while ( this.messages.length > 0 ) {
+//      this.messages.pop()
+//    }
+//    return this.localdbService.loadMessages( this.myContact ).then( msgs => {
+//      const promises: PromiseLike<Message>[] = [];
+//      msgs.forEach( msg => {
+//        promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+//          msg.text = value;          
+//          return msg;
+//        } ) );
+//      } );
+//      return Promise.all(promises).then(values => {
+//        this.messages = values;
+//        return values;
+//        });      
+//    } );
+
+	while ( this.messages.length > 0 ) {
       this.messages.pop()
     }    
     return this.localdbService.loadMessages(this.myContact)
         .then(msgs => this.messages = this.messages.concat(msgs));
   }
-  
-  addNewContact(contact: Contact) {      
-      this.contacts.push(contact);
+
+  addNewContact( contact: Contact ) {
+    this.contacts.push( contact );
   }
 }

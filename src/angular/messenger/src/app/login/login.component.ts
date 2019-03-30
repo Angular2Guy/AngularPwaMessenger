@@ -172,7 +172,7 @@ export class LoginComponent implements OnInit {
         }
         this.jwttokenService.localLogin = true;
         this.loginFailed = false;
-        us.password = null;
+//        us.password = null;
         this.data.myUser = us;
         this.dialogRef.close( this.data.myUser );
       } else {

@@ -37,7 +37,7 @@ export class ContactService {
       const con: Contact = {
               name: conName, 
               base64Avatar: null,             
-              base64PublicKey: null,
+              publicKey: null,
               userId: null};
       return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.utils.createHeader());
   }
