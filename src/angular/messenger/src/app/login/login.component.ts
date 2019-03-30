@@ -86,7 +86,13 @@ export class LoginComponent implements OnInit {
     myUser.email = this.signinForm.get( 'email' ).value;
     //      console.log(this.signinForm);
     //      console.log(myUser);
-    this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
+    let keypair: Tuple<string, string> = null;
+    this.cryptoService.generateKeys( this.signinForm.get( 'password' ).value ).then( result => {
+      keypair = result;
+      myUser.privateKey = keypair.b;
+      myUser.publicKey = keypair.a;
+      this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
+    } );
   }
 
   onLoginClick(): void {
@@ -109,9 +115,9 @@ export class LoginComponent implements OnInit {
         };
         this.localdbService.loadUser( myLocalUser ).then( localUserList =>
           localUserList.first().then( myLocalUser => {
-            us.password = myUser.password;
+            us.password = myUser.password;            
             this.login( us, myLocalUser );
-            }));
+          } ) );
         return;
       }
         , err => console.log( err ) );
@@ -126,34 +132,31 @@ export class LoginComponent implements OnInit {
         salt: null,
         username: myUser.username,
         userId: null
-      };      
+      };
       this.localdbService.loadUser( myLocalUser ).then( localUserList =>
         localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
     }
   }
 
 
-  signin( us: MyUser ): void {
+  signin( us: MyUser): void {
     this.data.myUser = null;
     if ( us.username !== null ) {
-      let keypair: Tuple<string,string> = null;
-      this.cryptoService.generateKeys(this.signinForm.get( 'password' ).value).then(result => { 
-          keypair = result;
-          return this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null );})
-      .then( ( result ) => {
-        const localUser: LocalUser = {
-          base64Avatar: us.base64Avatar,
-          createdAt: us.createdAt,
-          email: us.email,
-          hash: result.a,
-          salt: result.b,
-          username: us.username,
-          publicKey: keypair.a,
-          privateKey: keypair.b,
-          userId: us.userId
-        };
-        this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
-      }, ( rejected ) => console.log( rejected ) );
+      this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null )
+        .then( ( result ) => {
+          const localUser: LocalUser = {
+            base64Avatar: us.base64Avatar,
+            createdAt: us.createdAt,
+            email: us.email,
+            hash: result.a,
+            salt: result.b,
+            username: us.username,
+            publicKey: us.publicKey,
+            privateKey: us.privateKey,
+            userId: us.userId
+          };
+          this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
+        }, ( rejected ) => console.log( rejected ) );
       this.signinFailed = false;
       this.dialogRef.close();
     } else {
@@ -161,12 +164,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  login( us: MyUser, localUser: LocalUser ): void {    
-    this.cryptoService.generateKey(us.password, localUser.salt).then(tuple => {
-      if ( (us.username !== null || localUser.username !== null) && localUser.hash === tuple.a) {
-          if (this.connected ) {
-            this.jwttokenService.jwtToken = us.token;
-          }        
+  login( us: MyUser, localUser: LocalUser ): void {
+    this.cryptoService.generateKey( us.password, localUser.salt ).then( tuple => {
+      if ( ( us.username !== null || localUser.username !== null ) && localUser.hash === tuple.a ) {
+        if ( this.connected ) {
+          this.jwttokenService.jwtToken = us.token;
+        }
         this.jwttokenService.localLogin = true;
         this.loginFailed = false;
         us.password = null;
@@ -174,8 +177,8 @@ export class LoginComponent implements OnInit {
         this.dialogRef.close( this.data.myUser );
       } else {
         this.loginFailed = true;
-      }      
-    });    
+      }
+    } );
   }
 
   onCancelClick(): void {
