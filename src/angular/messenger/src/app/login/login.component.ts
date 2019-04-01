@@ -87,12 +87,13 @@ export class LoginComponent implements OnInit {
     //      console.log(this.signinForm);
     //      console.log(myUser);
     let keypair: Tuple<string, string> = null;
-    this.cryptoService.generateKeys( this.signinForm.get( 'password' ).value ).then( result => {
-      keypair = result;
-      myUser.privateKey = keypair.b;
-      myUser.publicKey = keypair.a;
-      this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
-    } );
+    this.cryptoService.hashPW( this.signinForm.get( 'password' ).value ).then( value =>
+      this.cryptoService.generateKeys( value ).then( result => {
+        keypair = result;
+        myUser.privateKey = keypair.b;
+        myUser.publicKey = keypair.a;
+        this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
+      } ) );
   }
 
   onLoginClick(): void {
