@@ -86,11 +86,12 @@ export class MainComponent implements OnInit {
   }
 
   sendMessage( msg: Message ) {
-    msg.fromId = this.ownContact.userId;  
-    const orgText = msg.text;
-    this.localdbService.storeMessage( msg ).then( result => {
-      this.addMessages().then( () => this.syncMsgs() );
-    } );
+    msg.fromId = this.ownContact.userId;
+    this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
+      msg.text = value;
+      return msg;
+    } ).then( myMsg => this.localdbService.storeMessage( myMsg ) )
+      .then( () => this.addMessages().then( () => this.syncMsgs() ) );
 
   }
 
@@ -103,19 +104,59 @@ export class MainComponent implements OnInit {
         lastUpdate: this.getLastSyncDate()
       };
       this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
-        this.messages = this.messages.concat( msgs );
-        msgs.forEach( msg => this.localdbService.storeMessage( msg ).then() );
+        let promises: PromiseLike<Message>[]
+        msgs.forEach( msg => {
+          promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+            msg.text = value;
+            return msg;
+          } ) );
+        } );
+        Promise.all( promises ).then( myMsgs => myMsgs.forEach( msg =>
+          this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
+            msg.text = value;
+            return this.localdbService.storeMessage( msg );
+          }
+          ) ) ).then(() => this.addMessages());
       } );
       this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
-        const syncMsgs2: SyncMsgs = {
-          ownId: this.ownContact.userId,
-          msgs: msgs
-        };
-        this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
-          myMsgs.forEach( msg => this.localdbService.updateMessage( msg ).then()
-          ) );
+        this.decryptLocalMsgs( msgs ).then( value => {
+          const promises: PromiseLike<Message>[] = [];
+          value.forEach( msg => {
+            const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ? null : this.contacts.filter( con => con.userId = msg.toId )[0];
+            if ( !fromCon ) {
+              console.log( fromCon );
+            } else {
+              promises.push( this.cryptoService.encryptText( msg.text, fromCon.publicKey ).then( result => {
+                msg.text = result;
+                return msg;
+              } ) );
+            }
+          } );
+          Promise.all( promises ).then( myMsgs => {
+            const syncMsgs2: SyncMsgs = {
+              ownId: this.ownContact.userId,
+              msgs: myMsgs
+            };
+            this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
+              msgs.forEach( msg => { 
+                msg.send = true;
+                return this.localdbService.updateMessage( msg );
+              }) );
+          } )
+        } );
       } );
     }
+  }
+
+  private decryptLocalMsgs( msgs: Message[] ): PromiseLike<Message[]> {
+    const promises: PromiseLike<Message>[] = [];
+    msgs.forEach( msg => {
+      promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+        msg.text = value;
+        return msg;
+      } ) );
+    } );
+    return Promise.all( promises );
   }
 
   private getLastSyncDate(): Date {
@@ -126,28 +167,20 @@ export class MainComponent implements OnInit {
   }
 
   private addMessages(): Promise<Message[]> {
-//    while ( this.messages.length > 0 ) {
-//      this.messages.pop()
-//    }
-//    return this.localdbService.loadMessages( this.myContact ).then( msgs => {
-//      const promises: PromiseLike<Message>[] = [];
-//      msgs.forEach( msg => {
-//        promises.push( this.cryptoService.decryptTextAes(msg.text, this.myUser., text) decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
-//          msg.text = value;          
-//          return msg;
-//        } ) );
-//      } );
-//      return Promise.all(promises).then(values => {
-//        this.messages = values;
-//        return values;
-//        });      
-//    } );
-
-	while ( this.messages.length > 0 ) {
+    while ( this.messages.length > 0 ) {
       this.messages.pop()
-    }    
-    return this.localdbService.loadMessages(this.myContact)
-        .then(msgs => this.messages = this.messages.concat(msgs));
+    }
+    return this.localdbService.loadMessages( this.myContact ).then( msgs =>
+      this.decryptLocalMsgs( msgs ).then( values => {
+        this.messages = values;
+        return values;
+      } ) );
+
+    //	while ( this.messages.length > 0 ) {
+    //      this.messages.pop()
+    //    }    
+    //    return this.localdbService.loadMessages(this.myContact)
+    //        .then(msgs => this.messages = this.messages.concat(msgs));
   }
 
   addNewContact( contact: Contact ) {
