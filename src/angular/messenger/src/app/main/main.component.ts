@@ -120,6 +120,7 @@ export class MainComponent implements OnInit {
           ;}).then(() => this.addMessages());
       } );
       this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
+        const oriMsgs:Message[] = JSON.parse(JSON.stringify(msgs));
         this.decryptLocalMsgs( msgs ).then( value => {
           const promises: PromiseLike<Message>[] = [];
           value.forEach( msg => {
@@ -140,8 +141,9 @@ export class MainComponent implements OnInit {
             };
             this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
               msgs.forEach( msg => { 
-                msg.send = true;
-                this.localdbService.updateMessage( msg ).then(result => console.log(msg));
+                const newMsg =  oriMsgs.filter(oriMsg => oriMsg.id === msg.id)[0];
+                newMsg.send = true;
+                this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg));
               }) );
           } )
         } );
@@ -177,12 +179,6 @@ export class MainComponent implements OnInit {
         this.messages = values;
         return values;
       } ) );
-
-    //	while ( this.messages.length > 0 ) {
-    //      this.messages.pop()
-    //    }    
-    //    return this.localdbService.loadMessages(this.myContact)
-    //        .then(msgs => this.messages = this.messages.concat(msgs));
   }
 
   addNewContact( contact: Contact ) {
