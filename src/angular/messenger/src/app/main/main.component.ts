@@ -104,19 +104,20 @@ export class MainComponent implements OnInit {
         lastUpdate: this.getLastSyncDate()
       };
       this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
-        let promises: PromiseLike<Message>[]
+        let promises: PromiseLike<Message>[] = [];
         msgs.forEach( msg => {
           promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
             msg.text = value;
             return msg;
           } ) );
         } );
-        Promise.all( promises ).then( myMsgs => myMsgs.forEach( msg =>
-          this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
+        Promise.all( promises ).then( myMsgs => {          
+          myMsgs.forEach( msg =>
+           this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
             msg.text = value;
             return this.localdbService.storeMessage( msg );
-          }
-          ) ) ).then(() => this.addMessages());
+          }) ); 
+          ;}).then(() => this.addMessages());
       } );
       this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
         this.decryptLocalMsgs( msgs ).then( value => {
@@ -140,7 +141,7 @@ export class MainComponent implements OnInit {
             this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
               msgs.forEach( msg => { 
                 msg.send = true;
-                return this.localdbService.updateMessage( msg );
+                this.localdbService.updateMessage( msg ).then(result => console.log(msg));
               }) );
           } )
         } );
@@ -151,12 +152,13 @@ export class MainComponent implements OnInit {
   private decryptLocalMsgs( msgs: Message[] ): PromiseLike<Message[]> {
     const promises: PromiseLike<Message>[] = [];
     msgs.forEach( msg => {
-      promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+      promises.push( this.cryptoService.decryptTextAes(this.myUser.password, this.myUser.salt, msg.text).then( value => {
         msg.text = value;
         return msg;
       } ) );
     } );
-    return Promise.all( promises );
+    return Promise.all( promises ).then(msgs => {      
+      return msgs;});
   }
 
   private getLastSyncDate(): Date {

@@ -47,7 +47,7 @@ export class LocaldbService extends Dexie {
   
   updateMessage(message: Message): Promise<number> {
       return this.transaction('rw', this.messages, () => this.messages.where('fromId').equalsIgnoreCase(message.fromId)
-              .and(msg =>  (msg.toId === message.toId && msg.text === message.text)).toArray())
+              .and(msg =>  (msg.toId === message.toId)).toArray())
               .then(msgs => this.messages.update(msgs[0].id, message));
   }
   
@@ -62,6 +62,7 @@ export class LocaldbService extends Dexie {
   toSyncMessages(contact: Contact): Promise<Message[]> {
       return this.transaction('rw', this.messages, () => this.messages
               .filter(msg => msg.fromId === contact.userId)
+              .filter(msg => !msg.send)
               .filter(msg => msg.timestamp === null || typeof msg.timestamp === "undefined")
               .toArray());     
   }
