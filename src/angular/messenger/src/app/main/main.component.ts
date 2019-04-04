@@ -95,6 +95,57 @@ export class MainComponent implements OnInit {
 
   }
 
+  private sendRemoteMsgs(syncMsgs1: SyncMsgs) {
+    this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
+      let promises: PromiseLike<Message>[] = [];
+      msgs.forEach( msg => {
+        promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+          msg.text = value;
+          return msg;
+        } ) );
+      } );
+      Promise.all( promises ).then( myMsgs => {          
+        myMsgs.forEach( msg =>
+         this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
+          msg.text = value;
+          return this.localdbService.storeMessage( msg );
+        }) ); 
+        ;}).then(() => this.addMessages());
+    } );
+  }
+  
+  private receiveRemoteMsgs(syncMsgs1: SyncMsgs) {
+    this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
+      const oriMsgs:Message[] = JSON.parse(JSON.stringify(msgs));
+      this.decryptLocalMsgs( msgs ).then( value => {
+        const promises: PromiseLike<Message>[] = [];
+        value.forEach( msg => {
+          const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ? null : this.contacts.filter( con => con.userId = msg.toId )[0];
+          if ( !fromCon ) {
+            console.log( fromCon );
+          } else {
+            promises.push( this.cryptoService.encryptText( msg.text, fromCon.publicKey ).then( result => {
+              msg.text = result;
+              return msg;
+            } ) );
+          }
+        } );
+        Promise.all( promises ).then( myMsgs => {
+          const syncMsgs2: SyncMsgs = {
+            ownId: this.ownContact.userId,
+            msgs: myMsgs
+          };
+          this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
+            msgs.forEach( msg => { 
+              const newMsg =  oriMsgs.filter(oriMsg => oriMsg.id === msg.id)[0];
+              newMsg.send = true;
+              this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg));
+            }) );
+        } )
+      } );
+    } );
+  }
+  
   private syncMsgs() {
     if ( this.netConnectionService.connetionStatus ) {
       const contactIds = this.contacts.map( con => con.userId );
@@ -103,51 +154,8 @@ export class MainComponent implements OnInit {
         contactIds: contactIds,
         lastUpdate: this.getLastSyncDate()
       };
-      this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
-        let promises: PromiseLike<Message>[] = [];
-        msgs.forEach( msg => {
-          promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
-            msg.text = value;
-            return msg;
-          } ) );
-        } );
-        Promise.all( promises ).then( myMsgs => {          
-          myMsgs.forEach( msg =>
-           this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
-            msg.text = value;
-            return this.localdbService.storeMessage( msg );
-          }) ); 
-          ;}).then(() => this.addMessages());
-      } );
-      this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
-        const oriMsgs:Message[] = JSON.parse(JSON.stringify(msgs));
-        this.decryptLocalMsgs( msgs ).then( value => {
-          const promises: PromiseLike<Message>[] = [];
-          value.forEach( msg => {
-            const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ? null : this.contacts.filter( con => con.userId = msg.toId )[0];
-            if ( !fromCon ) {
-              console.log( fromCon );
-            } else {
-              promises.push( this.cryptoService.encryptText( msg.text, fromCon.publicKey ).then( result => {
-                msg.text = result;
-                return msg;
-              } ) );
-            }
-          } );
-          Promise.all( promises ).then( myMsgs => {
-            const syncMsgs2: SyncMsgs = {
-              ownId: this.ownContact.userId,
-              msgs: myMsgs
-            };
-            this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
-              msgs.forEach( msg => { 
-                const newMsg =  oriMsgs.filter(oriMsg => oriMsg.id === msg.id)[0];
-                newMsg.send = true;
-                this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg));
-              }) );
-          } )
-        } );
-      } );
+      this.sendRemoteMsgs(syncMsgs1);
+      this.receiveRemoteMsgs(syncMsgs1);
     }
   }
 
