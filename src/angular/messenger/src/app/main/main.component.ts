@@ -95,7 +95,7 @@ export class MainComponent implements OnInit {
 
   }
 
-  private sendRemoteMsgs(syncMsgs1: SyncMsgs) {
+  private receiveRemoteMsgs( syncMsgs1: SyncMsgs ) {
     this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
       let promises: PromiseLike<Message>[] = [];
       msgs.forEach( msg => {
@@ -104,19 +104,29 @@ export class MainComponent implements OnInit {
           return msg;
         } ) );
       } );
-      Promise.all( promises ).then( myMsgs => {          
-        myMsgs.forEach( msg =>
-         this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
-          msg.text = value;
-          return this.localdbService.storeMessage( msg );
-        }) ); 
-        ;}).then(() => this.addMessages());
+      Promise.all( promises ).then( myMsgs => {
+        let promises2: PromiseLike<Promise<number>>[] = [];
+        myMsgs.forEach( msg => {
+          promises2.push(
+            this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text )
+              .then( value => {
+                msg.text = value;
+                return msg;
+              } ).then( myValue => this.localdbService.storeMessage( msg ) ) );
+        } );
+
+        Promise.all( promises2 ).then( values => Promise.all( values ).then( myValue => {
+          if ( promises.length > 0 ) {
+            this.addMessages();
+          }
+        } ) );
+      } )
     } );
   }
-  
-  private receiveRemoteMsgs(syncMsgs1: SyncMsgs) {
+
+  private sendRemoteMsgs( syncMsgs1: SyncMsgs ) {
     this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
-      const oriMsgs:Message[] = JSON.parse(JSON.stringify(msgs));
+      const oriMsgs: Message[] = JSON.parse( JSON.stringify( msgs ) );
       this.decryptLocalMsgs( msgs ).then( value => {
         const promises: PromiseLike<Message>[] = [];
         value.forEach( msg => {
@@ -136,16 +146,17 @@ export class MainComponent implements OnInit {
             msgs: myMsgs
           };
           this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
-            msgs.forEach( msg => { 
-              const newMsg =  oriMsgs.filter(oriMsg => oriMsg.id === msg.id)[0];
+            msgs.forEach( msg => {
+              const newMsg = oriMsgs.filter( oriMsg => oriMsg.id === msg.id )[0];
               newMsg.send = true;
               this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg));
-            }) );
+            } ) );
+
         } )
       } );
     } );
   }
-  
+
   private syncMsgs() {
     if ( this.netConnectionService.connetionStatus ) {
       const contactIds = this.contacts.map( con => con.userId );
@@ -154,21 +165,22 @@ export class MainComponent implements OnInit {
         contactIds: contactIds,
         lastUpdate: this.getLastSyncDate()
       };
-      this.sendRemoteMsgs(syncMsgs1);
-      this.receiveRemoteMsgs(syncMsgs1);
+      this.receiveRemoteMsgs( syncMsgs1 );
+      this.sendRemoteMsgs( syncMsgs1 );
     }
   }
 
   private decryptLocalMsgs( msgs: Message[] ): PromiseLike<Message[]> {
     const promises: PromiseLike<Message>[] = [];
     msgs.forEach( msg => {
-      promises.push( this.cryptoService.decryptTextAes(this.myUser.password, this.myUser.salt, msg.text).then( value => {
+      promises.push( this.cryptoService.decryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
         msg.text = value;
         return msg;
       } ) );
     } );
-    return Promise.all( promises ).then(msgs => {      
-      return msgs;});
+    return Promise.all( promises ).then( msgs => {
+      return msgs;
+    } );
   }
 
   private getLastSyncDate(): Date {
@@ -179,11 +191,11 @@ export class MainComponent implements OnInit {
   }
 
   private addMessages(): Promise<Message[]> {
-    while ( this.messages.length > 0 ) {
-      this.messages.pop()
-    }
     return this.localdbService.loadMessages( this.myContact ).then( msgs =>
       this.decryptLocalMsgs( msgs ).then( values => {
+        while ( this.messages.length > 0 ) {
+          this.messages.pop()
+        }
         this.messages = values;
         return values;
       } ) );
