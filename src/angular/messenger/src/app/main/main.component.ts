@@ -149,7 +149,7 @@ export class MainComponent implements OnInit {
             msgs.forEach( msg => {
               const newMsg = oriMsgs.filter( oriMsg => oriMsg.id === msg.id )[0];
               newMsg.send = true;
-              this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg));
+              this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg), reject => console.log(reject));
             } ) );
 
         } )
