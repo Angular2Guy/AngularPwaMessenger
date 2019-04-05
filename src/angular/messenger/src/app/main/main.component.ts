@@ -46,7 +46,7 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
-    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );
+    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );    
   }
 
   @HostListener( 'window:resize', ['$event'] )
@@ -70,6 +70,7 @@ export class MainComponent implements OnInit {
           userId: this.myUser.userId
         };
         this.contacts = [];
+        this.localdbService.loadContacts(this.ownContact).then(values => this.contacts = values);
         this.myContact = null;
       }
     } );
@@ -78,6 +79,8 @@ export class MainComponent implements OnInit {
   logout(): void {
     this.myUser = null;
     this.jwttokenService.jwtToken = null;
+    this.contacts = [];
+    this.messages = [];
   }
 
   selectContact( contact: Contact ) {

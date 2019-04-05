@@ -29,8 +29,8 @@ export class ContactService {
           private http: HttpClient, 
           private utils: Utils) { }
   
-  loadContacts(): Observable<Contact[]> {
-     return from(this.localdbService.loadContacts());
+  loadContacts(contact: Contact): Observable<Contact[]> {
+     return from(this.localdbService.loadContacts(contact));
   }
   
   findContacts(conName: string): Observable<Contact[]> {

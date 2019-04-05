@@ -18,6 +18,7 @@ import { ContactService } from '../services/contact.service';
 import { Contact } from '../model/contact';
 import { NetConnectionService } from '../services/net-connection.service';
 import { LocaldbService } from '../services/localdb.service';
+import { LocalContact } from '../model/localContact';
 
 @Component( {
     selector: 'app-add-contacts',
@@ -65,7 +66,14 @@ export class AddContactsComponent implements OnInit {
             if(!this.filteredOptions[0].base64Avatar) {
                 this.filteredOptions[0].base64Avatar = 'assets/icons/smiley-640.jpg';
             }
-            this.localdbService.storeContact(this.filteredOptions[0])
+            const localContact: LocalContact = {
+                base64Avatar: this.filteredOptions[0].base64Avatar,                
+                name: this.filteredOptions[0].name,
+                ownerId: this.userId, 
+                publicKey: this.filteredOptions[0].publicKey,
+                userId: this.filteredOptions[0].userId
+            }; 
+            this.localdbService.storeContact(localContact)
                 .then(() => {
                     this.addNewContact.emit(this.filteredOptions[0]);
                     this.myControl.reset();

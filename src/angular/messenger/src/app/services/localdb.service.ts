@@ -12,33 +12,36 @@
  */
 import { Injectable } from '@angular/core';
 import Dexie from 'dexie';
-import { Contact } from '../model/contact';
+import { LocalContact } from '../model/localContact';
 import { Message } from '../model/message';
 import { LocalUser } from '../model/localUser';
+import { Contact } from '../model/contact';
 
 @Injectable( {
   providedIn: 'root'
 } )
 export class LocaldbService extends Dexie {
-  contacts: Dexie.Table<Contact, number>;
+  contacts: Dexie.Table<LocalContact, number>;
   messages: Dexie.Table<Message, number>;
   users:    Dexie.Table<LocalUser, number>;
 
   constructor() {
     super( "LocaldbService" );
     this.version( 1 ).stores({
-      contacts: '++id, name, base64Avatar, base64PublicKey, userId',
+      contacts: '++id, name, base64Avatar, base64PublicKey, userId, ownerId',
       messages: '++id, fromId, toId, timestamp, text, send, received',
       users: '++id, createdAt, username, password, email, base64Avatar, userId'
     });
   }
   
-  storeContact(contact: Contact): Promise<number> {
+  storeContact(contact: LocalContact): Promise<number> {
     return this.transaction('rw', this.contacts, () => this.contacts.put(contact, contact.id));
   }
   
-  loadContacts(): Promise<Contact[]> {    
-    return this.transaction('r', this.contacts, () => this.contacts.orderBy('name').toArray());
+  loadContacts(contact: Contact): Promise<LocalContact[]> {    
+    return this.transaction('r', this.contacts, () => this.contacts
+        .filter(con => con.ownerId === contact.userId)
+        .sortBy('name'));
   }
   
   storeMessage(message: Message): Promise<number> {
