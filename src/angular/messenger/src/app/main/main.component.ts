@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
@@ -29,13 +29,14 @@ import { CryptoService } from '../services/crypto.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 } )
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit,OnDestroy {
   windowHeight: number;
   ownContact: Contact;
   contacts: Contact[] = [];
   myContact: Contact;
   messages: Message[] = [];
   myUser: MyUser = null;
+  private interval: any;
 
   constructor( private localdbService: LocaldbService,
     private jwttokenService: JwttokenService,
@@ -46,9 +47,15 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
-    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );    
+    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );        
   }
 
+  ngOnDestroy(): void {
+    if(this.interval) {
+      clearInterval(this.interval);
+    }
+  }  
+  
   @HostListener( 'window:resize', ['$event'] )
   onResize( event: any ) {
     this.windowHeight = event.target.innerHeight - 84;
@@ -70,17 +77,28 @@ export class MainComponent implements OnInit {
           userId: this.myUser.userId
         };
         this.contacts = [];
-        this.localdbService.loadContacts(this.ownContact).then(values => this.contacts = values);
+        this.localdbService.loadContacts(this.ownContact).then(values => {
+          this.contacts = values;
+          this.myContact = values && values.length > 0 ? values[0] : null;
+        });
         this.myContact = null;
+        if(this.interval) {
+          clearInterval(this.interval);
+        }
+        this.interval = setInterval(() => this.syncMsgs(), 15000);
       }
     } );
   }
 
   logout(): void {
     this.myUser = null;
+    this.ownContact = null;
     this.jwttokenService.jwtToken = null;
     this.contacts = [];
     this.messages = [];
+    if(this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   selectContact( contact: Contact ) {
@@ -161,7 +179,7 @@ export class MainComponent implements OnInit {
   }
 
   private syncMsgs() {
-    if ( this.netConnectionService.connetionStatus ) {
+    if (this.ownContact && this.netConnectionService.connetionStatus ) {
       const contactIds = this.contacts.map( con => con.userId );
       const syncMsgs1: SyncMsgs = {
         ownId: this.ownContact.userId,
