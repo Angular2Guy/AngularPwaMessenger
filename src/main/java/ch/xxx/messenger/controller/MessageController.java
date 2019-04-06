@@ -51,13 +51,17 @@ public class MessageController {
 
 	@PostMapping("/storeMsgs")
 	public Flux<Message> putStoreMessages(@RequestBody SyncMsgs syncMsgs, @RequestHeader Map<String, String> header) {
-		List<Message> msgs = syncMsgs.getMsgs().stream().map(msg -> {
-			msg.setSend(true);
-			return msg;
-		}).map(msg -> {
-			msg.setTimestamp(new Date());
-			return msg;
-		}).collect(Collectors.toList());
-		return this.operations.insertAll(msgs);
+		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
+		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
+			List<Message> msgs = syncMsgs.getMsgs().stream().map(msg -> {
+				msg.setSend(true);
+				return msg;
+			}).map(msg -> {
+				msg.setTimestamp(new Date());
+				return msg;
+			}).collect(Collectors.toList());
+			return this.operations.insertAll(msgs);
+		}
+		return Flux.empty();
 	}
 }
