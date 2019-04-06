@@ -29,7 +29,7 @@ import { CryptoService } from '../services/crypto.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 } )
-export class MainComponent implements OnInit,OnDestroy {
+export class MainComponent implements OnInit, OnDestroy {
   windowHeight: number;
   ownContact: Contact;
   contacts: Contact[] = [];
@@ -47,15 +47,15 @@ export class MainComponent implements OnInit,OnDestroy {
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
-    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );        
+    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );
   }
 
   ngOnDestroy(): void {
-    if(this.interval) {
-      clearInterval(this.interval);
+    if ( this.interval ) {
+      clearInterval( this.interval );
     }
-  }  
-  
+  }
+
   @HostListener( 'window:resize', ['$event'] )
   onResize( event: any ) {
     this.windowHeight = event.target.innerHeight - 84;
@@ -77,15 +77,16 @@ export class MainComponent implements OnInit,OnDestroy {
           userId: this.myUser.userId
         };
         this.contacts = [];
-        this.localdbService.loadContacts(this.ownContact).then(values => {
+        this.myContact = null;
+        this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
           this.myContact = values && values.length > 0 ? values[0] : null;
-        });
-        this.myContact = null;
-        if(this.interval) {
-          clearInterval(this.interval);
-        }
-        this.interval = setInterval(() => this.syncMsgs(), 15000);
+        } ).then( () => this.addMessages() ).then( () => {
+          if ( this.interval ) {
+            clearInterval( this.interval );
+          }
+          this.interval = setInterval( () => this.syncMsgs(), 15000 );
+        } );
       }
     } );
   }
@@ -96,8 +97,8 @@ export class MainComponent implements OnInit,OnDestroy {
     this.jwttokenService.jwtToken = null;
     this.contacts = [];
     this.messages = [];
-    if(this.interval) {
-      clearInterval(this.interval);
+    if ( this.interval ) {
+      clearInterval( this.interval );
     }
   }
 
@@ -119,6 +120,7 @@ export class MainComponent implements OnInit,OnDestroy {
   private receiveRemoteMsgs( syncMsgs1: SyncMsgs ) {
     this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
       let promises: PromiseLike<Message>[] = [];
+      msgs = msgs.filter( msg => syncMsgs1.lastUpdate.getTime() < new Date( msg.timestamp ).getTime() );
       msgs.forEach( msg => {
         promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
           msg.text = value;
@@ -179,7 +181,7 @@ export class MainComponent implements OnInit,OnDestroy {
   }
 
   private syncMsgs() {
-    if (this.ownContact && this.netConnectionService.connetionStatus ) {
+    if ( this.ownContact && this.netConnectionService.connetionStatus ) {
       const contactIds = this.contacts.map( con => con.userId );
       const syncMsgs1: SyncMsgs = {
         ownId: this.ownContact.userId,
@@ -208,7 +210,7 @@ export class MainComponent implements OnInit,OnDestroy {
     const sortedMsg = this.messages
       .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
       .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
-    return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : sortedMsg[sortedMsg.length - 1].timestamp;
+    return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date(sortedMsg[sortedMsg.length - 1].timestamp);
   }
 
   private addMessages(): Promise<Message[]> {
