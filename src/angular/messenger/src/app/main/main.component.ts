@@ -33,7 +33,7 @@ export class MainComponent implements OnInit, OnDestroy {
   windowHeight: number;
   ownContact: Contact;
   contacts: Contact[] = [];
-  myContact: Contact;
+  selectedContact: Contact;
   messages: Message[] = [];
   myUser: MyUser = null;
   private interval: any;
@@ -77,10 +77,10 @@ export class MainComponent implements OnInit, OnDestroy {
           userId: this.myUser.userId
         };
         this.contacts = [];
-        this.myContact = null;
+        this.selectedContact = null;
         this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
-          this.myContact = values && values.length > 0 ? values[0] : null;
+          this.selectedContact = values && values.length > 0 ? values[0] : null;
         } ).then( () => this.addMessages() ).then( () => {
           if ( this.interval ) {
             clearInterval( this.interval );
@@ -103,7 +103,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   selectContact( contact: Contact ) {
-    this.myContact = contact;
+    this.selectedContact = contact;
     this.addMessages().then( () => this.syncMsgs() );
   }
 
@@ -214,7 +214,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   private addMessages(): Promise<Message[]> {
-    return this.localdbService.loadMessages( this.myContact ).then( msgs =>
+    return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
       this.decryptLocalMsgs( msgs ).then( values => {
         while ( this.messages.length > 0 ) {
           this.messages.pop()

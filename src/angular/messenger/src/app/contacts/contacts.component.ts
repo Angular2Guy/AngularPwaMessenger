@@ -20,6 +20,8 @@ import { Contact } from '../model/contact';
 })
 export class ContactsComponent implements OnInit {
   @Input()
+  selectedContact: Contact;
+  @Input()
   contacts: Contact[] = [];
   @Output()
   selContact = new EventEmitter<Contact>();
