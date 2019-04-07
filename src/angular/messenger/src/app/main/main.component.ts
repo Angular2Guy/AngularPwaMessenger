@@ -168,14 +168,17 @@ export class MainComponent implements OnInit, OnDestroy {
             ownId: this.ownContact.userId,
             msgs: myMsgs
           };
-          this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
+          this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs => {
+            const promises2: PromiseLike<number>[] = [];
             msgs.forEach( msg => {
               const newMsg = oriMsgs.filter( oriMsg => oriMsg.id === msg.id )[0];
               const myMsg = myMsgs.filter(myMsg2 => myMsg2.id === msg.id)[0];
               newMsg.send = true;
               newMsg.timestamp = myMsg.timestamp;
-              this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg), reject => console.log(reject));
-            } ) );
+              promises2.push(this.localdbService.updateMessage( newMsg ));//.then(result => console.log(msg), reject => console.log(reject));
+            } );
+            Promise.all(promises2).then(() => this.addMessages());
+          });
         } )
       } );
     } );

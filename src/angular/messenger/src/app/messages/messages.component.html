@@ -2,7 +2,11 @@
 	<div *ngIf="receiver != null"
 		[class.receiver]="message.fromId === receiver.userId"
 		[class.sender]="message.toId === receiver.userId">
-		{{message.text}}</div>
+		<span>{{message.text}}
+		<i *ngIf="message.toId === receiver.userId && message.send && !message.received" class="material-icons">done</i>			
+		<i *ngIf="message.toId === receiver.userId && message.send && message.received" class="material-icons">done_all</i>
+		</span>		
+	</div>
 </div>
 <form [formGroup]="messageForm" novalidate>
 	<mat-form-field class="message-input">
