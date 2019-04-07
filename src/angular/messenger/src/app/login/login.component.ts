@@ -88,12 +88,15 @@ export class LoginComponent implements OnInit {
     //      console.log(myUser);
     let keypair: Tuple<string, string> = null;
     this.cryptoService.hashPW( this.signinForm.get( 'password' ).value ).then( value =>
-      this.cryptoService.generateKeys( value ).then( result => {
+      this.cryptoService.generateKeys( value ) ).then( result => {
         keypair = result;
         myUser.privateKey = keypair.b;
         myUser.publicKey = keypair.a;
-        this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
-      } ) );
+        this.cryptoService.hashServerPW( this.signinForm.get( 'password' ).value ).then( value => {
+          myUser.password = value
+          this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
+        } );
+      } );
   }
 
   onLoginClick(): void {
@@ -102,6 +105,8 @@ export class LoginComponent implements OnInit {
     myUser.password = this.loginForm.get( 'password' ).value;
     //      console.log(myUser);    
     if ( this.connected ) {
+      this.cryptoService.hashServerPW(this.loginForm.get( 'password' ).value).then(value => {
+        myUser.password = value;
       this.authenticationService.postLogin( myUser ).subscribe( us => {
         let myLocalUser: LocalUser = {
           base64Avatar: null,
@@ -116,30 +121,31 @@ export class LoginComponent implements OnInit {
         };
         this.localdbService.loadUser( myLocalUser ).then( localUserList =>
           localUserList.first().then( myLocalUser => {
-            us.password = myUser.password;
+            us.password = this.loginForm.get( 'password' ).value;
             this.login( us, myLocalUser );
           } ) );
         return;
-      }, err =>  this.localLogin(myUser));
+      }, err => this.localLogin( myUser ) );
+      });
     } else {
-      this.localLogin(myUser);
+      this.localLogin( myUser );
     }
   }
 
-  private localLogin(myUser: MyUser) {
+  private localLogin( myUser: MyUser ) {
     let myLocalUser: LocalUser = {
-        base64Avatar: null,
-        createdAt: null,
-        email: null,
-        hash: null,
-        publicKey: null,
-        privateKey: null,
-        salt: null,
-        username: myUser.username,
-        userId: null
-      };
-      this.localdbService.loadUser( myLocalUser ).then( localUserList =>
-        localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
+      base64Avatar: null,
+      createdAt: null,
+      email: null,
+      hash: null,
+      publicKey: null,
+      privateKey: null,
+      salt: null,
+      username: myUser.username,
+      userId: null
+    };
+    this.localdbService.loadUser( myLocalUser ).then( localUserList =>
+      localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
   }
 
   signin( us: MyUser ): void {

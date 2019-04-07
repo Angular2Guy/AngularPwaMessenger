@@ -110,4 +110,20 @@ describe('CryptoService', () => {
     });
   });
   
+  it('password server hash1', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.hashServerPW('hallo123').then(value => {
+      expect(value).toBe('Y5rm5bpbv43q+B3BspCfTS1heE8/BtVBnb85wckVYHZwumxYZjQduOErDfGinZKI', 'hashcode not matching');
+      done();
+    });
+  });
+  
+  it('password server hash2', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.hashServerPW('hallo1234').then(value => {
+      expect(value).toBe('a8rPRtpfbK1rkwWo7UeKmpgrubSjifgj2Kh+b0KIs90cBZuj9TbZyJXz9dngat+C', 'hashcode not matching');
+      done();
+    });
+  });
+  
 });

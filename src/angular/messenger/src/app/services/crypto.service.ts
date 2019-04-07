@@ -188,4 +188,8 @@ export class CryptoService {
   public hashPW(password: string): PromiseLike<string> {
     return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(password)).then(value => this.ab2str(value));
   }
+  
+  public hashServerPW(password: string): PromiseLike<string> {
+    return window.crypto.subtle.digest('SHA-384', new TextEncoder().encode(password)).then(value => this.ab2str(value));
+  }
 }
