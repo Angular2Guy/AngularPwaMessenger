@@ -180,6 +180,10 @@ export class MainComponent implements OnInit, OnDestroy {
     } );
   }
 
+  private storeReceivedMessages() {
+    this.messageService.findReceivedMessages(this.ownContact).subscribe(msgs => msgs.forEach(msg => console.log(msg)));
+  }
+  
   private syncMsgs() {
     if ( this.ownContact && this.netConnectionService.connetionStatus ) {
       const contactIds = this.contacts.map( con => con.userId );
@@ -190,6 +194,7 @@ export class MainComponent implements OnInit, OnDestroy {
       };
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
+      this.storeReceivedMessages();
     }
   }
 

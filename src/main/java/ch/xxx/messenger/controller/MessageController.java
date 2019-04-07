@@ -1,6 +1,7 @@
 package ch.xxx.messenger.controller;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.xxx.messenger.dto.Contact;
 import ch.xxx.messenger.dto.Message;
 import ch.xxx.messenger.dto.SyncMsgs;
 import ch.xxx.messenger.jwt.JwtTokenProvider;
@@ -34,6 +36,7 @@ public class MessageController {
 	@PostMapping("/findMsgs")
 	public Flux<Message> getFindMessages(@RequestBody SyncMsgs syncMsgs, @RequestHeader Map<String, String> header) {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
+		List<Message> msgToUpdate = new LinkedList<>();
 		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
 			return operations.find(
 					new Query().addCriteria(Criteria.where("fromId").in(syncMsgs.getContactIds())
@@ -42,13 +45,28 @@ public class MessageController {
 					Message.class).doOnEach(msg -> {
 						if (msg.hasValue()) {
 							msg.get().setReceived(true);
-							this.operations.save(msg);
+							msgToUpdate.add(msg.get());
 						}
-					});
+					}).doAfterTerminate(() -> msgToUpdate.forEach(msg -> operations.save(msg).block()));
 		}
 		return Flux.empty();
 	}
 
+	@PostMapping("/receivedMsgs")
+	public Flux<Message> getReceivedMessages(@RequestBody Contact contact, @RequestHeader Map<String, String> header) {
+		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);
+		List<Message> msgToDelete = new LinkedList<>();
+		if (tokenTuple.getB().contains(Role.USERS.name()) && !tokenTuple.getB().contains(Role.GUEST.name())) {
+			return operations.find(new Query().addCriteria(Criteria.where("fromId").is(contact.getUserId())
+									.andOperator(Criteria.where("received").is(true))), Message.class).doOnEach(msg -> {
+										if(msg.hasValue()) {
+											msgToDelete.add(msg.get());
+										}										
+									}).doAfterTerminate(() -> msgToDelete.forEach(msg -> operations.remove(msg).block()));
+		}
+		return Flux.empty();
+	}
+	
 	@PostMapping("/storeMsgs")
 	public Flux<Message> putStoreMessages(@RequestBody SyncMsgs syncMsgs, @RequestHeader Map<String, String> header) {
 		Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(header, jwtTokenProvider);

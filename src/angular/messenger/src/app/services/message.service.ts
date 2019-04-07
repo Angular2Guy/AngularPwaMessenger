@@ -25,4 +25,8 @@ export class MessageService {
   sendMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
       return this.http.post<Message[]>(this.contactUrl+'/storeMsgs', syncMsgs,this.utils.createHeader());
   }
+  
+  findReceivedMessages(contact: Contact): Observable<Message[]> {
+    return this.http.post<Message[]>(this.contactUrl+'/receivedMsgs', contact,this.utils.createHeader());
+  }
 }
