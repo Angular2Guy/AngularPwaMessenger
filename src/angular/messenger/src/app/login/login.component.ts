@@ -120,10 +120,14 @@ export class LoginComponent implements OnInit {
             this.login( us, myLocalUser );
           } ) );
         return;
-      }
-        , err => console.log( err ) );
+      }, err =>  this.localLogin(myUser));
     } else {
-      let myLocalUser: LocalUser = {
+      this.localLogin(myUser);
+    }
+  }
+
+  private localLogin(myUser: MyUser) {
+    let myLocalUser: LocalUser = {
         base64Avatar: null,
         createdAt: null,
         email: null,
@@ -136,9 +140,7 @@ export class LoginComponent implements OnInit {
       };
       this.localdbService.loadUser( myLocalUser ).then( localUserList =>
         localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
-    }
   }
-
 
   signin( us: MyUser ): void {
     this.data.myUser = null;
