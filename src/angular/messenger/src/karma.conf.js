@@ -32,12 +32,16 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
 //    browsers: ['Chromium'],
-    browsers: ['Chromium', 'ChromeHeadless'],
+    browsers: ['Chromium', 'ChromeHeadless', 'ChromiumHeadless'],
     customLaunchers: {
         ChromeHeadless: {
           base: 'Chrome',
           flags: ['--no-sandbox','--headless', '--disable-gpu', '--remote-debugging-port=9222']
-        }
+        },
+        ChromiumHeadless: {
+            base: 'Chromium',
+            flags: ['--no-sandbox','--headless', '--disable-gpu', '--remote-debugging-port=9222']
+          }
       },
     singleRun: false
   });
