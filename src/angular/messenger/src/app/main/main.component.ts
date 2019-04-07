@@ -171,65 +171,80 @@ export class MainComponent implements OnInit, OnDestroy {
           this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs =>
             msgs.forEach( msg => {
               const newMsg = oriMsgs.filter( oriMsg => oriMsg.id === msg.id )[0];
+              const myMsg = myMsgs.filter(myMsg2 => myMsg2.id === msg.id)[0];
               newMsg.send = true;
+              newMsg.timestamp = myMsg.timestamp;
               this.localdbService.updateMessage( newMsg );//.then(result => console.log(msg), reject => console.log(reject));
             } ) );
-
         } )
       } );
     } );
   }
 
   private storeReceivedMessages() {
-    this.messageService.findReceivedMessages(this.ownContact).subscribe(msgs => msgs.forEach(msg => console.log(msg)));
-  }
+    this.messageService.findReceivedMessages( this.ownContact ).subscribe( msgs => {
+      if ( msgs.length > 0 ) { 
+      this.localdbService.loadMessages( this.ownContact ).then( localMsgs => {
+        const msgsToStore: Message[] = [];
+        msgs.forEach( msg => msgsToStore.push( localMsgs.filter( localMsg => localMsg.timestamp === msg.timestamp )[0] ) );
+        msgsToStore.forEach( msg => msg.received = true );
+        return msgsToStore;
+      } ).then( msgsToStore => {
+        const promises: PromiseLike<number>[] = [];
+        msgsToStore.forEach( msgToStore =>
+          promises.push( this.localdbService.updateMessage( msgToStore ) ) );
+        return Promise.all( promises );
+      } ).then( () => this.addMessages() );
+    }
+    });
+}
   
   private syncMsgs() {
-    if ( this.ownContact && this.netConnectionService.connetionStatus ) {
-      const contactIds = this.contacts.map( con => con.userId );
-      const syncMsgs1: SyncMsgs = {
-        ownId: this.ownContact.userId,
-        contactIds: contactIds,
-        lastUpdate: this.getLastSyncDate()
-      };
-      this.receiveRemoteMsgs( syncMsgs1 );
-      this.sendRemoteMsgs( syncMsgs1 );
-      this.storeReceivedMessages();
-    }
+  if ( this.ownContact && this.netConnectionService.connetionStatus ) {
+    const contactIds = this.contacts.map( con => con.userId );
+    const syncMsgs1: SyncMsgs = {
+      ownId: this.ownContact.userId,
+      contactIds: contactIds,
+      lastUpdate: this.getLastSyncDate()
+    };
+    this.receiveRemoteMsgs( syncMsgs1 );
+    this.sendRemoteMsgs( syncMsgs1 );
+    this.storeReceivedMessages();
   }
+}
 
-  private decryptLocalMsgs( msgs: Message[] ): PromiseLike<Message[]> {
-    const promises: PromiseLike<Message>[] = [];
-    msgs.forEach( msg => {
-      promises.push( this.cryptoService.decryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
-        msg.text = value;
-        return msg;
-      } ) );
-    } );
-    return Promise.all( promises ).then( msgs => {
-      return msgs;
-    } );
-  }
+  private decryptLocalMsgs( msgs: Message[] ): PromiseLike < Message[] > {
+  const promises: PromiseLike<Message>[] = [];
+  msgs.forEach( msg => {
+    promises.push( this.cryptoService.decryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
+      msg.text = value;
+      return msg;
+    } ) );
+  } );
+  return Promise.all( promises ).then( msgs => {
+    return msgs;
+  } );
+}
 
   private getLastSyncDate(): Date {
-    const sortedMsg = this.messages
-      .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
-      .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
-    return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date(sortedMsg[sortedMsg.length - 1].timestamp);
-  }
+  const sortedMsg = this.messages
+    .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
+    .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
+  return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date( sortedMsg[sortedMsg.length - 1].timestamp );
+}
 
-  private addMessages(): Promise<Message[]> {
-    return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
-      this.decryptLocalMsgs( msgs ).then( values => {
-        while ( this.messages.length > 0 ) {
-          this.messages.pop()
-        }
-        this.messages = values;
-        return values;
-      } ) );
-  }
+  private addMessages(): Promise < Message[] > {
+  return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
+    this.decryptLocalMsgs( msgs ).then( values => {
+      while ( this.messages.length > 0 ) {
+        this.messages.pop()
+      }
+      this.messages = values;
+      return values;
+    } ) );
+}
 
-  addNewContact( contact: Contact ) {
-    this.contacts.push( contact );
-  }
+addNewContact( contact: Contact ) {
+  this.contacts.push( contact );
+}
 }

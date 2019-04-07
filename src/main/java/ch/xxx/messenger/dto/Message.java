@@ -20,6 +20,8 @@ public class Message {
 	@JsonProperty
 	private String toId;
 	@JsonProperty
+	private Long id;
+	@JsonProperty
 	private Date timestamp;
 	@JsonProperty
 	private String text;
@@ -69,6 +71,12 @@ public class Message {
 	}
 	public void setReceived(boolean received) {
 		this.received = received;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 }
