@@ -55,6 +55,8 @@ public class MsgUser implements UserDetails {
 	@JsonProperty
 	private String userId;
 	@JsonProperty
+	private String salt;
+	@JsonProperty
 	private List<ObjectId> contacts = new ArrayList<>();
 	
 	
@@ -172,6 +174,14 @@ public class MsgUser implements UserDetails {
 
 	public void setPrivateKey(String privateKey) {
 		this.privateKey = privateKey;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 
 }

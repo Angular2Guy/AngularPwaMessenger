@@ -84,18 +84,16 @@ export class LoginComponent implements OnInit {
     myUser.username = this.signinForm.get( 'username' ).value;
     myUser.password = this.signinForm.get( 'password' ).value;
     myUser.email = this.signinForm.get( 'email' ).value;
-    //      console.log(this.signinForm);
-    //      console.log(myUser);
-    let keypair: Tuple<string, string> = null;
     this.cryptoService.hashPW( this.signinForm.get( 'password' ).value ).then( value =>
       this.cryptoService.generateKeys( value ) ).then( result => {
-        keypair = result;
-        myUser.privateKey = keypair.b;
-        myUser.publicKey = keypair.a;
-        this.cryptoService.hashServerPW( this.signinForm.get( 'password' ).value ).then( value => {
-          myUser.password = value
-          this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
-        } );
+        myUser.privateKey = result.b;
+        myUser.publicKey = result.a;
+      } ).then( () => this.cryptoService.hashServerPW( this.signinForm.get( 'password' ).value ) )
+      .then( value => myUser.password = value)
+      .then(() => this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null ))
+      .then(myValue => {
+        myUser.salt = myValue.b;
+        this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
       } );
   }
 
@@ -105,28 +103,35 @@ export class LoginComponent implements OnInit {
     myUser.password = this.loginForm.get( 'password' ).value;
     //      console.log(myUser);    
     if ( this.connected ) {
-      this.cryptoService.hashServerPW(this.loginForm.get( 'password' ).value).then(value => {
+      this.cryptoService.hashServerPW( this.loginForm.get( 'password' ).value ).then( value => {
         myUser.password = value;
-      this.authenticationService.postLogin( myUser ).subscribe( us => {
-        let myLocalUser: LocalUser = {
-          base64Avatar: null,
-          createdAt: null,
-          email: null,
-          hash: null,
-          publicKey: null,
-          privateKey: null,
-          salt: null,
-          username: us.username,
-          userId: null
-        };
-        this.localdbService.loadUser( myLocalUser ).then( localUserList =>
-          localUserList.first().then( myLocalUser => {
-            us.password = this.loginForm.get( 'password' ).value;
-            this.login( us, myLocalUser );
-          } ) );
-        return;
-      }, err => this.localLogin( myUser ) );
-      });
+        this.authenticationService.postLogin( myUser ).subscribe( us => {
+          let myLocalUser: LocalUser = {
+            base64Avatar: null,
+            createdAt: null,
+            email: null,
+            hash: null,
+            publicKey: null,
+            privateKey: null,
+            salt: null,
+            username: us.username,
+            userId: null
+          };
+          this.localdbService.loadUser( myLocalUser )
+            .then( localUserList => localUserList.toArray() )
+            .then( localUserArray => {
+              if ( localUserArray.length > 0 ) {
+                us.password = this.loginForm.get( 'password' ).value;
+                this.login( us, localUserArray[0] );
+              } else {
+                this.createLocalUser( us , this.loginForm.get( 'password' ).value).then( result => {
+                  us.password = this.loginForm.get( 'password' ).value;
+                  this.login( us, result );
+                } );
+              }
+            } );
+        }, err => this.localLogin( myUser ) );
+      } );
     } else {
       this.localLogin( myUser );
     }
@@ -148,26 +153,33 @@ export class LoginComponent implements OnInit {
       localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
   }
 
+  private createLocalUser( us: MyUser, passwd: string): PromiseLike<LocalUser> {
+    let localUser: LocalUser = null;
+    return this.cryptoService.generateKey( passwd, us.salt ? us.salt : null )
+      .then( ( result ) => {
+        localUser = {
+          base64Avatar: us.base64Avatar,
+          createdAt: us.createdAt,
+          email: us.email,
+          hash: result.a,
+          salt: result.b,
+          username: us.username,
+          publicKey: us.publicKey,
+          privateKey: us.privateKey,
+          userId: us.userId
+        };
+        return localUser;
+      } ).then( myLocalUser => this.localdbService.storeUser( myLocalUser ) )
+      .then( value => Promise.resolve( value ) ).then( () => localUser );
+  }
+
   signin( us: MyUser ): void {
     this.data.myUser = null;
     if ( us.username !== null ) {
-      this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null )
-        .then( ( result ) => {
-          const localUser: LocalUser = {
-            base64Avatar: us.base64Avatar,
-            createdAt: us.createdAt,
-            email: us.email,
-            hash: result.a,
-            salt: result.b,
-            username: us.username,
-            publicKey: us.publicKey,
-            privateKey: us.privateKey,
-            userId: us.userId
-          };
-          this.localdbService.storeUser( localUser ).then( userId => console.log( userId ) );
-        }, ( rejected ) => console.log( rejected ) );
-      this.signinFailed = false;
-      this.dialogRef.close();
+      this.createLocalUser( us, this.signinForm.get( 'password' ).value ).then( value => {
+        this.signinFailed = false;
+        this.dialogRef.close();
+      } );
     } else {
       this.signinFailed = true;
     }
