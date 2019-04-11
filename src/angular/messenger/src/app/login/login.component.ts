@@ -130,7 +130,10 @@ export class LoginComponent implements OnInit {
                 } );
               }
             } );
-        }, err => this.localLogin( myUser ) );
+        }, err => {
+          myUser.password = this.loginForm.get( 'password' ).value;
+          this.localLogin( myUser ); 
+          });
       } );
     } else {
       this.localLogin( myUser );
@@ -150,7 +153,9 @@ export class LoginComponent implements OnInit {
       userId: null
     };
     this.localdbService.loadUser( myLocalUser ).then( localUserList =>
-      localUserList.first().then( myLocalUser => this.login( myUser, myLocalUser ) ) );
+      localUserList.first().then( myLocalUser => {
+        return this.login( myUser, myLocalUser ); 
+        }) );
   }
 
   private createLocalUser( us: MyUser, passwd: string): PromiseLike<LocalUser> {
