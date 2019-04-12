@@ -144,7 +144,7 @@ export class MainComponent implements OnInit, OnDestroy {
           }
         } ) );
       } )
-    } );
+    }, error => console.log('findMessages failed.') );
   }
 
   private sendRemoteMsgs( syncMsgs1: SyncMsgs ) {
@@ -178,7 +178,7 @@ export class MainComponent implements OnInit, OnDestroy {
               promises2.push(this.localdbService.updateMessage( newMsg ));//.then(result => console.log(msg), reject => console.log(reject));
             } );
             Promise.all(promises2).then(() => this.addMessages());
-          });
+          }, error => console.log('sendRemoteMsgs failed.'));
         } )
       } );
     } );
@@ -199,7 +199,7 @@ export class MainComponent implements OnInit, OnDestroy {
         return Promise.all( promises );
       } ).then( () => this.addMessages() );
     }
-    });
+    }, error => console.log('storeReceivedMessages failed.'));
 }
   
   private syncMsgs() {
