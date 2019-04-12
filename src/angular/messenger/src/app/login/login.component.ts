@@ -154,6 +154,7 @@ export class LoginComponent implements OnInit {
     };
     this.localdbService.loadUser( myLocalUser ).then( localUserList =>
       localUserList.first().then( myLocalUser => {
+        myUser.userId = myLocalUser.userId;
         return this.login( myUser, myLocalUser ); 
         }) );
   }
