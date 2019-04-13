@@ -1,0 +1,10 @@
+webAppName: angularpwamessenger
+dbName: mongodbserver
+webImageName: angular2guy/angularpwamessenger
+webImageVersion: latest
+dbImageName: mongo
+dbImageVersion: 3.6.6
+volumeClaimName: mongo-pv-claim
+persistentVolumeName: task-pv-volume
+webServiceName: angularpwa
+dbServiceName: mongodb
