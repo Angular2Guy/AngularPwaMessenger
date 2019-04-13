@@ -1,4 +1,4 @@
-webAppName: angularpwamessenger
+webAppName: angularpwamsg
 dbName: mongodbserver
 webImageName: angular2guy/angularpwamessenger
 webImageVersion: latest

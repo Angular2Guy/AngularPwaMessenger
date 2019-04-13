@@ -34,16 +34,16 @@ kind: Deployment
 metadata:
   name: {{ .Values.dbName }}
   labels:
-    appdb: {{ .Values.dbName }}
+    app: {{ .Values.dbName }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      appdb: {{ .Values.dbName }}
+      app: {{ .Values.dbName }}
   template:
     metadata:
       labels:
-        appdb: {{ .Values.dbName }}
+        app: {{ .Values.dbName }}
     spec:
       containers:
       - name: {{ .Values.dbName }}
@@ -69,7 +69,7 @@ spec:
   - port: 27017
     protocol: TCP
   selector:
-    appdb: {{ .Values.dbName }}
+    app: {{ .Values.dbName }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -109,4 +109,4 @@ spec:
   - port: 8080
     protocol: TCP
   selector:
-app: {{ .Values.webAppName }}
+    app: {{ .Values.webAppName }}
