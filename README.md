@@ -1,3 +1,31 @@
 # AngularPwaMessenger
 
-This is a work in progess. When the project works documentation will follow.
+![Build Status](https://travis-ci.org/Angular2Guy/AngularPwaMessenger.svg?branch=master)
+
+Author: Sven Loesekann
+
+Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Spring Webflux, MongoDB, Maven, Docker
+
+## What is the goal?
+
+The goal is to provide an Angular based Progressive Web App with a backend server that has a usecase. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and its Webflux features that use MongoDB as database. For development the project uses an in memory MongoDB to be just cloned and ready to run.
+
+## What is it?
+
+The application is a encrypted chat system that can be run offline. The PWA is served by the server like any website and installs a service worker. Then it can run offline because the PWA stores the data locally in the browser. The login, the chat history and sending new messages work offline. When the PWA is online again the stored pending messages are send to the server and it is checked for new messages. Adding new contacts and signing in only works online. The backend server stores only the pending messages and the contacts. The message texts are send encrypted and are stored encrypted. (If you delete your browsers indexed DB your chat history and your contacts are gone!)    
+
+## Setup
+
+MongoDB 3.4.x or newer.
+
+Eclipse 2018-09 or newer.
+
+Plugin Typescript.Java 1.4.0 or newer.
+
+Maven 3.3.3 or newer.
+
+Nodejs 8.9.x or newer
+
+Npm 5.6.x or newer
+
+Angular Cli 7 or newer.
