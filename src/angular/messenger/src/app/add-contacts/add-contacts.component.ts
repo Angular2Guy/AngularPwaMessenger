@@ -31,21 +31,15 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     @Input() userId: string;
     @Input() myContacts: Contact[];
     myControl = new FormControl();
-    options: string[] = [];
     filteredOptions: Contact[] = [];
     contactsLoading = false;
-    connected = false;
     myControlSub: Subscription = null;
-    myNetConServiceSub: Subscription = null;
 
     constructor( 
             private contactService: ContactService,
-            private netConService: NetConnectionService,
             private localdbService: LocaldbService) { }
 
     ngOnInit() {             
-        this.connected = this.netConService.connetionStatus;
-        this.myNetConServiceSub = this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
         this.myControlSub = this.myControl.valueChanges
             .pipe(
                 debounceTime( 400 ),
@@ -59,7 +53,6 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-      this.myNetConServiceSub.unsubscribe();
       this.myControlSub.unsubscribe();
     }
     
@@ -70,7 +63,7 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     }
     
     addContact() {
-        if(this.filteredOptions.length === 1 && this.connected) {
+        if(this.filteredOptions.length === 1) {
             if(!this.filteredOptions[0].base64Avatar) {
                 this.filteredOptions[0].base64Avatar = 'assets/icons/smiley-640.jpg';
             }
