@@ -27,6 +27,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { LoginComponent } from './login/login.component';
 import { AddContactsComponent } from './add-contacts/add-contacts.component';
 import { HttpProfileInterceptor } from './services/http-profile.interceptor';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -47,19 +48,17 @@ import { HttpProfileInterceptor } from './services/http-profile.interceptor';
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
     MatSidenavModule,    
     MatToolbarModule,
     MatTabsModule,
     MatButtonModule, 
     MatDialogModule,
-    MatFormFieldModule,
     MatInputModule,
     BrowserAnimationsModule,
-    MatInputModule,
     MatFormFieldModule,
     MatListModule,
     MatAutocompleteModule,
+    MatProgressSpinnerModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [

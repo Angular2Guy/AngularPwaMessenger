@@ -45,7 +45,7 @@ export class AddContactsComponent implements OnInit, OnDestroy {
 
     ngOnInit() {             
         this.connected = this.netConService.connetionStatus;
-        this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
+        this.myNetConServiceSub = this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
         this.myControlSub = this.myControl.valueChanges
             .pipe(
                 debounceTime( 400 ),
