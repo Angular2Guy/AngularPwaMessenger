@@ -10,9 +10,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap, filter, flatMap } from 'rxjs/operators';
 import { ContactService } from '../services/contact.service';
 import { Contact } from '../model/contact';
@@ -25,7 +25,8 @@ import { LocalContact } from '../model/localContact';
     templateUrl: './add-contacts.component.html',
     styleUrls: ['./add-contacts.component.scss']
 } )
-export class AddContactsComponent implements OnInit {
+export class AddContactsComponent implements OnInit, OnDestroy {
+    
     @Output() addNewContact = new EventEmitter<Contact>();
     @Input() userId: string;
     @Input() myContacts: Contact[];
@@ -34,6 +35,8 @@ export class AddContactsComponent implements OnInit {
     filteredOptions: Contact[] = [];
     contactsLoading = false;
     connected = false;
+    myControlSub: Subscription = null;
+    myNetConServiceSub: Subscription = null;
 
     constructor( 
             private contactService: ContactService,
@@ -43,7 +46,7 @@ export class AddContactsComponent implements OnInit {
     ngOnInit() {             
         this.connected = this.netConService.connetionStatus;
         this.netConService.connectionMonitor.subscribe( conn => this.connected = conn );
-        this.myControl.valueChanges
+        this.myControlSub = this.myControl.valueChanges
             .pipe(
                 debounceTime( 400 ),
                 distinctUntilChanged(),
@@ -55,6 +58,11 @@ export class AddContactsComponent implements OnInit {
             ).subscribe(contacts => this.filteredOptions = contacts);
     }
 
+    ngOnDestroy(): void {
+      this.myNetConServiceSub.unsubscribe();
+      this.myControlSub.unsubscribe();
+    }
+    
     private filterContacts(contacts: Contact[]): Contact[] {
         return contacts.filter(con => 
           this.myContacts.filter(myCon => 
