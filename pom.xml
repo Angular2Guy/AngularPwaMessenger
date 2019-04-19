@@ -18,7 +18,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>10</java.version>
+		<java.version>11</java.version>
 		<project.build.finalName>AngularPwaMessenger</project.build.finalName>
 		<docker.image.prefix>angular2guy</docker.image.prefix>
 	</properties>
@@ -47,6 +47,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
 		<dependency>
@@ -152,7 +156,7 @@
 							</arguments>
 							<workingDirectory>src/angular/messenger</workingDirectory>
 						</configuration>
-					</execution>					 
+					</execution>
 					<execution>
 						<id>angular-cli test</id>
 						<goals>
@@ -163,12 +167,12 @@
 							<executable>npm</executable>
 							<arguments>
 								<argument>run</argument>
-								<!-- <argument>test-chromium</argument>-->
+								<!-- <argument>test-chromium</argument> -->
 								<argument>test</argument>
 							</arguments>
 							<workingDirectory>src/angular/messenger</workingDirectory>
 						</configuration>
-					</execution>					 
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

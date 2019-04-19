@@ -57,6 +57,10 @@ public class MsgUser implements UserDetails {
 	@JsonProperty
 	private String salt;
 	@JsonProperty
+	private boolean confirmed = false;
+	@JsonProperty
+	private String uuid;
+	@JsonProperty
 	private List<ObjectId> contacts = new ArrayList<>();
 	
 	
@@ -182,6 +186,22 @@ public class MsgUser implements UserDetails {
 
 	public void setSalt(String salt) {
 		this.salt = salt;
+	}
+
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 }
