@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: angularpwa-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+ tls:
+   - secretName: minikube-tls
+     hosts: 
+       - minikube
+ rules:
+ - host: minikube
+   http:
+     paths:
+     - path: /*
+       backend:
+         serviceName: angularpwa
+         servicePort: 8080
