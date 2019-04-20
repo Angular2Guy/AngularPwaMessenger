@@ -8,7 +8,7 @@ Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Bo
 
 ## What is the goal?
 
-The goal is to provide an Angular based Progressive Web App with a backend server that has a usecase. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and its Webflux features that use MongoDB as database. For development the project uses an in memory MongoDB to be just cloned and ready to run.
+The goal is to provide an Angular based Progressive Web App with a backend server that has a usecase. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and uses its Webflux features with the MongoDB database. For development the project uses an in memory MongoDB to be just cloned and ready to run.
 
 ## What is it?
 
@@ -16,7 +16,7 @@ The application is an encrypted chat system that can be run offline. The PWA is 
 
 ## Minikube setup
 
-The application can be run in a Minikube cluster. The cluster runs the docker images for the AngularPwaMessenger and the Mongodb. The Mongodb has a persistent volume to store its data between restarts. The configuraton of the application can be found in the helm directory and is done as a helm chart. To run it minikube, kubectl and helm need to be installed.
+The application can be run in a Minikube cluster. The cluster runs the docker images for the AngularPwaMessenger and the Mongodb. The Mongodb has a persistent volume to store its data between restarts. The configuraton of the application can be found in the helm directory and is done as a helm chart. To run it minikube, kubectl and helm need to be installed. Further documentation can be found in the wiki.
 
 ## Setup
 
