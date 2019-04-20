@@ -6,3 +6,4 @@ minikube addons enable ingress
 #openssl req -new -key server.key -out server.csr -config csr.conf
 #openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 3650 -extensions v3_ext -extfile csr.conf
 kubectl create secret tls minikube-tls --cert=ca.crt --key=ca.key
+kubectl create -f ./ingress.yaml
