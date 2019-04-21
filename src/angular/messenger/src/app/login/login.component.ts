@@ -196,8 +196,7 @@ export class LoginComponent implements OnInit {
       if ( ( us.username !== null || localUser.username !== null ) && localUser.hash === tuple.a ) {
         if ( this.connected ) {
           this.jwttokenService.jwtToken = us.token;
-        }
-        this.jwttokenService.localLogin = true;
+        }        
         this.loginFailed = false;
         this.cryptoService.hashPW( us.password ).then( value => {
           us.password = value;

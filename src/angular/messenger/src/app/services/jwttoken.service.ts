@@ -30,10 +30,7 @@ export class JwttokenService {
   }
   
   get localLogin():boolean {
-    return this._localLogin;
+    return this._jwtToken ? false : true;
   }
-  
-  set localLogin(localLogin: boolean) {
-    this._localLogin = localLogin;
-  }
+    
 }

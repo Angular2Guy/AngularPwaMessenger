@@ -203,7 +203,7 @@ export class MainComponent implements OnInit, OnDestroy {
 }
   
   private syncMsgs() {
-  if ( this.ownContact && this.netConnectionService.connetionStatus ) {
+  if ( this.ownContact && this.netConnectionService.connetionStatus && !this.jwttokenService.localLogin) {
     const contactIds = this.contacts.map( con => con.userId );
     const syncMsgs1: SyncMsgs = {
       ownId: this.ownContact.userId,
