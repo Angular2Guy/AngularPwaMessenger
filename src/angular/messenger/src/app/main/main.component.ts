@@ -23,6 +23,7 @@ import { AuthenticationService } from '../services/authentication.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
+import { Subscription } from 'rxjs';
 
 @Component( {
   selector: 'app-main',
@@ -37,6 +38,7 @@ export class MainComponent implements OnInit, OnDestroy {
   messages: Message[] = [];
   myUser: MyUser = null;
   private interval: any;
+  private conMonSub: Subscription;
 
   constructor( private localdbService: LocaldbService,
     private jwttokenService: JwttokenService,
@@ -47,13 +49,14 @@ export class MainComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
-    this.netConnectionService.connectionMonitor.subscribe( online => this.syncMsgs() );
+    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain(online) );
   }
 
   ngOnDestroy(): void {
     if ( this.interval ) {
       clearInterval( this.interval );
     }
+    this.conMonSub.unsubscribe();
   }
 
   @HostListener( 'window:resize', ['$event'] )
@@ -61,6 +64,12 @@ export class MainComponent implements OnInit, OnDestroy {
     this.windowHeight = event.target.innerHeight - 84;
   }
 
+  private onlineAgain(online: boolean) {
+    if(online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime()) {
+      alert('You are online again and your token is exired. To connect please logout and login again.');
+    }
+  } 
+  
   openLoginDialog(): void {
     let dialogRef = this.dialog.open( LoginComponent, {
       width: '500px',
@@ -80,7 +89,7 @@ export class MainComponent implements OnInit, OnDestroy {
         this.selectedContact = null;
         this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
-          this.selectedContact = values && values.length > 0 ? values[0] : null;
+          this.selectedContact = values && values.length > 0 ? values[0] : null;          
         } ).then( () => this.addMessages() ).then( () => {
           if ( this.interval ) {
             clearInterval( this.interval );
