@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy, Inject } from '@angular/core';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
@@ -24,6 +24,7 @@ import { NetConnectionService } from '../services/net-connection.service';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
 import { Subscription } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
 @Component( {
   selector: 'app-main',
@@ -45,7 +46,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private netConnectionService: NetConnectionService,
     private messageService: MessageService,
     public dialog: MatDialog,
-    private cryptoService: CryptoService ) { }
+    private cryptoService: CryptoService,
+    @Inject(DOCUMENT) private document) { }
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
@@ -66,7 +68,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private onlineAgain(online: boolean) {
     if(online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime()) {
-      alert('You are online again and your token is exired. To connect please logout and login again.');
+      alert(this.document.getElementById('onlineAgainMsg').textContent);
     }
   } 
   

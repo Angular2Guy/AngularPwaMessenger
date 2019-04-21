@@ -122,12 +122,20 @@
           <context context-type="linenumber">6</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="onlineAgainMsg" datatype="html">
+        <source>You are online again and your token is exired. To reconnect please logout and login again.</source>
+        <target>Sie sind wieder online und ihr Token is abgelaufen. Um sich erneut zu verbinden bitte aus- und einloggen.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/main/main.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="f6755cff4957d5c3c89bafce5651f1b6fa2b1fd9" datatype="html">
         <source>Add</source>
         <target>Hinzufügen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/add-contacts/add-contacts.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">16</context>
         </context-group>
       </trans-unit>
     </body>

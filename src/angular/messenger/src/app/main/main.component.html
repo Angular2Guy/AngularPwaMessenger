@@ -13,3 +13,6 @@
   	<app-messages [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
   </mat-sidenav-content>
 </mat-sidenav-container>
+<div style="display:none">
+	<span id="onlineAgainMsg" i18n="@@onlineAgainMsg">You are online again and your token is exired. To reconnect please logout and login again.</span>
+</div>
