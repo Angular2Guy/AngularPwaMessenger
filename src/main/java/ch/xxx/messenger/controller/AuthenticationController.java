@@ -129,10 +129,10 @@ public class AuthenticationController {
 				query.addCriteria(Criteria.where("confirmed").is(true));
 			}
 			return this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).map(user1 -> {
-				user1.setUserId(user1.get_id().toString());
+				if(user1.get_id() != null) user1.setUserId(user1.get_id().toString());
 				return user1;
 			}).map(user1 -> loginHelp(user1, myUser.getPassword())).onErrorResume(re -> {
-				LOG.error("login failed for: "+myUser.getUsername(),re);
+				LOG.info("login failed for: "+myUser.getUsername(),re);
 				return Mono.just(new MsgUser());
 			});
 	}
