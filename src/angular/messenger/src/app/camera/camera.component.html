@@ -1,0 +1,6 @@
+<div>
+	<video class="video" [class.hide]="!showVideo" #videoElement autoplay></video>
+	<canvas class="video" [class.hide]="showVideo" #canvasElement></canvas>
+	<button (click)="capture()">Capture</button>
+	<button (click)="preview()">Preview</button>
+</div>

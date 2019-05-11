@@ -1,6 +1,7 @@
 <mat-toolbar color="primary">
 	<span i18n>Messenger</span>
 	<span class="example-fill-remaining-space"></span>
+	<!-- <span *ngIf="myUser !== null" class="camera" (click)="openCameraDialog()"><i class="material-icons">camera_alt</i></span> -->
 	<span *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></span>
 	<span *ngIf="myUser === null"><button mat-button (click)="openLoginDialog()" i18n>Login</button></span>		
 	<span *ngIf="myUser !== null"><button mat-button (click)="logout()" i18n>Logout</button></span>

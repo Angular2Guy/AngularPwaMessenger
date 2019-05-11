@@ -25,6 +25,7 @@ import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
 import { Subscription } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
+import { CameraComponent } from '../camera/camera.component';
 
 @Component( {
   selector: 'app-main',
@@ -71,6 +72,16 @@ export class MainComponent implements OnInit, OnDestroy {
       alert(this.document.getElementById('onlineAgainMsg').textContent);
     }
   } 
+  
+  openCameraDialog(): void {
+    let dialogRef = this.dialog.open( CameraComponent, {
+      width: '500px',
+      data: { myUser: this.myUser }
+    } );
+    dialogRef.afterClosed().subscribe( result => {
+      console.log(result);
+    });
+  }
   
   openLoginDialog(): void {
     let dialogRef = this.dialog.open( LoginComponent, {

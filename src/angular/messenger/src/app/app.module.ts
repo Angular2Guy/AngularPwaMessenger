@@ -28,11 +28,13 @@ import { LoginComponent } from './login/login.component';
 import { AddContactsComponent } from './add-contacts/add-contacts.component';
 import { HttpProfileInterceptor } from './services/http-profile.interceptor';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { CameraComponent } from './camera/camera.component';
 
 
 @NgModule({
   entryComponents: [
-    LoginComponent
+    LoginComponent,
+    CameraComponent
   ],  
   declarations: [
     AppComponent,
@@ -40,7 +42,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ContactsComponent,
     MessagesComponent,
     LoginComponent,
-    AddContactsComponent
+    AddContactsComponent,
+    CameraComponent
   ],
   imports: [
     BrowserModule,
