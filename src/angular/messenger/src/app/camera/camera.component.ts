@@ -45,7 +45,7 @@ export class CameraComponent implements OnInit {
     const videoRatio = this.video.videoHeight / this.video.videoWidth 
     this.canvas.height = this.canvas.width * videoRatio;
     this.context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.width * videoRatio);
-    this.base64Img = this.canvas.toDataURL(Constants.IMAGE_PREFIX, 0.9);
+    this.base64Img = this.canvas.toDataURL(Constants.IMAGE_TYPE, 0.8);
     this.base64Img = Constants.B64_IMAGE_PREFIX + this.base64Img.replace(/data\:image\/(jpeg|jpg|png)\;base64\,/gi, '');
 //    console.log(this.base64Img.length);
     let srco = this.video.srcObject as MediaStream;

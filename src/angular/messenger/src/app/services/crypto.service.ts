@@ -92,6 +92,29 @@ export class CryptoService {
     return buf;
   }
 
+  private chunkSubstr(str: string, size: number): string[] {
+    const numChunks = Math.ceil(str.length / size)
+    const chunks = new Array(numChunks)
+
+    for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+      chunks[i] = str.substr(o, size)
+    }
+
+    return chunks
+  }
+  
+  public encryptLargeText( msgText: string, keyStr: string ): PromiseLike<string> {    
+    let chunks = this.chunkSubstr(msgText, 400);
+    const blocks = chunks.map(chunk => this.encryptText(chunk, keyStr));
+    return Promise.all(blocks).then(myChunks => myChunks.join(","));
+  }
+  
+  public decryptLargeText( msgText: string, keyStr: string, keyPwd): PromiseLike<string> {    
+    let chunks = msgText.split(",");
+    const blocks = chunks.map(chunk => this.decryptText(chunk, keyStr, keyPwd));
+    return Promise.all(blocks).then(myChunks => myChunks.join(""));
+  }
+  
   public encryptText( msgText: string, keyStr: string ): PromiseLike<string> {
     const encMsg = new TextEncoder().encode( msgText );
     return window.crypto.subtle.importKey( 'jwk', JSON.parse( keyStr ), { name: "RSA-OAEP", hash: "SHA-256" }, false, ['encrypt'] )
