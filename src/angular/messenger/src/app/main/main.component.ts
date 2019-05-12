@@ -146,7 +146,7 @@ export class MainComponent implements OnInit, OnDestroy {
       let promises: PromiseLike<Message>[] = [];
       msgs = msgs.filter( msg => syncMsgs1.lastUpdate.getTime() < new Date( msg.timestamp ).getTime() );
       msgs.forEach( msg => {
-        promises.push( this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password ).then( value => {
+        promises.push( (msg.text.indexOf(',') > 0 ? this.cryptoService.decryptLargeText(msg.text, this.myUser.privateKey, this.myUser.password) : this.cryptoService.decryptText( msg.text, this.myUser.privateKey, this.myUser.password )).then( value => {
           msg.text = value;
           return msg;
         } ) );
@@ -181,7 +181,7 @@ export class MainComponent implements OnInit, OnDestroy {
           if ( !fromCon ) {
             console.log( fromCon );
           } else {
-            promises.push( this.cryptoService.encryptText( msg.text, fromCon.publicKey ).then( result => {
+            promises.push( (msg.text.length > 400 ? this.cryptoService.encryptLargeText(msg.text, fromCon.publicKey) : this.cryptoService.encryptText( msg.text, fromCon.publicKey )).then( result => {
               msg.text = result;
               return msg;
             } ) );
