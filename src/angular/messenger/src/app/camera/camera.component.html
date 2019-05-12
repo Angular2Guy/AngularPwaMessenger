@@ -1,6 +1,7 @@
 <div>
 	<video class="video" [class.hide]="!showVideo" #videoElement autoplay></video>
 	<canvas class="video" [class.hide]="showVideo" #canvasElement></canvas>
-	<button (click)="capture()">Capture</button>
-	<button (click)="preview()">Preview</button>
+	<button (click)="preview()" i18n>Preview</button>
+	<button (click)="capture()" [disabled]="!showVideo" i18n>Capture</button>
+	<button (click)="send()" [disabled]="!base64Img" i18n>Send</button>
 </div>

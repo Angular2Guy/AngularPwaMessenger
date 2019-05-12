@@ -15,6 +15,7 @@ import { Message } from '../model/message';
 import { Contact } from '../model/contact';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LocaldbService } from '../services/localdb.service';
+import { Constants } from '../common/constants';
 
 @Component({
   selector: 'app-messages',
@@ -38,6 +39,10 @@ export class MessagesComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+  
+  isImageMsg(msg: Message): boolean {
+    return msg.text.startsWith(Constants.IMAGE_PREFIX,0);
   }
   
   sendMessage() {   

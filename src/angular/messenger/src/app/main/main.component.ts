@@ -27,6 +27,7 @@ import { Subscription } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CameraComponent } from '../camera/camera.component';
 
+
 @Component( {
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -48,11 +49,11 @@ export class MainComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     public dialog: MatDialog,
     private cryptoService: CryptoService,
-    @Inject(DOCUMENT) private document) { }
+    @Inject( DOCUMENT ) private document ) { }
 
   ngOnInit() {
     this.windowHeight = window.innerHeight - 84;
-    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain(online) );
+    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );
   }
 
   ngOnDestroy(): void {
@@ -67,22 +68,23 @@ export class MainComponent implements OnInit, OnDestroy {
     this.windowHeight = event.target.innerHeight - 84;
   }
 
-  private onlineAgain(online: boolean) {
-    if(online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime()) {
-      alert(this.document.getElementById('onlineAgainMsg').textContent);
+  private onlineAgain( online: boolean ) {
+    if ( online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime() ) {
+      alert( this.document.getElementById( 'onlineAgainMsg' ).textContent );
     }
-  } 
-  
+  }
+
   openCameraDialog(): void {
     let dialogRef = this.dialog.open( CameraComponent, {
       width: '500px',
-      data: { myUser: this.myUser }
+      data: { receiver: this.selectedContact }
     } );
     dialogRef.afterClosed().subscribe( result => {
-      console.log(result);
-    });
+      console.log( result );
+      this.sendMessage(result);
+    } );
   }
-  
+
   openLoginDialog(): void {
     let dialogRef = this.dialog.open( LoginComponent, {
       width: '500px',
@@ -102,7 +104,7 @@ export class MainComponent implements OnInit, OnDestroy {
         this.selectedContact = null;
         this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
-          this.selectedContact = values && values.length > 0 ? values[0] : null;          
+          this.selectedContact = values && values.length > 0 ? values[0] : null;
         } ).then( () => this.addMessages() ).then( () => {
           if ( this.interval ) {
             clearInterval( this.interval );
@@ -166,7 +168,7 @@ export class MainComponent implements OnInit, OnDestroy {
           }
         } ) );
       } )
-    }, error => console.log('findMessages failed.') );
+    }, error => console.log( 'findMessages failed.' ) );
   }
 
   private sendRemoteMsgs( syncMsgs1: SyncMsgs ) {
@@ -194,13 +196,13 @@ export class MainComponent implements OnInit, OnDestroy {
             const promises2: PromiseLike<number>[] = [];
             msgs.forEach( msg => {
               const newMsg = oriMsgs.filter( oriMsg => oriMsg.id === msg.id )[0];
-              const myMsg = myMsgs.filter(myMsg2 => myMsg2.id === msg.id)[0];
+              const myMsg = myMsgs.filter( myMsg2 => myMsg2.id === msg.id )[0];
               newMsg.send = true;
               newMsg.timestamp = myMsg.timestamp;
-              promises2.push(this.localdbService.updateMessage( newMsg ));//.then(result => console.log(msg), reject => console.log(reject));
+              promises2.push( this.localdbService.updateMessage( newMsg ) );//.then(result => console.log(msg), reject => console.log(reject));
             } );
-            Promise.all(promises2).then(() => this.addMessages());
-          }, error => console.log('sendRemoteMsgs failed.'));
+            Promise.all( promises2 ).then( () => this.addMessages() );
+          }, error => console.log( 'sendRemoteMsgs failed.' ) );
         } )
       } );
     } );
@@ -208,68 +210,68 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private storeReceivedMessages() {
     this.messageService.findReceivedMessages( this.ownContact ).subscribe( msgs => {
-      if ( msgs.length > 0 ) { 
-      this.localdbService.loadMessages( this.ownContact ).then( localMsgs => {
-        const msgsToStore: Message[] = [];
-        msgs.forEach( msg => msgsToStore.push( localMsgs.filter( localMsg => localMsg.timestamp === msg.timestamp )[0] ) );
-        msgsToStore.forEach( msg => msg.received = true );
-        return msgsToStore;
-      } ).then( msgsToStore => {
-        const promises: PromiseLike<number>[] = [];
-        msgsToStore.forEach( msgToStore =>
-          promises.push( this.localdbService.updateMessage( msgToStore ) ) );
-        return Promise.all( promises );
-      } ).then( () => this.addMessages() );
-    }
-    }, error => console.log('storeReceivedMessages failed.'));
-}
-  
-  private syncMsgs() {
-  if ( this.ownContact && this.netConnectionService.connetionStatus && !this.jwttokenService.localLogin) {
-    const contactIds = this.contacts.map( con => con.userId );
-    const syncMsgs1: SyncMsgs = {
-      ownId: this.ownContact.userId,
-      contactIds: contactIds,
-      lastUpdate: this.getLastSyncDate()
-    };
-    this.receiveRemoteMsgs( syncMsgs1 );
-    this.sendRemoteMsgs( syncMsgs1 );
-    this.storeReceivedMessages();
+      if ( msgs.length > 0 ) {
+        this.localdbService.loadMessages( this.ownContact ).then( localMsgs => {
+          const msgsToStore: Message[] = [];
+          msgs.forEach( msg => msgsToStore.push( localMsgs.filter( localMsg => localMsg.timestamp === msg.timestamp )[0] ) );
+          msgsToStore.forEach( msg => msg.received = true );
+          return msgsToStore;
+        } ).then( msgsToStore => {
+          const promises: PromiseLike<number>[] = [];
+          msgsToStore.forEach( msgToStore =>
+            promises.push( this.localdbService.updateMessage( msgToStore ) ) );
+          return Promise.all( promises );
+        } ).then( () => this.addMessages() );
+      }
+    }, error => console.log( 'storeReceivedMessages failed.' ) );
   }
-}
 
-  private decryptLocalMsgs( msgs: Message[] ): PromiseLike < Message[] > {
-  const promises: PromiseLike<Message>[] = [];
-  msgs.forEach( msg => {
-    promises.push( this.cryptoService.decryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
-      msg.text = value;
-      return msg;
-    } ) );
-  } );
-  return Promise.all( promises ).then( msgs => {
-    return msgs;
-  } );
-}
+  private syncMsgs() {
+    if ( this.ownContact && this.netConnectionService.connetionStatus && !this.jwttokenService.localLogin ) {
+      const contactIds = this.contacts.map( con => con.userId );
+      const syncMsgs1: SyncMsgs = {
+        ownId: this.ownContact.userId,
+        contactIds: contactIds,
+        lastUpdate: this.getLastSyncDate()
+      };
+      this.receiveRemoteMsgs( syncMsgs1 );
+      this.sendRemoteMsgs( syncMsgs1 );
+      this.storeReceivedMessages();
+    }
+  }
+
+  private decryptLocalMsgs( msgs: Message[] ): PromiseLike<Message[]> {
+    const promises: PromiseLike<Message>[] = [];
+    msgs.forEach( msg => {
+      promises.push( this.cryptoService.decryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
+        msg.text = value;
+        return msg;
+      } ) );
+    } );
+    return Promise.all( promises ).then( msgs => {
+      return msgs;
+    } );
+  }
 
   private getLastSyncDate(): Date {
-  const sortedMsg = this.messages
-    .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
-    .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
-  return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date( sortedMsg[sortedMsg.length - 1].timestamp );
-}
+    const sortedMsg = this.messages
+      .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
+      .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
+    return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date( sortedMsg[sortedMsg.length - 1].timestamp );
+  }
 
-  private addMessages(): Promise < Message[] > {
-  return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
-    this.decryptLocalMsgs( msgs ).then( values => {
-      while ( this.messages.length > 0 ) {
-        this.messages.pop()
-      }
-      this.messages = values;
-      return values;
-    } ) );
-}
+  private addMessages(): Promise<Message[]> {
+    return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
+      this.decryptLocalMsgs( msgs ).then( values => {
+        while ( this.messages.length > 0 ) {
+          this.messages.pop()
+        }
+        this.messages = values;
+        return values;
+      } ) );
+  }
 
-addNewContact( contact: Contact ) {
-  this.contacts.push( contact );
-}
+  addNewContact( contact: Contact ) {
+    this.contacts.push( contact );
+  }  
 }

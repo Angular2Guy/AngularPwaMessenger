@@ -1,6 +1,9 @@
 import { Component, OnInit, Inject, ViewChild, ElementRef } from '@angular/core';
 import { MainComponent } from '../main/main.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Constants} from '../common/constants';
+import { Contact } from '../model/contact';
+import { Message } from '../model/message';
 
 @Component({
   selector: 'app-camera',
@@ -13,7 +16,8 @@ export class CameraComponent implements OnInit {
   @ViewChild('canvasElement') canvasElement: ElementRef;  
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  showVideo = true;  
+  showVideo = true;
+  base64Img:string = null;
   
   constructor(public dialogRef: MatDialogRef<MainComponent>,
       @Inject( MAT_DIALOG_DATA ) public data: any) { }
@@ -25,7 +29,8 @@ export class CameraComponent implements OnInit {
   }
 
   preview() {
-    this.showVideo = true;    
+    this.showVideo = true;
+    this.base64Img = null;
     let config: MediaStreamConstraints = {
         video: true,
         audio: false
@@ -40,8 +45,23 @@ export class CameraComponent implements OnInit {
     const videoRatio = this.video.videoHeight / this.video.videoWidth 
     this.canvas.height = this.canvas.width * videoRatio;
     this.context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.width * videoRatio);
+    this.base64Img = this.canvas.toDataURL(Constants.IMAGE_PREFIX, 0.9);
+//    console.log(this.base64Img.length);
     let srco = this.video.srcObject as MediaStream;
     srco.getTracks().forEach(track => track.stop());
     this.showVideo = false;
+  }
+  
+  send() {
+    let receiver = this.data as Contact;
+    let msg: Message = {
+        fromId: null,
+        toId: receiver.userId,
+        text: this.base64Img,
+        send: false,
+        received: false
+      
+    }; 
+    this.dialogRef.close( msg );
   }
 }
