@@ -42,7 +42,11 @@ export class MessagesComponent implements OnInit {
   }
   
   isImageMsg(msg: Message): boolean {
-    return msg.text.startsWith(Constants.IMAGE_PREFIX,0);
+    if(msg.text.startsWith(Constants.B64_IMAGE_PREFIX,0)) {
+      msg.text = Constants.IMAGE_PREFIX + msg.text.substr(Constants.B64_IMAGE_PREFIX.length);
+    }
+    let result = msg.text.startsWith(Constants.IMAGE_PREFIX,0);
+    return result;
   }
   
   sendMessage() {   

@@ -11,5 +11,6 @@
    limitations under the License.
  */
 export class Constants {
-  static readonly IMAGE_PREFIX = "data:image/png;base64";
+  static readonly IMAGE_PREFIX = "data:image/png;base64,";
+  static readonly B64_IMAGE_PREFIX = "PNGBASE64";
 }
