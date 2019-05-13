@@ -80,8 +80,10 @@ export class MainComponent implements OnInit, OnDestroy {
       data: { receiver: this.selectedContact }
     } );
     dialogRef.afterClosed().subscribe( result => {
-      console.log( result );
-      this.sendMessage(result);
+      // console.log( result );
+      if(result) {
+        this.sendMessage(result);
+      }
     } );
   }
 

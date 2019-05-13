@@ -18,6 +18,7 @@ export class CameraComponent implements OnInit {
   private context: CanvasRenderingContext2D;
   showVideo = true;
   base64Img:string = null;
+  showCameraMsg = false;
   
   constructor(public dialogRef: MatDialogRef<MainComponent>,
       @Inject( MAT_DIALOG_DATA ) public data: any) { }
@@ -36,9 +37,10 @@ export class CameraComponent implements OnInit {
         audio: false
     };
     navigator.mediaDevices.getUserMedia(config).then(stream => {
+      this.showCameraMsg = false;
       this.video.srcObject = stream;
       this.video.play();
-    });
+    }, rejected => {this.showCameraMsg = true;});
   }
   
   capture() {
@@ -63,5 +65,9 @@ export class CameraComponent implements OnInit {
         received: false
     }; 
     this.dialogRef.close( msg );
+  }
+  
+  cancel() {
+    this.dialogRef.close(null);
   }
 }
