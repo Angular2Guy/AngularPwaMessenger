@@ -59,6 +59,25 @@ describe('CryptoService', () => {
     });    
   });
   
+  it('encrypt text2', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.encryptLargeText('testText', publicKey).then(value => {
+      expect(value).toBeDefined('encryption failed');
+      expect(value.length > 0).toBeTruthy('encryption failed')
+      encText = value;
+      done();
+    });    
+  });
+  
+  it('decrypt text2', (done: DoneFn) => {
+    const service: CryptoService = TestBed.get(CryptoService);
+    service.decryptLargeText(encText, privateKey, privateKeyPwd).then(value => {
+      expect(value).toBeDefined('decryption failed');
+      expect(value).toBe('testText', 'text not the same');
+      done();
+    });    
+  });
+  
   it('encrypt image', (done: DoneFn) => {
     const service: CryptoService = TestBed.get(CryptoService);
     service.encryptLargeText(base64Image, publicKey).then(value => {

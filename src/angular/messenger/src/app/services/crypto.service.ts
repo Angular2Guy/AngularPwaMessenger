@@ -104,7 +104,7 @@ export class CryptoService {
   }
   
   public encryptLargeText( msgText: string, keyStr: string ): PromiseLike<string> {    
-    let chunks = this.chunkSubstr(msgText, 400);
+    let chunks = this.chunkSubstr(msgText, 350);
     const blocks = chunks.map(chunk => this.encryptText(chunk, keyStr));
     return Promise.all(blocks).then(myChunks => myChunks.join(","));
   }
