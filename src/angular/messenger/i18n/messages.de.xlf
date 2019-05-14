@@ -106,6 +106,46 @@
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="7edfa405d3c162798966df42769809a97400c568" datatype="html">
+        <source>Send Image to: </source>
+        <target>Sende Bild an: </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/camera/camera.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0404714bad938b6e8ca686e48fc259595113224b" datatype="html">
+        <source>Please enable your camera in the browser.</source>
+        <target>Bitte aktivieren sie die Kamera im Browser.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/camera/camera.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3e2a583f531f7dd9f089f68a6968e444c372c3e8" datatype="html">
+        <source>Preview</source>
+        <target>Vorschau</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/camera/camera.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d3a31da907b361ca8363a03642a652e52284b8f5" datatype="html">
+        <source>Capture</source>
+        <target>Foto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/camera/camera.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2c5ff8fa9c9aaec93f97e37c9a0edcd797194573" datatype="html">
+        <source>Send</source>
+        <target>Senden</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/camera/camera.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="78583d92f26b96e875855729612b59ea506806e2" datatype="html">
         <source>Messenger</source>
         <target>Messenger</target>
