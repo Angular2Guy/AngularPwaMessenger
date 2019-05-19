@@ -60,8 +60,6 @@ public class MessageController {
 	public Flux<Message> putStoreMessages(@RequestBody SyncMsgs syncMsgs) {
 		List<Message> msgs = syncMsgs.getMsgs().stream().map(msg -> {
 			msg.setSend(true);
-			return msg;
-		}).map(msg -> {
 			msg.setTimestamp(new Date());
 			return msg;
 		}).collect(Collectors.toList());
