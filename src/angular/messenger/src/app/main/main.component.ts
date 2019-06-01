@@ -14,7 +14,7 @@ import { Component, OnInit, HostListener, OnDestroy, Inject } from '@angular/cor
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LoginComponent } from '../login/login.component';
 import { MyUser } from '../model/myUser';
 import { SyncMsgs } from '../model/syncMsgs';

@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, ViewChild, ElementRef } from '@angular/core';
 import { MainComponent } from '../main/main.component';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants} from '../common/constants';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
@@ -11,9 +11,9 @@ import { Message } from '../model/message';
   styleUrls: ['./camera.component.scss']
 })
 export class CameraComponent implements OnInit {
-  @ViewChild('videoElement') videoElement: ElementRef;  
+  @ViewChild('videoElement', { static: true }) videoElement: ElementRef;  
   private video: HTMLVideoElement;
-  @ViewChild('canvasElement') canvasElement: ElementRef;  
+  @ViewChild('canvasElement', { static: true }) canvasElement: ElementRef;  
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   showVideo = true;
