@@ -27,6 +27,10 @@ export class FileuploadComponent implements OnInit {
   ngOnInit() {
   }
 
+  upload() {
+	
+  }
+
   cancel() {
 	this.dialogRef.close(null);
   }
