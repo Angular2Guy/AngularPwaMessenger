@@ -26,6 +26,7 @@ import { CryptoService } from '../services/crypto.service';
 import { Subscription } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CameraComponent } from '../camera/camera.component';
+import { FileuploadComponent } from '../fileupload/fileupload.component';
 
 
 @Component( {
@@ -72,6 +73,18 @@ export class MainComponent implements OnInit, OnDestroy {
     if ( online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime() ) {
       alert( this.document.getElementById( 'onlineAgainMsg' ).textContent );
     }
+  }
+
+  openFileuploadDialog(): void {
+	let dialogRef = this.dialog.open(FileuploadComponent, {
+		width: '500px',
+		data: { receiver: this.selectedContact }
+	});
+	dialogRef.afterClosed().subscribe(result => {
+		if(result) {
+			this.sendMessage(result);
+		}
+	});
   }
 
   openCameraDialog(): void {

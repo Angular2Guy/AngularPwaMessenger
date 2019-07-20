@@ -36,12 +36,14 @@ import { AddContactsComponent } from './add-contacts/add-contacts.component';
 import { HttpProfileInterceptor } from './services/http-profile.interceptor';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { CameraComponent } from './camera/camera.component';
+import { FileuploadComponent } from './fileupload/fileupload.component';
 
 
 @NgModule({
   entryComponents: [
     LoginComponent,
-    CameraComponent
+    CameraComponent,
+	FileuploadComponent
   ],  
   declarations: [
     AppComponent,
@@ -50,7 +52,8 @@ import { CameraComponent } from './camera/camera.component';
     MessagesComponent,
     LoginComponent,
     AddContactsComponent,
-    CameraComponent
+    CameraComponent,
+    FileuploadComponent
   ],
   imports: [
     BrowserModule,

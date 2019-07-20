@@ -26,6 +26,8 @@ public class Message {
 	@JsonProperty
 	private String text;
 	@JsonProperty
+	private String filename;
+	@JsonProperty
 	private boolean send;
 	@JsonProperty
 	private boolean received;
@@ -77,6 +79,12 @@ public class Message {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 	
 }

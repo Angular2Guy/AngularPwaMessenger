@@ -10,13 +10,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-export interface Message {
-  id?: number;
-  fromId: string;
-  toId: string;
-  timestamp?: Date,
-  text: string,
-  filename?: string,
-  send: boolean,
-  received: boolean
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MainComponent } from '../main/main.component';
+
+@Component({
+  selector: 'app-fileupload',
+  templateUrl: './fileupload.component.html',
+  styleUrls: ['./fileupload.component.scss']
+})
+export class FileuploadComponent implements OnInit {
+
+  constructor(public dialogRef: MatDialogRef<MainComponent>,
+      @Inject( MAT_DIALOG_DATA ) public data: any) { }
+
+  ngOnInit() {
+  }
+
+  cancel() {
+	this.dialogRef.close(null);
+  }
 }
