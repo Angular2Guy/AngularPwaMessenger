@@ -3,8 +3,9 @@
 		[class.receiver]="message.fromId === receiver.userId"
 		[class.sender]="message.toId === receiver.userId">
 		<span>
-			<span *ngIf="!isImageMsg(message)">{{message.text}}</span>
+			<span *ngIf="!isImageMsg(message) && !message.filename">{{message.text}}</span>
 			<img *ngIf="isImageMsg(message)" [src]="message.text">
+			<span *ngIf="message.filename">{{message.filename}}</span>
 			<i *ngIf="message.toId === receiver.userId && message.send && !message.received" class="material-icons">done</i>			
 			<i *ngIf="message.toId === receiver.userId && message.send && message.received" class="material-icons">done_all</i>
 		</span>		

@@ -2,8 +2,12 @@
 	<div>
 		<span i18n>Send File to: </span>{{data.receiver.name}}
 	</div>
+	<br/>
 	<div><input type="file" (change)="filechange($event)"></div>
 	<div *ngIf="showFileSizeMsg" class="filesizemsg" i18n>File size too big. Limit 2 MB.</div>
-	<div><button mat-button (click)="upload()" i18n>Upload</button></div>
-	<div><button mat-button (click)="cancel()" i18n>Cancel</button></div>
+	<br/>
+	<div class="buttons">
+		<div><button mat-button (click)="upload()" i18n>Upload</button></div>
+		<div><button mat-button (click)="cancel()" i18n>Cancel</button></div>
+	</div>
 </div>

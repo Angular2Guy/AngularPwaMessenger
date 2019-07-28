@@ -53,6 +53,7 @@ export class FileuploadComponent implements OnInit {
 				fromId: null,
 				toId: receiver.userId,
 				text: this.fileContent,
+				filename: this.currentFile.name,
 				send: false,
 				received: false
 			};

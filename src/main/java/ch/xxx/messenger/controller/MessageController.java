@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
 @RestController
 @RequestMapping("/rest/message")
 public class MessageController {
+	private static final int MB = 1024 * 1024;
 	@Autowired
 	private ReactiveMongoOperations operations;
 
@@ -59,7 +60,7 @@ public class MessageController {
 			msg.setSend(true);
 			msg.setTimestamp(new Date());
 			return msg;
-		}).collect(Collectors.toList());
+		}).filter(msg -> msg.getFilename() != null && msg.getText().length() < 3 * MB).collect(Collectors.toList());
 		return this.operations.insertAll(msgs);
 	}
 }
