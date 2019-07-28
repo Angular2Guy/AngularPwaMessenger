@@ -23,13 +23,13 @@ import { Constants } from '../common/constants';
   styleUrls: ['./messages.component.scss']
 })
 export class MessagesComponent implements OnInit {
+    
   @Input()
   messages: Message[];
   @Input()
   receiver: Contact;
   @Output()
   sendMsg = new EventEmitter<Message>();
-  
   messageForm: FormGroup;
   
   constructor(private fb: FormBuilder) { 
@@ -38,9 +38,10 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+  	
   }
-  
+
   isImageMsg(msg: Message): boolean {
     if(msg.text.startsWith(Constants.B64_IMAGE_PREFIX,0)) {
       msg.text = Constants.IMAGE_PREFIX + msg.text.substr(Constants.B64_IMAGE_PREFIX.length);

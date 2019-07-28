@@ -11,6 +11,7 @@
    limitations under the License.
  */
 import { Component, OnInit, HostListener, OnDestroy, Inject } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser'
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
@@ -50,6 +51,7 @@ export class MainComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     public dialog: MatDialog,
     private cryptoService: CryptoService,
+ 	private sanitizer: DomSanitizer,
     @Inject( DOCUMENT ) private document ) { }
 
   ngOnInit() {
@@ -281,8 +283,12 @@ export class MainComponent implements OnInit, OnDestroy {
         while ( this.messages.length > 0 ) {
           this.messages.pop()
         }
-        this.messages = values;
-        return values;
+        this.messages = values.map(msg => {
+			if(msg.filename) {
+				msg.url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([msg.text])));
+			}
+			return msg;});
+        return this.messages;
       } ) );
   }
 

@@ -1,3 +1,5 @@
+import { SafeUrl } from '@angular/platform-browser';
+
 /**
  *    Copyright 2018 Sven Loesekann
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,5 +20,6 @@ export interface Message {
   text: string,
   filename?: string,
   send: boolean,
-  received: boolean
+  received: boolean,
+  url?: SafeUrl
 }
