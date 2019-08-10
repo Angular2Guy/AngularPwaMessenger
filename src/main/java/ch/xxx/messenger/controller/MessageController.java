@@ -60,7 +60,7 @@ public class MessageController {
 			msg.setSend(true);
 			msg.setTimestamp(new Date());
 			return msg;
-		}).filter(msg -> msg.getFilename() != null && msg.getText().length() < 3 * MB).collect(Collectors.toList());
+		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB)).collect(Collectors.toList());
 		return this.operations.insertAll(msgs);
 	}
 }
