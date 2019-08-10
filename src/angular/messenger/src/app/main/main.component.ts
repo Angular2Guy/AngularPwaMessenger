@@ -285,6 +285,7 @@ export class MainComponent implements OnInit, OnDestroy {
         }
         this.messages = values.map(msg => {
 			if(msg.filename) {
+				msg.text = atob(msg.text.split('base64,')[1]);
 				msg.url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([msg.text])));
 			}
 			return msg;});
