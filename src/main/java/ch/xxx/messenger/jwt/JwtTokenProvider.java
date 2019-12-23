@@ -23,14 +23,13 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import ch.xxx.messenger.exception.JwtTokenValidationException;
 import ch.xxx.messenger.utils.WebUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -105,7 +104,7 @@ public class JwtTokenProvider {
 			Jwts.parser().setSigningKey(encodedSecretKey).parseClaimsJws(token);
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
-			throw new RuntimeException("Expired or invalid JWT token");
+			throw new JwtTokenValidationException("Expired or invalid JWT token",e);
 		}
 	}
 
