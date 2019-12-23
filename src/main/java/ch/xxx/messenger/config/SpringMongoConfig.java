@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
@@ -28,15 +30,22 @@ public class SpringMongoConfig {
     @Value("${spring.data.mongodb.host}")
     private String mongoHost;
 
-    public @Bean MongoClient reactiveMongoClient()  {
+    @Bean
+    public MongoClient reactiveMongoClient()  {
     	String myHost = System.getenv("MONGODB_HOST");		
 		log.info("MONGODB_HOST="+myHost);
         return MongoClients.create("mongodb://"+(myHost==null ? mongoHost : myHost));
     }	
 
-    public @Bean com.mongodb.MongoClient mongoClient() {
+    @Bean
+    public com.mongodb.MongoClient mongoClient() {
     	String myHost = System.getenv("MONGODB_HOST");		
 		log.info("MONGODB_HOST="+myHost);
         return new com.mongodb.MongoClient((myHost==null ? mongoHost : myHost));
     }
+    
+    @Bean
+	public ServerCodecConfigurer serverCodecConfigurer() {
+		return new DefaultServerCodecConfigurer();
+	}
 }

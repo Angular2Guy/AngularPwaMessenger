@@ -12,15 +12,10 @@
  */
 package ch.xxx.messenger.exception;
 
-public class JwtTokenValidationException extends RuntimeException {
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.stereotype.Component;
 
-	private static final long serialVersionUID = 4495144584990207860L;
+@Component
+public class MyErrorAttributes extends DefaultErrorAttributes {
 
-	public JwtTokenValidationException(String message) {
-		super(message);
-	}
-	
-	public JwtTokenValidationException(String message, Throwable throwable) {
-		super(message,throwable);
-	}
 }
