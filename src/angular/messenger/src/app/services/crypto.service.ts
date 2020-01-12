@@ -34,7 +34,7 @@ export class CryptoService {
     let wrapKey: CryptoKey = null;
     return window.crypto.subtle.exportKey( "jwk", cryptoKeyPair.publicKey ).then( value => {
       jwkPubKey = JSON.stringify( value );
-      const mySalt = this.ab2str( window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
+      const mySalt = this.ab2str( <Uint8Array> window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
       return this.createWrapKey( password, mySalt )
         .then( value => {
           wrapKey = value;
@@ -163,7 +163,7 @@ export class CryptoService {
     } ).then( ( webKey ) => {
       return crypto.subtle.exportKey( "raw", webKey );
     } ).then( ( buffer ) => {
-      return new Tuple( this.ab2str( buffer ), this.ab2str(saltBuffer) );
+      return new Tuple( this.ab2str( buffer ), this.ab2str(<Uint8Array> saltBuffer) );
     } );
   } 
    
@@ -214,5 +214,9 @@ export class CryptoService {
   
   public hashServerPW(password: string): PromiseLike<string> {
     return window.crypto.subtle.digest('SHA-384', new TextEncoder().encode(password)).then(value => this.ab2str(value));
+  }
+
+  public createSecurePassword(): string {
+	return this.ab2str(<Uint8Array> window.crypto.getRandomValues( new Uint8Array( 32 ) ));
   }
 }
