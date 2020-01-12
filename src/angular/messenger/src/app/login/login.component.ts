@@ -209,6 +209,19 @@ export class LoginComponent implements OnInit {
     } );
   }
 
+  onCreatePwClick() {
+	const secPw = this.cryptoService.createSecurePassword();
+	this.signinForm.patchValue({password2: secPw, password: secPw});
+	this.validate(this.signinForm);
+	let dummyInput = document.createElement('input');
+	dummyInput.setAttribute('id', 'dummyInput');	
+	document.body.appendChild(dummyInput);
+	dummyInput.value = secPw;
+	dummyInput.select();
+	document.execCommand('copy');
+	document.body.removeChild(dummyInput);
+  }
+
   onCancelClick(): void {
     this.dialogRef.close();
   }

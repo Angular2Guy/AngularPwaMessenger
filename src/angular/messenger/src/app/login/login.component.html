@@ -15,7 +15,7 @@
 							i18n-placeholder placeholder="Password" tabindex="2" formControlName="password" type="password">
 					</mat-form-field>
 				</li>
-				<li *ngIf="loginFailed" i18n class="errorText">
+				<li *ngIf="loginFailed" i18n class="error-text">
 					Login Failed
 				</li>
 				<li>
@@ -38,13 +38,13 @@
 					<mat-form-field> 
 						<input matInput
 							i18n-placeholder placeholder="Password" tabindex="2" formControlName="password" type="password">
-					</mat-form-field>
-					<mat-form-field> 
+					</mat-form-field>					
+					<mat-form-field class="spacer-left"> 
 						<input matInput
 							i18n-placeholder placeholder="Password" tabindex="3" formControlName="password2" type="password">
 					</mat-form-field>
 				</li>
-				<li *ngIf="!pwMatching" i18n class="errorText">
+				<li *ngIf="!pwMatching" i18n class="error-text">
 					Passwords do not match
 				</li>
 				<li>
@@ -53,8 +53,12 @@
 							i18n-placeholder placeholder="Email" tabindex="4" formControlName="email">
 					</mat-form-field>
 				</li>			
-				<li *ngIf="signinFailed" i18n class="errorText">
+				<li *ngIf="signinFailed" i18n class="error-text">
 					Signin Failed
+				</li>
+				<li class="space-below" i18n>
+					<p class="space-below">Create a secure random/long password. It needs to be pasted into a password manager you trust.</p>
+					<button mat-button (click)="onCreatePwClick()" tabindex="5" i18n>Create Password</button>
 				</li>	
 				<li>
 					<button mat-button (click)="onSigninClick()" [disabled]="!signinForm.valid" tabindex="-1"  i18n>Ok</button>

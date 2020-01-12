@@ -217,6 +217,7 @@ export class CryptoService {
   }
 
   public createSecurePassword(): string {
-	return this.ab2str(<Uint8Array> window.crypto.getRandomValues( new Uint8Array( 32 ) ));
+	return this.ab2str(<Uint8Array> window.crypto.getRandomValues( new Uint8Array( 32 ) ))
+		.replace('=','').replace(/[^a-z0-9]/gi,'');
   }
 }
