@@ -11,7 +11,7 @@
    limitations under the License.
  */
 export interface LocalUser {
-  id?: number;
+  localId?: number;
   createdAt: Date;
   username: string;
   hash: string;

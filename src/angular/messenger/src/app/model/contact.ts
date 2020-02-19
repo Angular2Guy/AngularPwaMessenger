@@ -11,7 +11,7 @@
    limitations under the License.
  */
 export interface Contact {
-  id?: number;
+  localId?: number;
   name: string;
   base64Avatar: string;
   publicKey: string;

@@ -13,7 +13,7 @@ import { SafeUrl } from '@angular/platform-browser';
    limitations under the License.
  */
 export interface Message {
-  id?: number;
+  localId?: number;
   fromId: string;
   toId: string;
   timestamp?: Date,

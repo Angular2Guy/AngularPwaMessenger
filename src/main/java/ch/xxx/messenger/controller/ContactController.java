@@ -37,7 +37,7 @@ public class ContactController {
 				.find(new Query().addCriteria(
 						Criteria.where("username").regex(String.format(".*%s.*", contact.getName()))), MsgUser.class)
 				.take(50).map(myUser -> new Contact(myUser.getUsername(), myUser.getBase64Avatar(),
-						myUser.getPublicKey(), myUser.get_id().toString()));
+						myUser.getPublicKey(), myUser.getId().toString()));
 	}
 
 }

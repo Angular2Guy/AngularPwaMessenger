@@ -84,7 +84,7 @@ public class AuthenticationController {
 			myUser.setUuid(uuid.toString());
 			this.operations.save(myUser).block();
 			this.sendConfirmMail(myUser);
-			myUser.setUserId(myUser.get_id().toString());
+			myUser.setUserId(myUser.getId().toString());
 			myUser.setUuid(null);
 			return Mono.just(myUser);
 		}
@@ -129,7 +129,7 @@ public class AuthenticationController {
 				query.addCriteria(Criteria.where("confirmed").is(true));
 			}
 			return this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).map(user1 -> {
-				if(user1.get_id() != null) user1.setUserId(user1.get_id().toString());
+				if(user1.getId() != null) user1.setUserId(user1.getId().toString());
 				return user1;
 			}).map(user1 -> loginHelp(user1, myUser.getPassword())).onErrorResume(re -> {
 				LOG.info("login failed for: "+myUser.getUsername(),re);

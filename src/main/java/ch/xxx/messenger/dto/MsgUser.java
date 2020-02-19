@@ -33,7 +33,7 @@ public class MsgUser implements UserDetails {
 	private static final long serialVersionUID = 3477333851877579761L;
 
 	@Id
-	private ObjectId _id;
+	private ObjectId id;
 	@JsonProperty
 	private Date createdAt = new Date();	
 	@Indexed( unique=true)
@@ -108,12 +108,12 @@ public class MsgUser implements UserDetails {
 		return true;
 	}
 
-	public ObjectId get_id() {
-		return _id;
+	public ObjectId getId() {
+		return id;
 	}
 
-	public void set_id(ObjectId _id) {
-		this._id = _id;
+	public void setId(ObjectId id) {
+		this.id = id;
 	}
 
 	public Date getCreatedAt() {

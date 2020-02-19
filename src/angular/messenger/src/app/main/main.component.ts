@@ -212,8 +212,8 @@ export class MainComponent implements OnInit, OnDestroy {
           this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs => {
             const promises2: PromiseLike<number>[] = [];
             msgs.forEach( msg => {
-              const newMsg = oriMsgs.filter( oriMsg => oriMsg.id === msg.id )[0];
-              const myMsg = myMsgs.filter( myMsg2 => myMsg2.id === msg.id )[0];
+              const newMsg = oriMsgs.filter( oriMsg => oriMsg.localId === msg.localId )[0];
+              const myMsg = myMsgs.filter( myMsg2 => myMsg2.localId === msg.localId )[0];
               newMsg.send = true;
               newMsg.timestamp = myMsg.timestamp;
               promises2.push( this.localdbService.updateMessage( newMsg ) );//.then(result => console.log(msg), reject => console.log(reject));

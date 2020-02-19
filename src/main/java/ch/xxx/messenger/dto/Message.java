@@ -1,3 +1,15 @@
+/**
+ *    Copyright 2018 Sven Loesekann
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package ch.xxx.messenger.dto;
 
 import java.util.Date;
@@ -12,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Document
 public class Message {
 	@Id
-	private ObjectId _id;
+	private ObjectId id;
 	@Indexed
 	@JsonProperty
 	private String fromId;
@@ -20,7 +32,7 @@ public class Message {
 	@JsonProperty
 	private String toId;
 	@JsonProperty
-	private Long id;
+	private Long localId;
 	@JsonProperty
 	private Date timestamp;
 	@JsonProperty
@@ -32,11 +44,11 @@ public class Message {
 	@JsonProperty
 	private boolean received;
 	
-	public ObjectId get_id() {
-		return _id;
+	public ObjectId getId() {
+		return id;
 	}
-	public void set_id(ObjectId _id) {
-		this._id = _id;
+	public void setId(ObjectId id) {
+		this.id = id;
 	}
 	public String getFromId() {
 		return fromId;
@@ -74,11 +86,11 @@ public class Message {
 	public void setReceived(boolean received) {
 		this.received = received;
 	}
-	public Long getId() {
-		return id;
+	public Long getLocalId() {
+		return localId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setLocalId(Long localId) {
+		this.localId = localId;
 	}
 	public String getFilename() {
 		return filename;
