@@ -5,10 +5,7 @@
     "http-server": "http-server -p 4300 -c-1 dist",
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
-    "build": "npm-run-all --parallel build:de build:en",
-    "build:de": "ng build --prod --aot --buildOptimizer=true --optimization=true --base-href /de/ --output-path dist/de/ --i18n-locale de --deploy-url /de/ --i18nFile=./i18n/messages.de.xlf",
-    "build:en": "ng build --prod --aot --buildOptimizer=true --optimization=true --base-href /en/ --deploy-url /en/ --output-path dist/en/ --i18n-locale en --i18nFile=./i18n/messages.xlf",
-    "build-dev": "ng build --base-href /de/ --output-path dist/de/ --i18n-locale de --deploy-url /de/ --i18nFile=./i18n/messages.de.xlf && ng build  --base-href /en/ --deploy-url /en/ --output-path dist/en/ --i18n-locale en --i18nFile=./i18n/messages.xlf",
+    "build": "ng build --prod --localize",
     "test": "ng test --browsers ChromeHeadless --watch=false",
     "test-chromium": "ng test --browsers ChromiumHeadless --watch=false",
     "test-local": "ng test --browsers Chromium --watch=true",
@@ -17,7 +14,7 @@
     "prebuild": "rimraf ./dist && mkdirp ./dist",
     "postbuild": "npm run deploy",
     "predeploy": "rimraf ../../main/resources/static/de && mkdirp ../../main/resources/static/de && rimraf ../../main/resources/static/en && mkdirp ../../main/resources/static/en",
-    "deploy": "cpx 'dist/**' ../../main/resources/static/"
+    "deploy": "cpx 'dist/testproject/**' ../../main/resources/static/"
   },
   "private": true,
   "dependencies": {
