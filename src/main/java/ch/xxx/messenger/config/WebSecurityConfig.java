@@ -37,8 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.httpBasic().and()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		.authorizeRequests().antMatchers("/rest/auth/**").anonymous().and()
 		.authorizeRequests().antMatchers("/rest/**").authenticated().and()
-		.authorizeRequests().antMatchers("/rest/auth").anonymous().and()
 		.csrf().disable()
 		.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
 	}
