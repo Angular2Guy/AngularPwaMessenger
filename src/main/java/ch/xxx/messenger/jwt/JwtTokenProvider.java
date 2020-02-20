@@ -12,11 +12,11 @@
  */
 package ch.xxx.messenger.jwt;
 
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,7 +37,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Component
@@ -57,7 +56,7 @@ public class JwtTokenProvider {
 		Date issuedAt = issuedAtOpt.orElse(new Date());
 		Date validity = new Date(issuedAt.getTime() + validityInMilliseconds);
 
-		SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 		return Jwts.builder().setClaims(claims).setIssuedAt(issuedAt).setExpiration(validity)				
 				.signWith(key, SignatureAlgorithm.HS256).compact();
 	}
@@ -66,7 +65,7 @@ public class JwtTokenProvider {
 		if (!token.isPresent()) {
 			return Optional.empty();
 		}
-		SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 		return Optional.of(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token.get()));
 	}
 
@@ -78,7 +77,7 @@ public class JwtTokenProvider {
 	}
 
 	public String getUsername(String token) {
-		SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
 	
@@ -88,9 +87,11 @@ public class JwtTokenProvider {
 		for(Role role :Role.values()) {
 			roles.add(role);
 		}
-		SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-		Collection<String> rolestrs = (Collection<String>) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("auth");
-		return rolestrs.stream().map(str -> roles.stream().filter(r -> r.name().equals(str)).findFirst().orElse(Role.GUEST)).collect(Collectors.toList());
+		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		List<Map<String,String>> myRoles = (List<Map<String,String>>) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("auth");
+		return myRoles.stream().map(map -> map.values())
+				.map(str -> roles.stream().filter(r -> r.name().equals(str))
+						.findFirst().orElse(Role.GUEST)).collect(Collectors.toList());
 	}
 
 	public String resolveToken(HttpServletRequest req) {
@@ -102,9 +103,9 @@ public class JwtTokenProvider {
 	}
 
 	public boolean validateToken(String token) {
-		String encodedSecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 		try {
-			Jwts.parserBuilder().setSigningKey(encodedSecretKey).build().parseClaimsJws(token);
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
 			throw new JwtTokenValidationException("Expired or invalid JWT token",e);
