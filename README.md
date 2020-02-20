@@ -28,8 +28,8 @@ Plugin Typescript.Java 1.4.0 or newer.
 
 Maven 3.3.3 or newer.
 
-Nodejs 10.9.x or newer
+Nodejs 12.16.x or newer
 
-Npm 6.2.x or newer
+Npm 6.13.4 or newer
 
-Angular Cli 8 or newer.
+Angular Cli 9 or newer.
