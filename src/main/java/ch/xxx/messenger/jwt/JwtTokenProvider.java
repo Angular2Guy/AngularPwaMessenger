@@ -90,6 +90,7 @@ public class JwtTokenProvider {
 		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 		List<Map<String,String>> myRoles = (List<Map<String,String>>) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("auth");
 		return myRoles.stream().map(map -> map.values())
+				.flatMap(Collection::stream)
 				.map(str -> roles.stream().filter(r -> r.name().equals(str))
 						.findFirst().orElse(Role.GUEST)).collect(Collectors.toList());
 	}
