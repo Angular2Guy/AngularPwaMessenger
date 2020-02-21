@@ -14,4 +14,5 @@ import {Contact} from './contact';
 
 export interface LocalContact extends Contact {
     ownerId: string;
+	id?: number;
 }

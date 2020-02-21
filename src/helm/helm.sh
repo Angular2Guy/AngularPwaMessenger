@@ -1,3 +1,3 @@
 #!/bin/sh
-helm delete --purge messenger
-helm install ./ --name messenger --set serviceType=NodePort
+helm delete messenger
+helm install messenger ./  --set serviceType=NodePort

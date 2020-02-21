@@ -10,15 +10,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-export interface LocalUser {
-  id?: number;
-  createdAt: Date;
-  username: string;
-  hash: string;
-  salt: string;
-  email: string;
-  base64Avatar: string;
-  publicKey: string;
-  privateKey: string;
-  userId: string;
+import { Message } from './message';
+
+export interface LocalMessage extends Message {
+	id?: number;	
 }
