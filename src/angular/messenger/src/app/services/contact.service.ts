@@ -12,13 +12,9 @@
  */
 import { Injectable } from '@angular/core';
 import { LocaldbService } from './localdb.service';
-import { NetConnectionService } from './net-connection.service';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { JwttokenService } from './jwttoken.service';
+import { HttpClient } from '@angular/common/http';
 import { Contact } from '../model/contact';
-import { flatMap,tap, map, switchMap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
-import { Utils } from '../services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +22,7 @@ import { Utils } from '../services/utils.service';
 export class ContactService {
   private readonly contactUrl = '/rest/contact';
   constructor(private localdbService: LocaldbService,           
-          private http: HttpClient, 
-          private utils: Utils) { }
+          private http: HttpClient) { }
   
   loadContacts(contact: Contact): Observable<Contact[]> {
      return from(this.localdbService.loadContacts(contact));
@@ -39,6 +34,6 @@ export class ContactService {
               base64Avatar: null,             
               publicKey: null,
               userId: null};
-      return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con, this.utils.createHeader());
+      return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con);
   }
 }

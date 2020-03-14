@@ -17,13 +17,12 @@ import {JwtToken} from '../model/jwtToken';
   providedIn: 'root'
 } )
 export class JwttokenService {
-  private _jwtToken: string = null;
-  private _localLogin: boolean = false;
+  private _jwtToken: string = null;  
 
   constructor() { }
 
   get jwtToken(): string {
-    return this._jwtToken === null ? '' : `Bearer ${this._jwtToken}`;
+    return this._jwtToken === null ? '' : this._jwtToken;
   }
 
   set jwtToken( token: string ) {

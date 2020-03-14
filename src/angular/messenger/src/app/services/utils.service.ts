@@ -10,19 +10,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { JwttokenService } from '../services/jwttoken.service';
 import { Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root'
   })
-export class Utils {
+export class UtilsService {
     constructor(private jwttokenService: JwttokenService) {}
     
     createHeader() {
-        return { headers: new HttpHeaders()
+        return new HttpHeaders()
         .set('Content-Type', 'application/json')
-        .set('Authorization', this.jwttokenService.jwtToken)};
+        .set('Authorization', `Bearer ${this.jwttokenService.jwtToken}`);
     }  
 }

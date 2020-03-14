@@ -37,6 +37,7 @@ import { HttpProfileInterceptor } from './services/http-profile.interceptor';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { CameraComponent } from './camera/camera.component';
 import { FileuploadComponent } from './fileupload/fileupload.component';
+import { TokenInterceptor } from './services/token.interceptor';
 
 
 @NgModule({
@@ -75,7 +76,8 @@ import { FileuploadComponent } from './fileupload/fileupload.component';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: HttpProfileInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: HttpProfileInterceptor, multi: true },
+	{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })
