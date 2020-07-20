@@ -32,4 +32,4 @@ Nodejs 12.16.x or newer
 
 Npm 6.13.4 or newer
 
-Angular Cli 9 or newer.
+Angular Cli 10 or newer.
