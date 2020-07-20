@@ -48,14 +48,7 @@ public class SpringMongoConfig {
     	String myHost = System.getenv("MONGODB_HOST");		
 		log.info("MONGODB_HOST="+myHost);
         return MongoClients.create("mongodb://"+(myHost==null ? mongoHost : myHost));
-    }	
-
-    @Bean
-    public com.mongodb.MongoClient mongoClient() {
-    	String myHost = System.getenv("MONGODB_HOST");		
-		log.info("MONGODB_HOST="+myHost);
-        return new com.mongodb.MongoClient((myHost==null ? mongoHost : myHost));
-    }
+    }	    
     
     @Bean
 	public ServerCodecConfigurer serverCodecConfigurer() {
