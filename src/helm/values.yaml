@@ -8,3 +8,4 @@ volumeClaimName: mongo-pv-claim
 persistentVolumeName: task-pv-volume
 webServiceName: angularpwa
 dbServiceName: mongodb
+jwtTokenSecrect: secret-key1234567890abcdefghijklmnopqrstuvpxyz
