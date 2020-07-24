@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,12 +69,15 @@ public class MessageController {
 	}
 
 	@PostMapping("/storeMsgs")
-	public Flux<Message> putStoreMessages(@RequestBody SyncMsgs syncMsgs) {
+	public ResponseEntity<Flux<Message>> putStoreMessages(@RequestBody SyncMsgs syncMsgs) {
 		List<Message> msgs = syncMsgs.getMsgs().stream().map(msg -> {
 			msg.setSend(true);
 			msg.setTimestamp(new Date());
 			return msg;
-		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB)).collect(Collectors.toList());
-		return this.operations.insertAll(msgs);
+		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB))
+				.collect(Collectors.toList());
+		return syncMsgs.getMsgs().size() > msgs.size()
+				? ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(this.operations.insertAll(msgs))
+				: ResponseEntity.ok(this.operations.insertAll(msgs));
 	}
 }

@@ -48,6 +48,8 @@ public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHan
 		Throwable exception = this.getError(request);
 		if (exception instanceof JwtTokenValidationException) {
 			return ServerResponse.status(HttpStatus.UNAUTHORIZED).build();
+		} else if(exception instanceof TooManyMsgException) {
+			return ServerResponse.status(HttpStatus.TOO_MANY_REQUESTS).build();
 		}
 		return ServerResponse.status(HttpStatus.NOT_FOUND).build();
 	}
