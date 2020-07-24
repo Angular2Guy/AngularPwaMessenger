@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
@@ -31,7 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.xxx.messenger.dto.Contact;
 import ch.xxx.messenger.dto.Message;
 import ch.xxx.messenger.dto.SyncMsgs;
+import ch.xxx.messenger.exception.TooManyMsgException;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/rest/message")
@@ -43,7 +46,7 @@ public class MessageController {
 	@PostMapping("/findMsgs")
 	public Flux<Message> getFindMessages(@RequestBody SyncMsgs syncMsgs) {
 		List<Message> msgToUpdate = new LinkedList<>();
-		return operations
+		return this.operations
 				.find(new Query().addCriteria(Criteria.where("fromId").in(syncMsgs.getContactIds())
 						.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
 								.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))),
@@ -59,7 +62,7 @@ public class MessageController {
 	@PostMapping("/receivedMsgs")
 	public Flux<Message> getReceivedMessages(@RequestBody Contact contact) {
 		List<Message> msgToDelete = new LinkedList<>();
-		return operations.find(new Query().addCriteria(
+		return this.operations.find(new Query().addCriteria(
 				Criteria.where("fromId").is(contact.getUserId()).andOperator(Criteria.where("received").is(true))),
 				Message.class).doOnEach(msg -> {
 					if (msg.hasValue()) {
@@ -76,8 +79,22 @@ public class MessageController {
 			return msg;
 		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB))
 				.collect(Collectors.toList());
+		Flux<Message> msgsFlux = this.operations.find(new Query().addCriteria(Criteria.where("fromId").is(syncMsgs.getOwnId())), Message.class)
+				.collectList().flatMap(messages -> sizeOfMessages(messages, syncMsgs.getOwnId())).flux()
+				.flatMap(value -> this.operations.insertAll(msgs));
 		return syncMsgs.getMsgs().size() > msgs.size()
-				? ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(this.operations.insertAll(msgs))
-				: ResponseEntity.ok(this.operations.insertAll(msgs));
+				? ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(msgsFlux)
+				: ResponseEntity.ok(msgsFlux);
+	}
+
+	private Mono<Long> sizeOfMessages(List<Message> messages, String ownerId) {
+		long msgsSizeSum = messages.stream()
+				.flatMapToLong(message -> message.getText() == null ? LongStream.of(0L)
+						: LongStream.of(Long.valueOf(message.getText().length())))
+				.reduce(0, (collect, newLength) -> collect + newLength);
+		if (msgsSizeSum > 15 * MB) {
+			throw new TooManyMsgException(String.format("MsgSizeSum for User %s is %d", ownerId, msgsSizeSum));
+		}
+		return Mono.just(msgsSizeSum);
 	}
 }
