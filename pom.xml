@@ -195,8 +195,8 @@
 							<executable>npm</executable>
 							<arguments>
 								<argument>run</argument>
-								<argument>test-chromium</argument>
-								<!--<argument>test</argument>-->
+								<!-- <argument>test-chromium</argument>-->
+								<argument>test</argument>
 							</arguments>
 							<workingDirectory>src/angular/messenger</workingDirectory>
 						</configuration>
