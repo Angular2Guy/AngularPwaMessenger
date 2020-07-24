@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
@@ -56,7 +57,9 @@ public class MessageController {
 						msg.get().setReceived(true);
 						msgToUpdate.add(msg.get());
 					}
-				}).doAfterTerminate(() -> msgToUpdate.forEach(msg -> operations.save(msg).block()));
+				}).doAfterTerminate(
+						() -> Flux.concat(msgToUpdate.stream().flatMap(msg -> Stream.of(this.operations.save(msg)))
+								.collect(Collectors.toList())).collectList().block());
 	}
 
 	@PostMapping("/receivedMsgs")
@@ -68,7 +71,9 @@ public class MessageController {
 					if (msg.hasValue()) {
 						msgToDelete.add(msg.get());
 					}
-				}).doAfterTerminate(() -> msgToDelete.forEach(msg -> operations.remove(msg).block()));
+				}).doAfterTerminate(
+						() -> Flux.concat(msgToDelete.stream().flatMap(msg -> Stream.of(operations.remove(msg)))
+								.collect(Collectors.toList())).collectList().block());
 	}
 
 	@PostMapping("/storeMsgs")
@@ -79,7 +84,8 @@ public class MessageController {
 			return msg;
 		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB))
 				.collect(Collectors.toList());
-		Flux<Message> msgsFlux = this.operations.find(new Query().addCriteria(Criteria.where("fromId").is(syncMsgs.getOwnId())), Message.class)
+		Flux<Message> msgsFlux = this.operations
+				.find(new Query().addCriteria(Criteria.where("fromId").is(syncMsgs.getOwnId())), Message.class)
 				.collectList().flatMap(messages -> sizeOfMessages(messages, syncMsgs.getOwnId())).flux()
 				.flatMap(value -> this.operations.insertAll(msgs));
 		return syncMsgs.getMsgs().size() > msgs.size()
