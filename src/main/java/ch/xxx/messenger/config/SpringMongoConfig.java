@@ -23,11 +23,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 
 @Configuration
+@EnableScheduling
 public class SpringMongoConfig {
 	private static final Logger log = LoggerFactory.getLogger(SpringMongoConfig.class);
 	
