@@ -6,63 +6,63 @@
 				<li>
 					<mat-form-field> 
 						<input matInput
-							i18n-placeholder placeholder="Username" tabindex="1" formControlName="username"> 
+							i18n-placeholder="@@loginUsername" placeholder="Username" tabindex="1" formControlName="username"> 
 					</mat-form-field>
 				</li>
 				<li>
 					<mat-form-field> 
 						<input matInput
-							i18n-placeholder placeholder="Password" tabindex="2" formControlName="password" type="password">
+							i18n-placeholder="@@loginPassword" placeholder="Password" tabindex="2" formControlName="password" type="password">
 					</mat-form-field>
 				</li>
-				<li *ngIf="loginFailed" i18n class="error-text">
+				<li *ngIf="loginFailed" i18n="@@loginLoginFailed" class="error-text">
 					Login Failed
 				</li>
 				<li>
-					<button mat-button (click)="onLoginClick()" [disabled]="!loginForm.valid" tabindex="-1" i18n>Ok</button>
-					<button mat-button (click)="onCancelClick()" tabindex="-1" i18n>Cancel</button>
+					<button mat-button (click)="onLoginClick()" [disabled]="!loginForm.valid" tabindex="-1" i18n="@@loginOk">Ok</button>
+					<button mat-button (click)="onCancelClick()" tabindex="-1" i18n="@@loginCancel">Cancel</button>
 				</li>
 			</ul>
 		</form>
 	</mat-tab> 
-	<mat-tab i18n-label label="Signin">
+	<mat-tab i18n-label="@@loginSignin" label="Signin">
 		<form [formGroup]="signinForm" novalidate>
 			<ul>
 				<li>
 					<mat-form-field> 
 						<input matInput
-							i18n-placeholder placeholder="Username" tabindex="1" formControlName="username"> 
+							i18n-placeholder="@@loginUsername" placeholder="Username" tabindex="1" formControlName="username"> 
 					</mat-form-field>
 				</li>
 				<li>
 					<mat-form-field> 
 						<input matInput
-							i18n-placeholder placeholder="Password" tabindex="2" formControlName="password" type="password">
+							i18n-placeholder="@@loginPassword" placeholder="Password" tabindex="2" formControlName="password" type="password">
 					</mat-form-field>					
 					<mat-form-field class="spacer-left"> 
 						<input matInput
-							i18n-placeholder placeholder="Password" tabindex="3" formControlName="password2" type="password">
+							i18n-placeholder="@@loginPassword" placeholder="Password" tabindex="3" formControlName="password2" type="password">
 					</mat-form-field>
 				</li>
-				<li *ngIf="!pwMatching" i18n class="error-text">
+				<li *ngIf="!pwMatching" i18n="@@loginPasswordNotMatch" class="error-text">
 					Passwords do not match
 				</li>
 				<li>
 					<mat-form-field> 
 						<input matInput
-							i18n-placeholder placeholder="Email" tabindex="4" formControlName="email">
+							i18n-placeholder="@@loginEmail" placeholder="Email" tabindex="4" formControlName="email">
 					</mat-form-field>
 				</li>			
-				<li *ngIf="signinFailed" i18n class="error-text">
+				<li *ngIf="signinFailed" i18n="@@loginSinginFailed" class="error-text">
 					Signin Failed
 				</li>
 				<li class="space-below">
-					<p class="space-below" i18n>Create a secure random/long password. It needs to be pasted into a password manager you trust.</p>
-					<button mat-button (click)="onCreatePwClick()" tabindex="5" i18n>Create Password</button>
+					<p class="space-below" i18n="@@loginCreateRandomPassword">Create a secure random/long password. It needs to be pasted into a password manager you trust.</p>
+					<button mat-button (click)="onCreatePwClick()" tabindex="5" i18n="@@loginCreatePassword">Create Password</button>
 				</li>	
 				<li>
-					<button mat-button (click)="onSigninClick()" [disabled]="!signinForm.valid" tabindex="-1"  i18n>Ok</button>
-					<button mat-button (click)="onCancelClick()" tabindex="-1" i18n>Cancel</button>
+					<button mat-button (click)="onSigninClick()" [disabled]="!signinForm.valid" tabindex="-1" i18n="@@loginOk">Ok</button>
+					<button mat-button (click)="onCancelClick()" tabindex="-1" i18n="@@loginCancel">Cancel</button>
 				</li>
 			</ul>
 		</form>

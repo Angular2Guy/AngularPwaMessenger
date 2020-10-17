@@ -12,11 +12,10 @@
  */
 import { Component, OnInit, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
-import { startWith, map, debounceTime, distinctUntilChanged, tap, switchMap, filter, flatMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
 import { ContactService } from '../services/contact.service';
 import { Contact } from '../model/contact';
-import { NetConnectionService } from '../services/net-connection.service';
 import { LocaldbService } from '../services/localdb.service';
 import { LocalContact } from '../model/localContact';
 

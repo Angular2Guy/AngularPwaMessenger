@@ -20,10 +20,10 @@ import { LoginComponent } from '../login/login.component';
 import { MyUser } from '../model/myUser';
 import { SyncMsgs } from '../model/syncMsgs';
 import { JwttokenService } from '../services/jwttoken.service';
-import { AuthenticationService } from '../services/authentication.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
+import { TranslationsService } from '../services/translations.service';
 import { Subscription } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CameraComponent } from '../camera/camera.component';
@@ -36,6 +36,7 @@ import { FileuploadComponent } from '../fileupload/fileupload.component';
   styleUrls: ['./main.component.scss']
 } )
 export class MainComponent implements OnInit, OnDestroy {
+  private readonly componentKey = 'main';
   windowHeight: number;
   ownContact: Contact;
   contacts: Contact[] = [];
@@ -49,12 +50,13 @@ export class MainComponent implements OnInit, OnDestroy {
     private jwttokenService: JwttokenService,
     private netConnectionService: NetConnectionService,
     private messageService: MessageService,
+    private translationsService: TranslationsService,
     public dialog: MatDialog,
     private cryptoService: CryptoService,
  	private sanitizer: DomSanitizer,
     @Inject( DOCUMENT ) private document ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.windowHeight = window.innerHeight - 84;
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );
   }
@@ -67,13 +69,13 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   @HostListener( 'window:resize', ['$event'] )
-  onResize( event: any ) {
+  onResize( event: any ): void {
     this.windowHeight = event.target.innerHeight - 84;
   }
 
-  private onlineAgain( online: boolean ) {
+  private onlineAgain( online: boolean ): void {
     if ( online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime() ) {
-      alert( this.document.getElementById( 'onlineAgainMsg' ).textContent );
+      alert( this.translationsService.getTranslation(this.componentKey, 'onlineAgainMsg'));
     }
   }
 
@@ -143,12 +145,12 @@ export class MainComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectContact( contact: Contact ) {
+  selectContact( contact: Contact ): void {
     this.selectedContact = contact;
     this.addMessages().then( () => this.syncMsgs() );
   }
 
-  sendMessage( msg: Message ) {
+  sendMessage( msg: Message ): void {
     msg.fromId = this.ownContact.userId;
     this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
       msg.text = value;
@@ -188,7 +190,7 @@ export class MainComponent implements OnInit, OnDestroy {
     }, error => console.log( 'findMessages failed.' ) );
   }
 
-  private sendRemoteMsgs( syncMsgs1: SyncMsgs ) {
+  private sendRemoteMsgs( syncMsgs1: SyncMsgs ): void {
     this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
       const oriMsgs: Message[] = JSON.parse( JSON.stringify( msgs ) );
       this.decryptLocalMsgs( msgs ).then( value => {
@@ -225,7 +227,7 @@ export class MainComponent implements OnInit, OnDestroy {
     } );
   }
 
-  private storeReceivedMessages() {
+  private storeReceivedMessages(): void {
     this.messageService.findReceivedMessages( this.ownContact ).subscribe( msgs => {
       if ( msgs.length > 0 ) {
         this.localdbService.loadMessages( this.ownContact ).then( localMsgs => {
@@ -243,7 +245,7 @@ export class MainComponent implements OnInit, OnDestroy {
     }, error => console.log( 'storeReceivedMessages failed.' ) );
   }
 
-  private syncMsgs() {
+  private syncMsgs(): void {
     if ( this.ownContact && this.netConnectionService.connetionStatus && !this.jwttokenService.localLogin ) {
       const contactIds = this.contacts.map( con => con.userId );
       const syncMsgs1: SyncMsgs = {
@@ -293,7 +295,7 @@ export class MainComponent implements OnInit, OnDestroy {
       } ) );
   }
 
-  addNewContact( contact: Contact ) {
+  addNewContact( contact: Contact ): void {
     this.contacts.push( contact );
   }  
 }

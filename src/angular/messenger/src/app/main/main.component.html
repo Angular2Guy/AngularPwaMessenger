@@ -1,11 +1,11 @@
 <mat-toolbar color="primary">
-	<span i18n>Messenger</span>
+	<span i18n="@@mainMessenger">Messenger</span>
 	<span class="example-fill-remaining-space"></span>
-	<span *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><i class="material-icons">attachment</i></span>
+	<span *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><i class="material-icons">attachment_alt</i></span>
 	<span *ngIf="myUser !== null" class="icon" (click)="openCameraDialog()"><i class="material-icons">camera_alt</i></span>
 	<span *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></span>
-	<span *ngIf="myUser === null"><button mat-button (click)="openLoginDialog()" i18n>Login</button></span>		
-	<span *ngIf="myUser !== null"><button mat-button (click)="logout()" i18n>Logout</button></span>
+	<span *ngIf="myUser === null"><button mat-button (click)="openLoginDialog()" i18n="@@mainLogin">Login</button></span>		
+	<span *ngIf="myUser !== null"><button mat-button (click)="logout()" i18n="@@mainLogout">Logout</button></span>
 </mat-toolbar>
 <mat-sidenav-container class="container" [ngStyle]="{'height.px': windowHeight}">
   <mat-sidenav opened mode="side" class="contact-list">
@@ -15,6 +15,3 @@
   	<app-messages [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
   </mat-sidenav-content>
 </mat-sidenav-container>
-<div style="display:none">
-	<span id="onlineAgainMsg" i18n="@@onlineAgainMsg">You are online again and your token is expired. To reconnect please logout and login again.</span>
-</div>
