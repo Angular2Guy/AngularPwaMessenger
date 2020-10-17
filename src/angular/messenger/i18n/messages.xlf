@@ -52,7 +52,7 @@
       </trans-unit>
       <trans-unit id="loginOk" datatype="html">
         <source>Ok</source>
-        <source>Ok</source>
+        <target>Ok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/login/login.component.html</context>
           <context context-type="linenumber">22</context>
