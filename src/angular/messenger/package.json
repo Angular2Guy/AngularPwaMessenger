@@ -14,7 +14,8 @@
     "prebuild": "rimraf ./dist && mkdirp ./dist",
     "postbuild": "npm run deploy",
     "predeploy": "rimraf ../../main/resources/static/*",
-    "deploy": "cpx 'base/*' dist/messenger/ && cpx 'dist/messenger/**' ../../main/resources/static/"
+    "deploy": "cpx 'base/*' dist/messenger/ && cpx 'dist/messenger/**' ../../main/resources/static/",
+    "xi18n": "ng xi18n --ivy=true"
   },
   "private": true,
   "dependencies": {

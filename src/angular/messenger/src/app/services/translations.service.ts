@@ -24,6 +24,7 @@ export class TranslationsService {
   }
 
   public getTranslation(componentKey: string, key: string): string {
-	return this.translatonsMap.get(componentKey + '_' + key);
+	const result = this.translatonsMap.get(componentKey + '_' + key);
+	return !!result ? result : this.translatonsMap.get(key);
   }
 }
