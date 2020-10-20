@@ -36,7 +36,7 @@ import { FileuploadComponent } from '../fileupload/fileupload.component';
   styleUrls: ['./main.component.scss']
 } )
 export class MainComponent implements OnInit, OnDestroy {
-  private readonly componentKey = 'main';
+  private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   windowHeight: number;
   ownContact: Contact;
   contacts: Contact[] = [];
@@ -75,7 +75,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private onlineAgain( online: boolean ): void {
     if ( online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime() ) {
-      alert( this.translationsService.getTranslation(this.componentKey, 'onlineAgainMsg'));
+      alert( this.translationsService.getTranslation(this.componentKey, TranslationsService.ONLINE_AGAIN_MSG));
     }
   }
 
