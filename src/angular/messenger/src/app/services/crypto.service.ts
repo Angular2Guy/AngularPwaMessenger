@@ -32,20 +32,18 @@ export class CryptoService {
   private createKeyTuple( password: string, cryptoKeyPair: CryptoKeyPair ): PromiseLike<Tuple<string, string>> {
     let jwkPubKey: string = null;
     let wrapKey: CryptoKey = null;
+    const mySalt = this.ab2str( <Uint8Array> window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
     return window.crypto.subtle.exportKey( "jwk", cryptoKeyPair.publicKey ).then( value => {
       jwkPubKey = JSON.stringify( value );
-      const mySalt = this.ab2str( <Uint8Array> window.crypto.getRandomValues( new Uint8Array( 16 ) ) );
-      return this.createWrapKey( password, mySalt )
+      return this.createWrapKey( password, mySalt );})
         .then( value => {
           wrapKey = value;
           const algo: AesGcmParams = { name: "AES-GCM", iv: this.str2ab( mySalt ) };
-          return window.crypto.subtle.wrapKey( "jwk", cryptoKeyPair.privateKey, value, algo );
-        } )
-        .then( value => {        
-          const privateKey: PrivateKey = { key: this.ab2str( value ), salt: mySalt };
-          return new Tuple( jwkPubKey, JSON.stringify( privateKey ) );
-        } );
-    } );
+          return window.crypto.subtle.wrapKey( "jwk", cryptoKeyPair.privateKey, value, algo ); })
+		.then(myValue =>  { 			      
+          	const privateKey: PrivateKey = { key: this.ab2str( myValue ), salt: mySalt };
+          	return new Tuple( jwkPubKey, JSON.stringify( privateKey ) );
+          });
   }
 
   private createWrapKey( password: string, salt: string ): PromiseLike<CryptoKey> {
@@ -122,19 +120,19 @@ export class CryptoService {
       .then( value => this.ab2str( value ) );
   }
 
-  public decryptText( encText: string, keyStr: string, keyPwd: string ) {
+  public decryptText( encText: string, keyStr: string, keyPwd: string ): PromiseLike<string>  {
     const keyJson: PrivateKey = JSON.parse( keyStr );
     const encKey = this.str2ab(keyJson.key );
     //    console.log(encText);
-    return this.createWrapKey( keyPwd, keyJson.salt ).then( value => {
+    const result = Promise.all([this.createWrapKey( keyPwd, keyJson.salt ).then( value => {
       const algo1: AesGcmParams = { name: "AES-GCM", iv: this.str2ab( keyJson.salt ) };
       const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
-      return window.crypto.subtle.unwrapKey( 'jwk', encKey, value, algo1, algo2, false, ["decrypt"] );
-    } ).then( value => {
+	  return window.crypto.subtle.unwrapKey( 'jwk', encKey, value, algo1, algo2, false, ["decrypt"] );})	
+	.then( myValue => {
       const algo2: RsaHashedImportParams = { name: "RSA-OAEP", hash: "SHA-256" };
-      return window.crypto.subtle.decrypt( algo2, value, this.str2ab( encText ) );
-    } )
-      .then( value => new TextDecoder().decode( value ) );
+      return Promise.all([myValue]).then(myValue2 => window.crypto.subtle.decrypt( algo2, myValue2[0], this.str2ab( encText ) ));
+    } ).then(value2 => Promise.all([value2]).then(value3 => new TextDecoder().decode( value3[0] )))]).then(myResult => myResult[0]);
+	return result;
   }
 
   public generateKey( password: string, salt: string ): PromiseLike<Tuple<string, string>> {
@@ -194,18 +192,18 @@ export class CryptoService {
   
   public encryptTextAes(password: string, salt: string, text: string): PromiseLike<string> {
     const saltBuffer = this.str2ab( salt );
-    return this.keycreator(password, salt, text).then(  webKey  => {
-      return window.crypto.subtle.encrypt({ name: 'AES-CBC', iv: saltBuffer }, webKey, new TextEncoder().encode(text))
-        .then(result => this.ab2str(result));
-    });
+    return Promise.all([this.keycreator(password, salt, text).then(  webKey  => {
+      return Promise.all([webKey]).then(webKey2 => window.crypto.subtle.encrypt({ name: 'AES-CBC', iv: saltBuffer }, webKey2[0], new TextEncoder().encode(text)))
+        .then(result => Promise.all([result]).then(myResult => this.ab2str(myResult[0])));
+    })]).then(result2 => result2[0]);
   }
   
   public decryptTextAes(password: string, salt: string, text: string): PromiseLike<string> {
     const saltBuffer = this.str2ab( salt );    
-    return this.keycreator(password, salt, text).then(  webKey  => {
-      return window.crypto.subtle.decrypt({ "name": 'AES-CBC', iv: saltBuffer }, webKey, this.str2ab(text))
-        .then(result => new TextDecoder().decode(result));      
-    });
+    return Promise.all([this.keycreator(password, salt, text).then(  webKey  => {
+      return Promise.all([webKey]).then(webKey2 => window.crypto.subtle.decrypt({ "name": 'AES-CBC', iv: saltBuffer }, webKey2[0], this.str2ab(text)))
+        .then(result => Promise.all([result]).then(result2 => new TextDecoder().decode(result2[0])));      
+    })]).then(result3 => result3[0]);
   }
   
   public hashPW(password: string): PromiseLike<string> {
