@@ -22,17 +22,17 @@ import { SyncMsgs } from '../model/syncMsgs';
 })
 export class MessageService {
   private readonly contactUrl = '/rest/message';
-  
+
   constructor(private http: HttpClient) { }
-  
+
   findMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
       return this.http.post<Message[]>(this.contactUrl+'/findMsgs', syncMsgs);
   }
-  
+
   sendMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
       return this.http.post<Message[]>(this.contactUrl+'/storeMsgs', syncMsgs);
   }
-  
+
   findReceivedMessages(contact: Contact): Observable<Message[]> {
     return this.http.post<Message[]>(this.contactUrl+'/receivedMsgs', contact);
   }

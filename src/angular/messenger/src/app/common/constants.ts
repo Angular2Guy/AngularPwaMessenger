@@ -11,7 +11,7 @@
    limitations under the License.
  */
 export class Constants {
-  static readonly IMAGE_TYPE = "image/jpeg";
-  static readonly IMAGE_PREFIX = "data:"+Constants.IMAGE_TYPE+";base64,";
-  static readonly B64_IMAGE_PREFIX = "JPGBASE64";
+  static readonly IMAGE_TYPE = 'image/jpeg';
+  static readonly IMAGE_PREFIX = 'data:'+Constants.IMAGE_TYPE+';base64,';
+  static readonly B64_IMAGE_PREFIX = 'JPGBASE64';
 }

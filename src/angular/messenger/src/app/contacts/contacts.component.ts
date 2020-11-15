@@ -28,11 +28,11 @@ export class ContactsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {    
+  ngOnInit() {
   }
-  
+
   select(contact: Contact) {
-    this.selContact.emit(contact);    
+    this.selContact.emit(contact);
   }
 
 }

@@ -17,7 +17,7 @@ import {JwtToken} from '../model/jwtToken';
   providedIn: 'root'
 } )
 export class JwttokenService {
-  private _jwtToken: string = null;  
+  private _jwtToken: string = null;
 
   constructor() { }
 

@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSigninClick(): void {
-    let myUser = new MyUser();
+    const myUser = new MyUser();
     myUser.username = this.signinForm.get( 'username' ).value;
     myUser.password = this.signinForm.get( 'password' ).value;
     myUser.email = this.signinForm.get( 'email' ).value;
@@ -97,15 +97,15 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginClick(): void {
-    let myUser = new MyUser();
+    const myUser = new MyUser();
     myUser.username = this.loginForm.get( 'username' ).value;
     myUser.password = this.loginForm.get( 'password' ).value;
-    //      console.log(myUser);    
+    //      console.log(myUser);
     if ( this.connected ) {
       this.cryptoService.hashServerPW( this.loginForm.get( 'password' ).value ).then( value => {
         myUser.password = value;
         this.authenticationService.postLogin( myUser ).subscribe( us => {
-          let myLocalUser: LocalUser = {
+          const myLocalUser: LocalUser = {
             base64Avatar: null,
             createdAt: null,
             email: null,
@@ -131,7 +131,7 @@ export class LoginComponent implements OnInit {
             } );
         }, err => {
           myUser.password = this.loginForm.get( 'password' ).value;
-          this.localLogin( myUser ); 
+          this.localLogin( myUser );
           });
       } );
     } else {
@@ -140,7 +140,7 @@ export class LoginComponent implements OnInit {
   }
 
   private localLogin( myUser: MyUser ) {
-    let myLocalUser: LocalUser = {
+    const myLocalUser: LocalUser = {
       base64Avatar: null,
       createdAt: null,
       email: null,
@@ -154,7 +154,7 @@ export class LoginComponent implements OnInit {
     this.localdbService.loadUser( myLocalUser ).then( localUserList =>
       localUserList.first().then( myLocalUser => {
         myUser.userId = myLocalUser.userId;
-        return this.login( myUser, myLocalUser ); 
+        return this.login( myUser, myLocalUser );
         }) );
   }
 
@@ -195,7 +195,7 @@ export class LoginComponent implements OnInit {
       if ( ( us.username !== null || localUser.username !== null ) && localUser.hash === tuple.a ) {
         if ( us.token ) {
           this.jwttokenService.jwtToken = us.token;
-        }        
+        }
         this.loginFailed = false;
         this.cryptoService.hashPW( us.password ).then( value => {
           us.password = value;
@@ -213,8 +213,8 @@ export class LoginComponent implements OnInit {
 	const secPw = this.cryptoService.createSecurePassword();
 	this.signinForm.patchValue({password2: secPw, password: secPw});
 	this.validate(this.signinForm);
-	let dummyInput = document.createElement('input');
-	dummyInput.setAttribute('id', 'dummyInput');	
+	const dummyInput = document.createElement('input');
+	dummyInput.setAttribute('id', 'dummyInput');
 	document.body.appendChild(dummyInput);
 	dummyInput.value = secPw;
 	dummyInput.select();

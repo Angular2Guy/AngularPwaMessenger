@@ -20,7 +20,7 @@ export class TranslationsService {
   public static readonly ONLINE_AGAIN_MSG = 'onlineAgainMsg';
   public static readonly MAIN_COMPONENT = 'main';
 
-  constructor() { 
+  constructor() {
 	const str = $localize`:@@onlineAgainMsg:You are online again and your token is expired. To reconnect please logout and login again.`;
 	this.translatonsMap.set(TranslationsService.MAIN_COMPONENT+'_'+TranslationsService.ONLINE_AGAIN_MSG, str);
   }

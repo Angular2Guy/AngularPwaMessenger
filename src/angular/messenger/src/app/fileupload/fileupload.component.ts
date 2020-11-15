@@ -36,10 +36,10 @@ export class FileuploadComponent implements OnInit {
 
 	filechange(fileInput: any) {
 		this.currentFile = fileInput.target.files[0];
-		let reader = new FileReader();
+		const reader = new FileReader();
 		reader.onload = () => {
-			let textstr: string = <string>reader.result;
-			let textstrs = textstr.split(";");
+			const textstr: string = <string>reader.result;
+			const textstrs = textstr.split(';');
 			this.fileContent = textstrs[1];
 			//console.log(textstrs[1]);
 		};
@@ -48,8 +48,8 @@ export class FileuploadComponent implements OnInit {
 
 	upload() {
 		if (this.fileContent && this.fileContent.length < 2 * this.MB) {
-			let receiver = this.data.receiver as Contact;
-			let msg: Message = {
+			const receiver = this.data.receiver as Contact;
+			const msg: Message = {
 				fromId: null,
 				toId: receiver.userId,
 				text: this.fileContent,

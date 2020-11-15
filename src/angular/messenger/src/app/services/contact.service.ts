@@ -21,17 +21,17 @@ import { from, Observable } from 'rxjs';
 })
 export class ContactService {
   private readonly contactUrl = '/rest/contact';
-  constructor(private localdbService: LocaldbService,           
+  constructor(private localdbService: LocaldbService,
           private http: HttpClient) { }
-  
+
   loadContacts(contact: Contact): Observable<Contact[]> {
      return from(this.localdbService.loadContacts(contact));
   }
-  
+
   findContacts(conName: string): Observable<Contact[]> {
       const con: Contact = {
-              name: conName, 
-              base64Avatar: null,             
+              name: conName,
+              base64Avatar: null,
               publicKey: null,
               userId: null};
       return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con);

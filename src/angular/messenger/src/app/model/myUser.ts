@@ -14,7 +14,7 @@ import { Contact } from './contact';
 
 export class MyUser {
   id?: number;
-  createdAt: Date;  
+  createdAt: Date;
   username: string;
   password: string;
   email: string;

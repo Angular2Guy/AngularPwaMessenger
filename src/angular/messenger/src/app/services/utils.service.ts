@@ -19,10 +19,10 @@ import { Injectable } from '@angular/core';
   })
 export class UtilsService {
     constructor(private jwttokenService: JwttokenService) {}
-    
+
     createHeader() {
         return new HttpHeaders()
         .set('Content-Type', 'application/json')
         .set('Authorization', `Bearer ${this.jwttokenService.jwtToken}`);
-    }  
+    }
 }

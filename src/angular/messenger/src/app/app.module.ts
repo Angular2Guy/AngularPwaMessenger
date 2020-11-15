@@ -45,7 +45,7 @@ import { TokenInterceptor } from './services/token.interceptor';
     LoginComponent,
     CameraComponent,
 	FileuploadComponent
-  ],  
+  ],
   declarations: [
     AppComponent,
     MainComponent,
@@ -62,10 +62,10 @@ import { TokenInterceptor } from './services/token.interceptor';
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-    MatSidenavModule,    
+    MatSidenavModule,
     MatToolbarModule,
     MatTabsModule,
-    MatButtonModule, 
+    MatButtonModule,
     MatDialogModule,
     MatInputModule,
     BrowserAnimationsModule,

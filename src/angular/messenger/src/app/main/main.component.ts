@@ -11,7 +11,7 @@
    limitations under the License.
  */
 import { Component, OnInit, HostListener, OnDestroy, Inject } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser'
+import { DomSanitizer } from '@angular/platform-browser';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
@@ -80,7 +80,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   openFileuploadDialog(): void {
-	let dialogRef = this.dialog.open(FileuploadComponent, {
+	const dialogRef = this.dialog.open(FileuploadComponent, {
 		width: '500px',
 		data: { receiver: this.selectedContact }
 	});
@@ -92,7 +92,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   openCameraDialog(): void {
-    let dialogRef = this.dialog.open( CameraComponent, {
+    const dialogRef = this.dialog.open( CameraComponent, {
       width: '500px',
       data: { receiver: this.selectedContact }
     } );
@@ -105,7 +105,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   openLoginDialog(): void {
-    let dialogRef = this.dialog.open( LoginComponent, {
+    const dialogRef = this.dialog.open( LoginComponent, {
       width: '500px',
       data: { myUser: this.myUser }
     } );
@@ -162,7 +162,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private receiveRemoteMsgs( syncMsgs1: SyncMsgs ) {
     this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
-      let promises: PromiseLike<Message>[] = [];
+      const promises: PromiseLike<Message>[] = [];
       msgs = msgs.filter( msg => syncMsgs1.lastUpdate.getTime() < new Date( msg.timestamp ).getTime() );
       msgs.forEach( msg => {
         promises.push( (this.cryptoService.decryptLargeText(msg.text, this.myUser.privateKey, this.myUser.password)).then( value => {
@@ -171,7 +171,7 @@ export class MainComponent implements OnInit, OnDestroy {
         } ) );
       } );
       Promise.all( promises ).then( myMsgs => {
-        let promises2: PromiseLike<Promise<number>>[] = [];
+        const promises2: PromiseLike<Promise<number>>[] = [];
         myMsgs.forEach( msg => {
           promises2.push(
             this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text )
@@ -186,7 +186,7 @@ export class MainComponent implements OnInit, OnDestroy {
             this.addMessages();
           }
         } ) );
-      } )
+      } );
     }, error => console.log( 'findMessages failed.' ) );
   }
 
@@ -222,7 +222,7 @@ export class MainComponent implements OnInit, OnDestroy {
             } );
             Promise.all( promises2 ).then( () => this.addMessages() );
           }, error => console.log( 'sendRemoteMsgs failed.' ) );
-        } )
+        } );
       } );
     } );
   }
@@ -250,7 +250,7 @@ export class MainComponent implements OnInit, OnDestroy {
       const contactIds = this.contacts.map( con => con.userId );
       const syncMsgs1: SyncMsgs = {
         ownId: this.ownContact.userId,
-        contactIds: contactIds,
+        contactIds,
         lastUpdate: this.getLastSyncDate()
       };
       this.receiveRemoteMsgs( syncMsgs1 );
@@ -267,14 +267,12 @@ export class MainComponent implements OnInit, OnDestroy {
         return msg;
       } ) );
     } );
-    return Promise.all( promises ).then( msgs => {
-      return msgs;
-    } );
+    return Promise.all( promises ).then( msgs => msgs );
   }
 
   private getLastSyncDate(): Date {
     const sortedMsg = this.messages
-      .filter( i => !( typeof i.timestamp === "undefined" ) && !( i.timestamp === null ) )
+      .filter( i => !( typeof i.timestamp === 'undefined' ) && !( i.timestamp === null ) )
       .sort( ( i1, i2 ) => new Date( i1.timestamp ).getTime() - new Date( i2.timestamp ).getTime() );
     return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date( sortedMsg[sortedMsg.length - 1].timestamp );
   }
@@ -283,7 +281,7 @@ export class MainComponent implements OnInit, OnDestroy {
     return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
       this.decryptLocalMsgs( msgs ).then( values => {
         while ( this.messages.length > 0 ) {
-          this.messages.pop()
+          this.messages.pop();
         }
         this.messages = values.map(msg => {
 			if(msg.filename) {
@@ -297,5 +295,5 @@ export class MainComponent implements OnInit, OnDestroy {
 
   addNewContact( contact: Contact ): void {
     this.contacts.push( contact );
-  }  
+  }
 }

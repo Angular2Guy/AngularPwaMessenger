@@ -25,7 +25,7 @@ import { LocalContact } from '../model/localContact';
     styleUrls: ['./add-contacts.component.scss']
 } )
 export class AddContactsComponent implements OnInit, OnDestroy {
-    
+
     @Output() addNewContact = new EventEmitter<Contact>();
     @Input() userId: string;
     @Input() myContacts: Contact[];
@@ -34,11 +34,11 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     contactsLoading = false;
     myControlSub: Subscription = null;
 
-    constructor( 
+    constructor(
             private contactService: ContactService,
             private localdbService: LocaldbService) { }
 
-    ngOnInit() {             
+    ngOnInit() {
         this.myControlSub = this.myControl.valueChanges
             .pipe(
                 debounceTime( 400 ),
@@ -54,25 +54,25 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
       this.myControlSub.unsubscribe();
     }
-    
+
     private filterContacts(contacts: Contact[]): Contact[] {
-        return contacts.filter(con => 
-          this.myContacts.filter(myCon => 
+        return contacts.filter(con =>
+          this.myContacts.filter(myCon =>
             myCon.userId === con.userId).length === 0);
     }
-    
+
     addContact() {
         if(this.filteredOptions.length === 1) {
             if(!this.filteredOptions[0].base64Avatar) {
                 this.filteredOptions[0].base64Avatar = 'assets/icons/smiley-640.jpg';
             }
             const localContact: LocalContact = {
-                base64Avatar: this.filteredOptions[0].base64Avatar,                
+                base64Avatar: this.filteredOptions[0].base64Avatar,
                 name: this.filteredOptions[0].name,
-                ownerId: this.userId, 
+                ownerId: this.userId,
                 publicKey: this.filteredOptions[0].publicKey,
                 userId: this.filteredOptions[0].userId
-            }; 
+            };
             this.localdbService.storeContact(localContact)
                 .then(() => {
                     this.addNewContact.emit(this.filteredOptions[0]);

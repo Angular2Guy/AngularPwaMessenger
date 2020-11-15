@@ -13,5 +13,5 @@
 import { Message } from './message';
 
 export interface LocalMessage extends Message {
-	id?: number;	
+	id?: number;
 }

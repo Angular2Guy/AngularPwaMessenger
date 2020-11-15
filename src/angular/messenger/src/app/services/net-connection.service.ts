@@ -31,13 +31,13 @@ export class NetConnectionService {
         this._connectionStatus = true;
         observer.next( true );
       } );
-    } );    
+    } );
   }
-  
+
   get connectionMonitor(): Observable<boolean> {
     return this._connectionMonitor;
   }
-  
+
   get connetionStatus(): boolean {
     return this._connectionStatus;
   }

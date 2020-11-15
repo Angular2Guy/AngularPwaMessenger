@@ -31,8 +31,8 @@ export class HttpProfileInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       tap(
         (event: HttpEvent<any>) => ok = event instanceof HttpResponse ? 'succeeded' : '',
-        (error: HttpErrorResponse) => ok = "failed"
-      ),      
+        (error: HttpErrorResponse) => ok = 'failed'
+      ),
       finalize(() => {
         const elapsed = Date.now() - started;
         const msg = `${request.method} "${request.urlWithParams}" ${ok} in ${elapsed} ms.`;

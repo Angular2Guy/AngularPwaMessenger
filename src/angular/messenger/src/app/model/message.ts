@@ -16,10 +16,10 @@ export interface Message {
   localId?: number;
   fromId: string;
   toId: string;
-  timestamp?: Date,
-  text: string,
-  filename?: string,
-  send: boolean,
-  received: boolean,
-  url?: SafeUrl
+  timestamp?: Date;
+  text: string;
+  filename?: string;
+  send: boolean;
+  received: boolean;
+  url?: SafeUrl;
 }
