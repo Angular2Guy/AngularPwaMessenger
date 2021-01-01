@@ -4,7 +4,7 @@
 
 Author: Sven Loesekann
 
-Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Spring Webflux, MongoDB, Maven, Docker
+Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
 ## What is the goal?
 
