@@ -4,7 +4,7 @@
 
 Author: Sven Loesekann
 
-Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Spring Webflux, MongoDB, Maven, Docker
+Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
 ## What is the goal?
 
@@ -32,4 +32,4 @@ Nodejs 12.16.x or newer
 
 Npm 6.13.4 or newer
 
-Angular Cli 10 or newer.
+Angular Cli 11 or newer.
