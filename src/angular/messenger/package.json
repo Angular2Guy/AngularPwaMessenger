@@ -11,6 +11,7 @@
     "test-local": "ng test --browsers Chromium --watch=true",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "postinstall": "ngcc",
     "prebuild": "rimraf ./dist && mkdirp ./dist",
     "postbuild": "npm run deploy",
     "predeploy": "rimraf ../../main/resources/static/*",
@@ -35,7 +36,7 @@
     "core-js": "^2.5.7",
     "dexie": "^2.0.4",
     "material-design-icons": "^3.0.1",
-    "rxjs": "~6.5.4",
+    "rxjs": "~6.6.3",
     "tslib": "^2.0.0",
     "web-animations-js": "^2.3.2",
     "zone.js": "~0.10.3"
