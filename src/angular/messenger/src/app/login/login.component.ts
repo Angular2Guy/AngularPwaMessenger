@@ -11,9 +11,9 @@
    limitations under the License.
  */
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MyUser } from '../model/myUser';
-import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MainComponent } from '../main/main.component';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocaldbService } from '../services/localdb.service';
@@ -21,7 +21,6 @@ import { LocalUser } from '../model/localUser';
 import { JwttokenService } from '../services/jwttoken.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { CryptoService } from '../services/crypto.service';
-import { Tuple } from '../common/tuple';
 
 
 @Component( {
@@ -68,7 +67,9 @@ export class LoginComponent implements OnInit {
     if ( group.get( 'password' ).touched || group.get( 'password2' ).touched ) {
       this.pwMatching = group.get( 'password' ).value === group.get( 'password2' ).value && group.get( 'password' ).value !== '';
       if ( !this.pwMatching ) {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         group.get( 'password' ).setErrors( { MatchPassword: true } );
+// eslint-disable-next-line @typescript-eslint/naming-convention
         group.get( 'password2' ).setErrors( { MatchPassword: true } );
       } else {
         group.get( 'password' ).setErrors( null );
@@ -129,7 +130,7 @@ export class LoginComponent implements OnInit {
                 } );
               }
             } );
-        }, err => {
+        }, () => {
           myUser.password = this.loginForm.get( 'password' ).value;
           this.localLogin( myUser );
           });
@@ -139,49 +140,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  private localLogin( myUser: MyUser ) {
-    const myLocalUser: LocalUser = {
-      base64Avatar: null,
-      createdAt: null,
-      email: null,
-      hash: null,
-      publicKey: null,
-      privateKey: null,
-      salt: null,
-      username: myUser.username,
-      userId: null
-    };
-    this.localdbService.loadUser( myLocalUser ).then( localUserList =>
-      localUserList.first().then( myLocalUser => {
-        myUser.userId = myLocalUser.userId;
-        return this.login( myUser, myLocalUser );
-        }) );
-  }
-
-  private createLocalUser( us: MyUser, passwd: string): PromiseLike<LocalUser> {
-    let localUser: LocalUser = null;
-    return this.cryptoService.generateKey( passwd, us.salt ? us.salt : null )
-      .then( ( result ) => {
-        localUser = {
-          base64Avatar: us.base64Avatar,
-          createdAt: us.createdAt,
-          email: us.email,
-          hash: result.a,
-          salt: result.b,
-          username: us.username,
-          publicKey: us.publicKey,
-          privateKey: us.privateKey,
-          userId: us.userId
-        };
-        return localUser;
-      } ).then( myLocalUser => this.localdbService.storeUser( myLocalUser ) )
-      .then( value => Promise.resolve( value ) ).then( () => localUser );
-  }
-
   signin( us: MyUser ): void {
     this.data.myUser = null;
     if ( us.username !== null ) {
-      this.createLocalUser( us, this.signinForm.get( 'password' ).value ).then( value => {
+      this.createLocalUser( us, this.signinForm.get( 'password' ).value ).then( () => {
         this.signinFailed = false;
         this.dialogRef.close();
       } );
@@ -224,5 +186,44 @@ export class LoginComponent implements OnInit {
 
   onCancelClick(): void {
     this.dialogRef.close();
+  }
+
+  private localLogin( myUser: MyUser ) {
+    const myLocalUser: LocalUser = {
+      base64Avatar: null,
+      createdAt: null,
+      email: null,
+      hash: null,
+      publicKey: null,
+      privateKey: null,
+      salt: null,
+      username: myUser.username,
+      userId: null
+    };
+    this.localdbService.loadUser( myLocalUser ).then( localUserList =>
+      localUserList.first().then( myLocalUser1 => {
+        myUser.userId = myLocalUser1.userId;
+        return this.login( myUser, myLocalUser1 );
+        }) );
+  }
+
+  private createLocalUser( us: MyUser, passwd: string): PromiseLike<LocalUser> {
+    let localUser: LocalUser = null;
+    return this.cryptoService.generateKey( passwd, us.salt ? us.salt : null )
+      .then( ( result ) => {
+        localUser = {
+          base64Avatar: us.base64Avatar,
+          createdAt: us.createdAt,
+          email: us.email,
+          hash: result.a,
+          salt: result.b,
+          username: us.username,
+          publicKey: us.publicKey,
+          privateKey: us.privateKey,
+          userId: us.userId
+        };
+        return localUser;
+      } ).then( myLocalUser => this.localdbService.storeUser( myLocalUser ) )
+      .then( value => Promise.resolve( value ) ).then( () => localUser );
   }
 }

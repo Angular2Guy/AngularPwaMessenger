@@ -38,6 +38,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { CameraComponent } from './camera/camera.component';
 import { FileuploadComponent } from './fileupload/fileupload.component';
 import { TokenInterceptor } from './services/token.interceptor';
+import { PhoneCallComponent } from './phone-call/phone-call.component';
 
 
 @NgModule({
@@ -54,7 +55,8 @@ import { TokenInterceptor } from './services/token.interceptor';
     LoginComponent,
     AddContactsComponent,
     CameraComponent,
-    FileuploadComponent
+    FileuploadComponent,
+    PhoneCallComponent
   ],
   imports: [
     BrowserModule,

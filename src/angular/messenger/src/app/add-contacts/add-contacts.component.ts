@@ -55,12 +55,6 @@ export class AddContactsComponent implements OnInit, OnDestroy {
       this.myControlSub.unsubscribe();
     }
 
-    private filterContacts(contacts: Contact[]): Contact[] {
-        return contacts.filter(con =>
-          this.myContacts.filter(myCon =>
-            myCon.userId === con.userId).length === 0);
-    }
-
     addContact() {
         if(this.filteredOptions.length === 1) {
             if(!this.filteredOptions[0].base64Avatar) {
@@ -80,5 +74,11 @@ export class AddContactsComponent implements OnInit, OnDestroy {
                     this.filteredOptions = [];
                 });
         }
+    }
+
+    private filterContacts(contacts: Contact[]): Contact[] {
+        return contacts.filter(con =>
+          this.myContacts.filter(myCon =>
+            myCon.userId === con.userId).length === 0);
     }
 }

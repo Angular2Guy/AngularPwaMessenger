@@ -10,10 +10,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-/* eslint-disable @typescript-eslint/naming-convention */
+import { Component, OnInit } from '@angular/core';
 
-export class Constants {
-  static readonly IMAGE_TYPE = 'image/jpeg';
-  static readonly IMAGE_PREFIX = 'data:'+Constants.IMAGE_TYPE+';base64,';
-  static readonly B64_IMAGE_PREFIX = 'JPGBASE64';
+@Component({
+  selector: 'app-phone-call',
+  templateUrl: './phone-call.component.html',
+  styleUrls: ['./phone-call.component.scss']
+})
+export class PhoneCallComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
 }

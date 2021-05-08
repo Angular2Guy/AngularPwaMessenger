@@ -10,15 +10,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TranslationsService {
-  private translatonsMap = new Map<string,string>();
   public static readonly ONLINE_AGAIN_MSG = 'onlineAgainMsg';
   public static readonly MAIN_COMPONENT = 'main';
+  private translatonsMap = new Map<string,string>();
 
   constructor() {
 	const str = $localize`:@@onlineAgainMsg:You are online again and your token is expired. To reconnect please logout and login again.`;

@@ -46,13 +46,13 @@ export class LocaldbService extends Dexie {
   }
 
   storeMessage(message: Message): Promise<number> {
-	const localMessage: LocalMessage = <LocalMessage> message;
+	const localMessage: LocalMessage = message;
 	delete localMessage.id;
     return this.transaction('rw', this.messages, () => this.messages.add(localMessage));
   }
 
   updateMessage(message: Message): Promise<number> {
-	const localMessage: LocalMessage = <LocalMessage> message;
+	const localMessage: LocalMessage = message;
 	localMessage.id = message.localId;
 	delete message.localId;
     return this.transaction('rw', this.messages, () => this.messages.update(localMessage.id, message));
@@ -73,14 +73,6 @@ export class LocaldbService extends Dexie {
               .toArray()).then(localMsgs => this.localMsgToMsg(localMsgs));
   }
 
-  private localMsgToMsg(localMsgs: LocalMessage[]): Message[] {
-	return localMsgs.map(localMsg => {
-			const msg: Message = <Message> localMsg;
-			msg.localId = localMsg.id;
-			localMsg.id = null;
-			return msg;
-		});
-  }
 
   storeUser(user: LocalUser): Promise<number> {
     return this.transaction('rw', this.users, () => this.users.add(user));
@@ -88,5 +80,14 @@ export class LocaldbService extends Dexie {
 
   loadUser(user: LocalUser): Promise<Dexie.Collection<LocalUser, number>> {
     return this.transaction('rw', this.users, () => this.users.filter(dbuser => dbuser.username === user.username));
+  }
+
+  private localMsgToMsg(localMsgs: LocalMessage[]): Message[] {
+	return localMsgs.map(localMsg => {
+			const msg: Message = localMsg;
+			msg.localId = localMsg.id;
+			localMsg.id = null;
+			return msg;
+		});
   }
 }

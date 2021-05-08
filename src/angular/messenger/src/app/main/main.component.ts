@@ -10,12 +10,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, HostListener, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '../login/login.component';
 import { MyUser } from '../model/myUser';
 import { SyncMsgs } from '../model/syncMsgs';
@@ -25,7 +25,6 @@ import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
 import { TranslationsService } from '../services/translations.service';
 import { Subscription } from 'rxjs';
-import { DOCUMENT } from '@angular/common';
 import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
 
@@ -36,13 +35,13 @@ import { FileuploadComponent } from '../fileupload/fileupload.component';
   styleUrls: ['./main.component.scss']
 } )
 export class MainComponent implements OnInit, OnDestroy {
-  private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   windowHeight: number;
   ownContact: Contact;
   contacts: Contact[] = [];
   selectedContact: Contact;
   messages: Message[] = [];
   myUser: MyUser = null;
+  private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
 
@@ -53,8 +52,12 @@ export class MainComponent implements OnInit, OnDestroy {
     private translationsService: TranslationsService,
     public dialog: MatDialog,
     private cryptoService: CryptoService,
- 	private sanitizer: DomSanitizer,
-    @Inject( DOCUMENT ) private document ) { }
+ 	private sanitizer: DomSanitizer ) { }
+
+  @HostListener( 'window:resize', ['$event'] )
+  onResize( event: any ): void {
+    this.windowHeight = event.target.innerHeight - 84;
+  }
 
   ngOnInit(): void {
     this.windowHeight = window.innerHeight - 84;
@@ -68,15 +71,8 @@ export class MainComponent implements OnInit, OnDestroy {
     this.conMonSub.unsubscribe();
   }
 
-  @HostListener( 'window:resize', ['$event'] )
-  onResize( event: any ): void {
-    this.windowHeight = event.target.innerHeight - 84;
-  }
-
-  private onlineAgain( online: boolean ): void {
-    if ( online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime() ) {
-      alert( this.translationsService.getTranslation(this.componentKey, TranslationsService.ONLINE_AGAIN_MSG));
-    }
+  startCall(): void {
+	console.log('startCall');
   }
 
   openFileuploadDialog(): void {
@@ -160,6 +156,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   }
 
+  addNewContact( contact: Contact ): void {
+    this.contacts.push( contact );
+  }
+
   private receiveRemoteMsgs( syncMsgs1: SyncMsgs ) {
     this.messageService.findMessages( syncMsgs1 ).subscribe( msgs => {
       const promises: PromiseLike<Message>[] = [];
@@ -171,23 +171,22 @@ export class MainComponent implements OnInit, OnDestroy {
         } ) );
       } );
       Promise.all( promises ).then( myMsgs => {
-        const promises2: PromiseLike<Promise<number>>[] = [];
-        myMsgs.forEach( msg => {
-          promises2.push(
-            this.cryptoService.encryptTextAes( this.myUser.password, this.myUser.salt, msg.text )
-              .then( value => {
-                msg.text = value;
-                return msg;
-              } ).then( myValue => this.localdbService.storeMessage( msg ) ) );
-        } );
+        const promises2: PromiseLike<number>[] = [];
+        myMsgs.forEach( msg => promises2.push(
+                this.cryptoService.encryptTextAes(this.myUser.password, this.myUser.salt, msg.text)
+                    .then(value => {
+                        msg.text = value;
+                        return msg;
+                    }).then(myValue => this.localdbService.storeMessage(myValue)).then())
+         );
 
-        Promise.all( promises2 ).then( values => Promise.all( values ).then( myValue => {
+        Promise.all( promises2 ).then( values => Promise.all( values ).then( () => {
           if ( promises.length > 0 ) {
             this.addMessages();
           }
         } ) );
       } );
-    }, error => console.log( 'findMessages failed.' ) );
+    }, error => console.log( 'findMessages failed.' + error ) );
   }
 
   private sendRemoteMsgs( syncMsgs1: SyncMsgs ): void {
@@ -196,7 +195,8 @@ export class MainComponent implements OnInit, OnDestroy {
       this.decryptLocalMsgs( msgs ).then( value => {
         const promises: PromiseLike<Message>[] = [];
         value.forEach( msg => {
-          const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ? null : this.contacts.filter( con => con.userId = msg.toId )[0];
+          const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ?
+				null : this.contacts.filter( con => con.userId = msg.toId )[0];
           if ( !fromCon ) {
             console.log( fromCon );
           } else {
@@ -211,17 +211,18 @@ export class MainComponent implements OnInit, OnDestroy {
             ownId: this.ownContact.userId,
             msgs: myMsgs
           };
-          this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs => {
+          this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs2 => {
             const promises2: PromiseLike<number>[] = [];
             msgs.forEach( msg => {
               const newMsg = oriMsgs.filter( oriMsg => oriMsg.localId === msg.localId )[0];
-              const myMsg = myMsgs.filter( myMsg2 => myMsg2.localId === msg.localId )[0];
+              const myMsg = myMsgs2.filter( myMsg2 => myMsg2.localId === msg.localId )[0];
               newMsg.send = true;
               newMsg.timestamp = myMsg.timestamp;
-              promises2.push( this.localdbService.updateMessage( newMsg ) );//.then(result => console.log(msg), reject => console.log(reject));
+              promises2.push( this.localdbService.updateMessage( newMsg ) );
+				//.then(result => console.log(msg), reject => console.log(reject));
             } );
             Promise.all( promises2 ).then( () => this.addMessages() );
-          }, error => console.log( 'sendRemoteMsgs failed.' ) );
+          }, error => console.log( 'sendRemoteMsgs failed.' + error ) );
         } );
       } );
     } );
@@ -242,7 +243,7 @@ export class MainComponent implements OnInit, OnDestroy {
           return Promise.all( promises );
         } ).then( () => this.addMessages() );
       }
-    }, error => console.log( 'storeReceivedMessages failed.' ) );
+    }, error => console.log( 'storeReceivedMessages failed.' + error) );
   }
 
   private syncMsgs(): void {
@@ -267,7 +268,7 @@ export class MainComponent implements OnInit, OnDestroy {
         return msg;
       } ) );
     } );
-    return Promise.all( promises ).then( msgs => msgs );
+    return Promise.all( promises ).then( msgs2 => msgs2 );
   }
 
   private getLastSyncDate(): Date {
@@ -293,7 +294,9 @@ export class MainComponent implements OnInit, OnDestroy {
       } ) );
   }
 
-  addNewContact( contact: Contact ): void {
-    this.contacts.push( contact );
+  private onlineAgain( online: boolean ): void {
+    if ( online && this.jwttokenService.getExpiryDate().getTime() < new Date().getTime() ) {
+      alert( this.translationsService.getTranslation(this.componentKey, TranslationsService.ONLINE_AGAIN_MSG));
+    }
   }
 }

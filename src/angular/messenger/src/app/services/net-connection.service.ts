@@ -17,28 +17,28 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 } )
 export class NetConnectionService {
-  private _connectionMonitor: Observable<boolean>;
-  private _connectionStatus: boolean;
+  private localConnectionMonitor: Observable<boolean>;
+  private localCconnectionStatus: boolean;
 
   constructor() {
-    this._connectionStatus = navigator.onLine;
-    this._connectionMonitor = new Observable( ( observer ) => {
+    this.localCconnectionStatus = navigator.onLine;
+    this.localConnectionMonitor = new Observable( ( observer ) => {
       window.addEventListener( 'offline', ( e ) => {
-        this._connectionStatus = false;
+        this.localCconnectionStatus = false;
         observer.next( false );
       } );
       window.addEventListener( 'online', ( e ) => {
-        this._connectionStatus = true;
+        this.localCconnectionStatus = true;
         observer.next( true );
       } );
     } );
   }
 
   get connectionMonitor(): Observable<boolean> {
-    return this._connectionMonitor;
+    return this.localConnectionMonitor;
   }
 
   get connetionStatus(): boolean {
-    return this._connectionStatus;
+    return this.localCconnectionStatus;
   }
 }

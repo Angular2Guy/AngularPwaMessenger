@@ -1,4 +1,3 @@
-import { SafeUrl } from '@angular/platform-browser';
 
 /**
  *    Copyright 2018 Sven Loesekann
@@ -12,6 +11,8 @@ import { SafeUrl } from '@angular/platform-browser';
    See the License for the specific language governing permissions and
    limitations under the License.
  */
+import { SafeUrl } from '@angular/platform-browser';
+
 export interface Message {
   localId?: number;
   fromId: string;

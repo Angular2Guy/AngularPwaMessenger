@@ -11,31 +11,31 @@
    limitations under the License.
  */
 import { Injectable } from '@angular/core';
-import {JwtToken} from '../model/jwtToken';
+import { JwtToken } from '../model/jwtToken';
 
 @Injectable( {
   providedIn: 'root'
 } )
 export class JwttokenService {
-  private _jwtToken: string = null;
+  private localJwtToken: string = null;
 
   constructor() { }
 
   get jwtToken(): string {
-    return this._jwtToken === null ? '' : this._jwtToken;
+    return this.localJwtToken === null ? '' : this.localJwtToken;
   }
 
   set jwtToken( token: string ) {
-    this._jwtToken = !token ? null : token;
+    this.localJwtToken = !token ? null : token;
   }
 
   get localLogin(): boolean {
-    return this._jwtToken ? false : true;
+    return this.localJwtToken ? false : true;
   }
 
   getExpiryDate(): Date {
     if(!this.localLogin) {
-      const jwtToken = this.urlBase64Decode(this._jwtToken);
+      const jwtToken = this.urlBase64Decode(this.localJwtToken);
       return new Date(jwtToken.exp*1000);
     } else {
       return new Date( '2000-01-01' );

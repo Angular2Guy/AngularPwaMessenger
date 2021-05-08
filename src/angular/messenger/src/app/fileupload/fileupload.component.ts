@@ -25,6 +25,7 @@ export class FileuploadComponent implements OnInit {
 	currentFile: File;
 	fileContent: string;
 	showFileSizeMsg: boolean;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	private readonly MB: number = 1024 * 1024;
 
 	constructor(public dialogRef: MatDialogRef<MainComponent>,
@@ -38,7 +39,7 @@ export class FileuploadComponent implements OnInit {
 		this.currentFile = fileInput.target.files[0];
 		const reader = new FileReader();
 		reader.onload = () => {
-			const textstr: string = <string>reader.result;
+			const textstr: string = reader.result as string;
 			const textstrs = textstr.split(';');
 			this.fileContent = textstrs[1];
 			//console.log(textstrs[1]);

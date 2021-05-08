@@ -12,13 +12,13 @@ import { Message } from '../model/message';
 })
 export class CameraComponent implements OnInit {
   @ViewChild('videoElement', { static: true }) videoElement: ElementRef;
-  private video: HTMLVideoElement;
   @ViewChild('canvasElement', { static: true }) canvasElement: ElementRef;
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
   showVideo = true;
   base64Img: string = null;
   showCameraMsg = false;
+  private video: HTMLVideoElement;
+  private canvas: HTMLCanvasElement;
+  private context: CanvasRenderingContext2D;
 
   constructor(public dialogRef: MatDialogRef<MainComponent>,
       @Inject( MAT_DIALOG_DATA ) public data: any) { }
@@ -40,7 +40,7 @@ export class CameraComponent implements OnInit {
       this.showCameraMsg = false;
       this.video.srcObject = stream;
       this.video.play();
-    }, rejected => {this.showCameraMsg = true;});
+    }, () => {this.showCameraMsg = true;});
   }
 
   capture() {

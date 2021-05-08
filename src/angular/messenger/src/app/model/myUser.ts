@@ -10,7 +10,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Contact } from './contact';
 
 export class MyUser {
   id?: number;
