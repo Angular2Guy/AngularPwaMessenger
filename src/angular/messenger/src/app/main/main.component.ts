@@ -28,6 +28,8 @@ import { Subscription } from 'rxjs';
 import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
 
+// eslint-disable-next-line no-shadow
+enum MyFeature { chat, phone, }
 
 @Component( {
   selector: 'app-main',
@@ -41,6 +43,8 @@ export class MainComponent implements OnInit, OnDestroy {
   selectedContact: Contact;
   messages: Message[] = [];
   myUser: MyUser = null;
+  myFeature = MyFeature;
+  selFeature = MyFeature.chat;
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
@@ -71,8 +75,9 @@ export class MainComponent implements OnInit, OnDestroy {
     this.conMonSub.unsubscribe();
   }
 
-  startCall(): void {
-	console.log('startCall');
+  switchContent(): void {
+	this.selFeature = this.selFeature === this.myFeature.chat ? this.myFeature.phone : this.myFeature.chat;
+	console.log('New feature ' + this.selFeature);
   }
 
   openFileuploadDialog(): void {
