@@ -5,7 +5,7 @@
     "http-server": "http-server -p 4300 -c-1 dist",
     "ng": "ng",
     "start": "ng serve --hmr --proxy-config proxy.conf.json",
-    "build": "ng build --prod --localize",
+    "build": "ng build --localize --configuration production",
     "test": "ng test --browsers ChromeHeadless --watch=false",
     "test-chromium": "ng test --browsers ChromiumHeadless --watch=false",
     "test-local": "ng test --browsers Chromium --watch=true",
