@@ -20,7 +20,6 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,17 +37,17 @@ public class AuthenticationService {
 	private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PasswordEncoder passwordEncoder;
-	private final ReactiveMongoOperations operations;
 	private final MailService mailService;
+	private final MyMongoRepository myMongoRepository;
 	@Value("${messenger.url.uuid.confirm}")
 	private String confirmUrl;
 
 	public AuthenticationService(JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder,
-			ReactiveMongoOperations operations, MailService mailService) {
+			MailService mailService, MyMongoRepository myMongoRepository) {
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.passwordEncoder = passwordEncoder;
-		this.operations = operations;
 		this.mailService = mailService;
+		this.myMongoRepository = myMongoRepository;
 	}
 
 	public Mono<AuthCheck> authorizeUser(AuthCheck authcheck, Map<String, String> headers) {
@@ -64,14 +63,14 @@ public class AuthenticationService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
-			MsgUser user = this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser()))
+			MsgUser user = this.myMongoRepository.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser()))
 					.block();
 			if (user.getUsername() == null) {
 				String encryptedPassword = this.passwordEncoder.encode(myUser.getPassword());
 				myUser.setPassword(encryptedPassword);
 				UUID uuid = UUID.randomUUID();
 				myUser.setUuid(uuid.toString());
-				this.operations.save(myUser).block();
+				this.myMongoRepository.save(myUser).block();
 				this.mailService.sendConfirmMail(myUser, this.confirmUrl);
 				myUser.setUserId(myUser.getId().toString());
 				myUser.setUuid(null);
@@ -87,10 +86,10 @@ public class AuthenticationService {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("uuid").is(uuid));
 		query.addCriteria(Criteria.where("confirmed").is(false));
-		return this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).flatMap(user -> {
+		return this.myMongoRepository.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).flatMap(user -> {
 			if (user.getUuid() != null && user.getUuid().equalsIgnoreCase(uuid)) {
 				user.setConfirmed(true);
-				return operations.save(user);
+				return this.myMongoRepository.save(user);
 			}
 			return Mono.just(user);
 		}).map(user -> user.isConfirmed());
@@ -102,7 +101,7 @@ public class AuthenticationService {
 		if (this.confirmUrl != null && !this.confirmUrl.isBlank()) {
 			query.addCriteria(Criteria.where("confirmed").is(true));
 		}
-		return this.operations.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).map(user1 -> {
+		return this.myMongoRepository.findOne(query, MsgUser.class).switchIfEmpty(Mono.just(new MsgUser())).map(user1 -> {
 			if (user1.getId() != null)
 				user1.setUserId(user1.getId().toString());
 			return user1;

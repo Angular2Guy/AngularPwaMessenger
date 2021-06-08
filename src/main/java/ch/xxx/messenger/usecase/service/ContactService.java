@@ -12,7 +12,6 @@
  */
 package ch.xxx.messenger.usecase.service;
 
-import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -23,14 +22,14 @@ import reactor.core.publisher.Flux;
 
 @Service
 public class ContactService {
-	private final ReactiveMongoOperations operations;
+	private final MyMongoRepository myMongoRepository; 
 	
-	public ContactService(ReactiveMongoOperations operations) {
-		this.operations = operations;
+	public ContactService(MyMongoRepository myMongoRepository) {
+		this.myMongoRepository = myMongoRepository;
 	}
 	
 	public Flux<Contact> findContacts(Contact contact) {
-		return operations
+		return this.myMongoRepository
 				.find(new Query().addCriteria(
 						Criteria.where("username").regex(String.format(".*%s.*", contact.getName()))), MsgUser.class)
 				.take(50).map(myUser -> new Contact(myUser.getUsername(), myUser.getBase64Avatar(),
