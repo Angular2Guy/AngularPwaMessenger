@@ -58,7 +58,7 @@ public class JwtTokenProvider {
 		Date validity = new Date(issuedAt.getTime() + validityInMilliseconds);
 
 		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
-		return Jwts.builder().setClaims(claims).setIssuedAt(issuedAt).setExpiration(validity)				
+		return Jwts.builder().setClaims(claims).setIssuedAt(issuedAt).setExpiration(validity)
 				.signWith(key, SignatureAlgorithm.HS256).compact();
 	}
 
@@ -70,8 +70,8 @@ public class JwtTokenProvider {
 		return Optional.of(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token.get()));
 	}
 
-	public Authentication getAuthentication(String token) {		
-		if(this.getAuthorities(token).stream().filter(role -> role.equals(Role.GUEST)).count() > 0) {
+	public Authentication getAuthentication(String token) {
+		if (this.getAuthorities(token).stream().filter(role -> role.equals(Role.GUEST)).count() > 0) {
 			return new UsernamePasswordAuthenticationToken(this.getUsername(token), null);
 		}
 		return new UsernamePasswordAuthenticationToken(this.getUsername(token), "", this.getAuthorities(token));
@@ -81,19 +81,19 @@ public class JwtTokenProvider {
 		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Collection<Role> getAuthorities(String token) {
 		Collection<Role> roles = new LinkedList<>();
-		for(Role role :Role.values()) {
+		for (Role role : Role.values()) {
 			roles.add(role);
 		}
 		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
-		List<Map<String,String>> myRoles = (List<Map<String,String>>) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("auth");
-		return myRoles.stream().map(map -> map.values())
-				.flatMap(Collection::stream)
-				.map(str -> roles.stream().filter(r -> r.name().equals(str))
-						.findFirst().orElse(Role.GUEST)).collect(Collectors.toList());
+		List<Map<String, String>> myRoles = (List<Map<String, String>>) Jwts.parserBuilder().setSigningKey(key).build()
+				.parseClaimsJws(token).getBody().get("auth");
+		return myRoles.stream().map(map -> map.values()).flatMap(Collection::stream)
+				.map(str -> roles.stream().filter(r -> r.name().equals(str)).findFirst().orElse(Role.GUEST))
+				.collect(Collectors.toList());
 	}
 
 	public String resolveToken(HttpServletRequest req) {
@@ -110,7 +110,7 @@ public class JwtTokenProvider {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
-			throw new JwtTokenValidationException("Expired or invalid JWT token",e);
+			throw new JwtTokenValidationException("Expired or invalid JWT token", e);
 		}
 	}
 

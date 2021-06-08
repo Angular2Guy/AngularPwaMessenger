@@ -121,16 +121,6 @@
 			<artifactId>jaxb-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
-		</dependency>
-		<dependency>
 			<groupId>com.tngtech.archunit</groupId>
 			<artifactId>archunit-junit5</artifactId>
 			<version>0.19.0</version>
@@ -206,8 +196,7 @@
 							<executable>npm</executable>
 							<arguments>
 								<argument>run</argument>
-								<!-- <argument>test-chromium</argument> -->
-								<argument>test</argument>
+								<argument>${npm.test.script}</argument>
 							</arguments>
 							<workingDirectory>src/angular/messenger</workingDirectory>
 						</configuration>
@@ -265,6 +254,16 @@
 					<groupId>de.flapdoodle.embed</groupId>
 					<artifactId>de.flapdoodle.embed.mongo</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>io.springfox</groupId>
+					<artifactId>springfox-swagger2</artifactId>
+					<version>2.9.2</version>
+				</dependency>
+				<dependency>
+					<groupId>io.springfox</groupId>
+					<artifactId>springfox-swagger-ui</artifactId>
+					<version>2.9.2</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
@@ -275,31 +274,6 @@
 					<value>true</value>
 				</property>
 			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.spotify</groupId>
-						<artifactId>dockerfile-maven-plugin</artifactId>
-						<version>1.4.4</version>
-						<executions>
-							<execution>
-								<id>default</id>
-								<goals>
-									<goal>build</goal>
-									<goal>push</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<repository>${docker.image.prefix}/${project.artifactId}</repository>
-							<tag>${project.version}</tag>
-							<buildArgs>
-								<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-							</buildArgs>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 </project>

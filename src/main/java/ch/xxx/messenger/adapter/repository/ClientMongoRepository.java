@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.reactivestreams.client.MongoCollection;
 
 import ch.xxx.messenger.usecase.service.MyMongoRepository;
@@ -56,8 +57,8 @@ public class ClientMongoRepository implements MyMongoRepository {
 		return this.operations.find(query, entityClass, collectionName);
 	}
 	
-	public <T> Flux<T> insertAll(Mono<? extends Collection<? extends T>> batchToSave, String collectionName) {
-		return this.operations.insertAll(batchToSave,collectionName);
+	public <T> Flux<T> insertAll(Collection<? extends T> batchToSave) {
+		return this.operations.insertAll(batchToSave);
 	}
 	
 	public Mono<Boolean> collectionExists(String collectionName) {
@@ -66,5 +67,9 @@ public class ClientMongoRepository implements MyMongoRepository {
 	
 	public Mono<MongoCollection<Document>> createCollection(String collectionName) {
 		return this.operations.createCollection(collectionName);
+	}
+	
+	public Mono<DeleteResult> remove(Object objectToRemove) {
+		return this.operations.remove(objectToRemove);
 	}
 }

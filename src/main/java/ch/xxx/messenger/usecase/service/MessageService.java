@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -38,15 +37,15 @@ import reactor.core.publisher.Mono;
 public class MessageService {
 	private static final int MB = 1024 * 1024;
 
-	private final ReactiveMongoOperations operations;
+	private final MyMongoRepository myMongoRepository;
 
-	public MessageService(ReactiveMongoOperations operations) {
-		this.operations = operations;
+	public MessageService(MyMongoRepository myMongoRepository) {
+		this.myMongoRepository = myMongoRepository;
 	}
 
 	public Flux<Message> findMessages(SyncMsgs syncMsgs) {
 		List<Message> msgToUpdate = new LinkedList<>();
-		return this.operations
+		return this.myMongoRepository
 				.find(new Query().addCriteria(Criteria.where("fromId").in(syncMsgs.getContactIds())
 						.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
 								.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))),
@@ -56,22 +55,24 @@ public class MessageService {
 						msg.get().setReceived(true);
 						msgToUpdate.add(msg.get());
 					}
-				}).doAfterTerminate(
-						() -> Flux.concat(msgToUpdate.stream().flatMap(msg -> Stream.of(this.operations.save(msg)))
-								.collect(Collectors.toList())).collectList().block());
+				})
+				.doAfterTerminate(() -> Flux.concat(msgToUpdate.stream()
+						.flatMap(msg -> Stream.of(this.myMongoRepository.save(msg))).collect(Collectors.toList()))
+						.collectList().block());
 	}
 
 	public Flux<Message> receivedMessages(Contact contact) {
 		List<Message> msgToDelete = new LinkedList<>();
-		return this.operations.find(new Query().addCriteria(
+		return this.myMongoRepository.find(new Query().addCriteria(
 				Criteria.where("fromId").is(contact.getUserId()).andOperator(Criteria.where("received").is(true))),
 				Message.class).doOnEach(msg -> {
 					if (msg.hasValue()) {
 						msgToDelete.add(msg.get());
 					}
-				}).doAfterTerminate(
-						() -> Flux.concat(msgToDelete.stream().flatMap(msg -> Stream.of(operations.remove(msg)))
-								.collect(Collectors.toList())).collectList().block());
+				})
+				.doAfterTerminate(() -> Flux.concat(msgToDelete.stream()
+						.flatMap(msg -> Stream.of(this.myMongoRepository.remove(msg))).collect(Collectors.toList()))
+						.collectList().block());
 	}
 
 	public ResponseEntity<Flux<Message>> storeMessages(SyncMsgs syncMsgs) {
@@ -81,10 +82,10 @@ public class MessageService {
 			return msg;
 		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB))
 				.collect(Collectors.toList());
-		Flux<Message> msgsFlux = this.operations
+		Flux<Message> msgsFlux = this.myMongoRepository
 				.find(new Query().addCriteria(Criteria.where("fromId").is(syncMsgs.getOwnId())), Message.class)
 				.collectList().flatMap(messages -> sizeOfMessages(messages, syncMsgs.getOwnId())).flux()
-				.flatMap(value -> this.operations.insertAll(msgs));
+				.flatMap(value -> this.myMongoRepository.insertAll(msgs));
 		return syncMsgs.getMsgs().size() > msgs.size()
 				? ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(msgsFlux)
 				: ResponseEntity.ok(msgsFlux);
