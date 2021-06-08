@@ -52,7 +52,7 @@ public class AuthenticationController {
 
 	@GetMapping("/confirm/{uuid}")
 	public Mono<Boolean> getConfirmUuid(@PathVariable String uuid) {
-		return this.authenticationService.getConfirmUuid(uuid);
+		return this.authenticationService.confirmUuid(uuid);
 	}
 
 	@PostMapping("/login")

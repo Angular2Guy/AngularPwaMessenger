@@ -83,7 +83,7 @@ public class AuthenticationService {
 		return Mono.just(new MsgUser());
 	}
 
-	public Mono<Boolean> getConfirmUuid(String uuid) {
+	public Mono<Boolean> confirmUuid(String uuid) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("uuid").is(uuid));
 		query.addCriteria(Criteria.where("confirmed").is(false));
