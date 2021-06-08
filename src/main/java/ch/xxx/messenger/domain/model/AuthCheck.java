@@ -10,17 +10,26 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger;
+package ch.xxx.messenger.domain.model;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@SpringBootTest
-public class MessengerApplicationTests {
-
-	@Test
-	public void contextLoads() {
+public class AuthCheck {
+	private final String path;
+	private final boolean authorized;	
+	
+	public AuthCheck(@JsonProperty("path") String path, @JsonProperty("authorized") boolean authorized) {
+		super();
+		this.path = path;
+		this.authorized = authorized;
 	}
 
-}
+	public boolean isAuthorized() {
+		return authorized;
+	}
 
+	public String getPath() {
+		return path;
+	}
+	
+}

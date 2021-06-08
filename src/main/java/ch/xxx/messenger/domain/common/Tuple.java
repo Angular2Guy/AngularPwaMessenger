@@ -10,17 +10,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger;
+package ch.xxx.messenger.domain.common;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-public class MessengerApplicationTests {
-
-	@Test
-	public void contextLoads() {
+public class Tuple<A,B> {
+	private final A a;
+	private final B b;
+	
+	public Tuple(A a, B b) {
+		this.a = a;
+		this.b = b;
 	}
 
-}
+	public A getA() {
+		return a;
+	}
 
+	public B getB() {
+		return b;
+	}
+	
+}

@@ -10,17 +10,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger;
+package ch.xxx.messenger.domain.exception;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.stereotype.Component;
 
-@SpringBootTest
-public class MessengerApplicationTests {
-
-	@Test
-	public void contextLoads() {
-	}
+@Component
+public class MyErrorAttributes extends DefaultErrorAttributes {
 
 }
-

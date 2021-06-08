@@ -10,17 +10,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger;
+package ch.xxx.messenger.domain.exception;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+public class TooManyMsgException extends RuntimeException {
+	private static final long serialVersionUID = 1191680533563683261L;
 
-@SpringBootTest
-public class MessengerApplicationTests {
-
-	@Test
-	public void contextLoads() {
+	public TooManyMsgException(String message) {
+		super(message);
 	}
-
 }
-

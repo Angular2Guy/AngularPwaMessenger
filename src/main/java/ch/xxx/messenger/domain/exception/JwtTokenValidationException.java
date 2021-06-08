@@ -10,17 +10,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger;
+package ch.xxx.messenger.domain.exception;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+public class JwtTokenValidationException extends RuntimeException {
 
-@SpringBootTest
-public class MessengerApplicationTests {
+	private static final long serialVersionUID = 4495144584990207860L;
 
-	@Test
-	public void contextLoads() {
+	public JwtTokenValidationException(String message) {
+		super(message);
 	}
-
+	
+	public JwtTokenValidationException(String message, Throwable throwable) {
+		super(message,throwable);
+	}
 }
-
