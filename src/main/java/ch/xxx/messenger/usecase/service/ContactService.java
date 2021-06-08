@@ -1,4 +1,3 @@
-
 /**
  *    Copyright 2018 Sven Loesekann
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,6 @@ package ch.xxx.messenger.usecase.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MessageService {
+public class ContactService {
 
 }
