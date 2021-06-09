@@ -13,6 +13,9 @@
  */
 package ch.xxx.messenger.usecase.service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -35,6 +40,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class MessageService {
+	private static final Logger LOG = LoggerFactory.getLogger(MessageService.class);
 	private static final int MB = 1024 * 1024;
 
 	private final MyMongoRepository myMongoRepository;
@@ -73,6 +79,15 @@ public class MessageService {
 				.doAfterTerminate(() -> Flux.concat(msgToDelete.stream()
 						.flatMap(msg -> Stream.of(this.myMongoRepository.remove(msg))).collect(Collectors.toList()))
 						.collectList().block());
+	}
+
+	public void cleanUpMessages(Long messageTtl) {
+		LOG.info("CleanUpOldMessages started.");
+		Date removeTimestamp = Date.from(LocalDateTime.now().minusDays(messageTtl)
+				.toInstant(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
+		this.myMongoRepository.findAllAndRemove(new Query().addCriteria(Criteria.where("timestamp").lt(removeTimestamp)),
+				Message.class).collectList().block();
+		LOG.info("CleanUpOldMessages finished.");
 	}
 
 	public ResponseEntity<Flux<Message>> storeMessages(SyncMsgs syncMsgs) {

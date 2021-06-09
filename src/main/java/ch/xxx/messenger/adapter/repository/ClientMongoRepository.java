@@ -72,4 +72,7 @@ public class ClientMongoRepository implements MyMongoRepository {
 	public Mono<DeleteResult> remove(Object objectToRemove) {
 		return this.operations.remove(objectToRemove);
 	}
+	public <T> Flux<T> findAllAndRemove(Query query, Class<T> entityClass) {
+		return this.operations.findAllAndRemove(query, entityClass);
+	}
 }

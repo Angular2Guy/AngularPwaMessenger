@@ -12,31 +12,25 @@
  */
 package ch.xxx.messenger.adapter.cron;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.ReactiveMongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import ch.xxx.messenger.domain.model.Message;
+import ch.xxx.messenger.usecase.service.MessageService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
 @Component
 public class MessageCronJob {
 	private static final Logger LOG = LoggerFactory.getLogger(MessageCronJob.class);
 	@Value("${cronjob.message.ttl.days}")
-	private int messageTtl;
-	@Autowired
-	private ReactiveMongoOperations operations;
+	private Long messageTtl;
+	private final MessageService messageService;
+	
+	public MessageCronJob(MessageService messageService) {
+		this.messageService = messageService;
+	}
 	
 	/**
 	 * remove messages that are older than 30 days. (unreceived/unrequested) 
@@ -44,11 +38,6 @@ public class MessageCronJob {
 	@Scheduled(cron = "5 0 * * * ?")
 	@SchedulerLock(name = "MessageCleanUp_scheduledTask", lockAtLeastFor = "PT2H", lockAtMostFor = "PT3H")
 	public void cleanUpOldMessages() {
-		LOG.info("CleanUpOldMessages started.");
-		Date removeTimestamp = Date.from(LocalDateTime.now().minusDays(messageTtl)
-				.toInstant(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
-		this.operations.findAllAndRemove(new Query().addCriteria(Criteria.where("timestamp").lt(removeTimestamp)),
-				Message.class).collectList().block();
-		LOG.info("CleanUpOldMessages finished.");
+		this.messageService.cleanUpMessages(this.messageTtl);
 	}
 }

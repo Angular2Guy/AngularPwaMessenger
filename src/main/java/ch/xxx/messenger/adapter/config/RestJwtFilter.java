@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import ch.xxx.messenger.domain.common.JwtTokenProvider;
 import ch.xxx.messenger.domain.common.Role;
 import ch.xxx.messenger.domain.common.Tuple;
 import ch.xxx.messenger.domain.common.WebUtils;

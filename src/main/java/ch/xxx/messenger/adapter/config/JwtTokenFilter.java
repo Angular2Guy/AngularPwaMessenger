@@ -24,6 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+import ch.xxx.messenger.domain.common.JwtTokenProvider;
+
 public class JwtTokenFilter extends GenericFilterBean {	
 	
 	private JwtTokenProvider jwtTokenProvider;

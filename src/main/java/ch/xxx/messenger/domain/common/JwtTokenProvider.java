@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger.adapter.config;
+package ch.xxx.messenger.domain.common;
 
 import java.util.Collection;
 import java.util.Date;
@@ -30,8 +30,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import ch.xxx.messenger.domain.common.Role;
-import ch.xxx.messenger.domain.common.WebUtils;
 import ch.xxx.messenger.domain.exception.JwtTokenValidationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

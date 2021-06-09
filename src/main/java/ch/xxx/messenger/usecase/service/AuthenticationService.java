@@ -25,7 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import ch.xxx.messenger.adapter.config.JwtTokenProvider;
+import ch.xxx.messenger.domain.common.JwtTokenProvider;
 import ch.xxx.messenger.domain.common.Role;
 import ch.xxx.messenger.domain.common.WebUtils;
 import ch.xxx.messenger.domain.model.AuthCheck;

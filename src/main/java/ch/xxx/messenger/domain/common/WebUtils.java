@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import ch.xxx.messenger.adapter.config.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 

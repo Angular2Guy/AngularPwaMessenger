@@ -22,6 +22,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import ch.xxx.messenger.domain.common.JwtTokenProvider;
+
 @Configuration
 @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {	

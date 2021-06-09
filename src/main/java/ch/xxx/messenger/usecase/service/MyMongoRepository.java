@@ -36,6 +36,8 @@ public interface MyMongoRepository {
 	
 	<T> Flux<T> find(Query query, Class<T> entityClass, String collectionName);
 	
+	<T> Flux<T> findAllAndRemove(Query query, Class<T> entityClass);
+	
 	<T> Flux<T> insertAll(Collection<? extends T> batchToSave);
 	
 	Mono<Boolean> collectionExists(String collectionName);

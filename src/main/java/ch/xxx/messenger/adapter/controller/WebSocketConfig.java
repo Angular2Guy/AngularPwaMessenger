@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger.adapter.config;
+package ch.xxx.messenger.adapter.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-
-import ch.xxx.messenger.adapter.controller.ReactiveWebSocketHandler;
 
 @Configuration
 public class WebSocketConfig {
