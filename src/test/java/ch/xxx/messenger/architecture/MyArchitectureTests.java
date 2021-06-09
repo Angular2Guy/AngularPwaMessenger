@@ -61,7 +61,7 @@ public class MyArchitectureTests {
 			.beFreeOfCycles();
 
 	@ArchTest
-	static final ArchRule cyclesUseCases = SlicesRuleDefinition.slices().matching("..usecase(*)..").should()
+	static final ArchRule cyclesUseCases = SlicesRuleDefinition.slices().matching("..usecase.(*)..").should()
 			.beFreeOfCycles();
 
 	@ArchTest
@@ -70,7 +70,6 @@ public class MyArchitectureTests {
 
 	@Test
 	public void ruleControllerAnnotations() {
-
 		ArchRule beAnnotatedWith = ArchRuleDefinition.classes().that().resideInAPackage("..adapter.controller..")
 				.should().beAnnotatedWith(RestController.class).orShould().beAnnotatedWith(Configuration.class)
 				.orShould().implement(WebSocketHandler.class);
