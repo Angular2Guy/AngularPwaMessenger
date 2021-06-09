@@ -58,6 +58,13 @@ spec:
       containers:
       - name: {{ .Values.dbName }}
         image: "{{ .Values.dbImageName }}:{{ .Values.dbImageVersion }}"
+        resources:
+          limits:
+            memory: "2G"
+            cpu: "1.5"
+          requests:
+            memory: "1G"
+            cpu: "0.5"
         ports:
         - containerPort: 27017
         volumeMounts:
@@ -101,6 +108,13 @@ spec:
       - name: {{ .Values.webAppName }}
         image: "{{ .Values.webImageName }}:{{ .Values.webImageVersion }}" 
         imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "1G"
+            cpu: "0.5"
+          requests:
+            memory: "768M"
+            cpu: "0.5"
         env:
           {{- include "helpers.list-envApp-variables" . | indent 10 }}
         ports:
