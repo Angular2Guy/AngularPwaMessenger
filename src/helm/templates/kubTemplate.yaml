@@ -1,3 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.secret.name }}
+type: Opaque
+data:
+  {{- range $key, $val := .Values.envApp.secret }}
+  {{ $key }}: {{ $val | b64enc }}
+  {{- end}}
+---
 kind: PersistentVolume
 apiVersion: v1
 metadata:
@@ -49,7 +59,7 @@ spec:
       - name: {{ .Values.dbName }}
         image: "{{ .Values.dbImageName }}:{{ .Values.dbImageVersion }}"
         ports:
-        - containerPort: 27017              	
+        - containerPort: 27017
         volumeMounts:
         - name: hostvol
           mountPath: /data/db
@@ -92,10 +102,7 @@ spec:
         image: "{{ .Values.webImageName }}:{{ .Values.webImageVersion }}" 
         imagePullPolicy: Always
         env:
-        - name: MONGODB_HOST
-          value: {{ .Values.dbServiceName }}
-        - name: JWTTOKEN_SECRET
-          value: {{ .Values.jwtTokenSecrect }}  
+          {{- include "helpers.list-envApp-variables" . | indent 10 }}
         ports:
         - containerPort: 8080
 ---
