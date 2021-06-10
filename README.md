@@ -22,12 +22,14 @@ MongoDB 3.4.x or newer.
 
 Eclipse 2018-09 or newer.
 
-Plugin Typescript.Java 1.4.0 or newer.
+Install Eclipse Plugin 'Java 16 Support for Eclipse 2021-03' of the Eclipse Marktplace.(free)
 
 Maven 3.3.3 or newer.
 
-Nodejs 12.16.x or newer
+Java 16 or newer
 
-Npm 6.13.4 or newer
+Nodejs 14.15.x or newer
 
-Angular Cli 11 or newer.
+Npm 6.14.x or newer
+
+Angular Cli 12 or newer.
