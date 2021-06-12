@@ -35,7 +35,7 @@ public class MessageCronJob {
 	/**
 	 * remove messages that are older than 30 days. (unreceived/unrequested) 
 	 */
-	@Scheduled(cron = "5 0 * * * ?")
+	@Scheduled(cron = "5 0 1 * * ?")
 	@SchedulerLock(name = "MessageCleanUp_scheduledTask", lockAtLeastFor = "PT2H", lockAtMostFor = "PT3H")
 	public void cleanUpOldMessages() {
 		this.messageService.cleanUpMessages(this.messageTtl);
