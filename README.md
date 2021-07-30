@@ -4,6 +4,13 @@ Author: Sven Loesekann
 
 Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
+## Articles
+* [An Angular PWA From Front-End to Backend: Sign In and Add Contacts](https://dzone.com/articles/an-angular-pwa-from-frontend-to-backend)
+* [An Angular PWA From Front-End to Backend: Creating a Login Process](https://dzone.com/articles/draft-an-angular-pwa-from-frontend-to-backend-the)
+* [An Angular PWA From Front-End to Backend: Send/Receive Messages](https://dzone.com/articles/an-angular-pwa-from-front-end-to-backend-sendrecei)
+* [An Angular PWA From Front-End to Backend: Kubernetes Deployment](https://dzone.com/articles/an-angular-pwa-from-front-end-to-backend-kubernete)
+* [Angular Translations Have Arrived](https://dzone.com/articles/angular-translations-have-arrived)
+
 ## What is the goal?
 
 The goal is to provide an Angular based Progressive Web App with a backend server that has a usecase. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and uses its Webflux features with the MongoDB database in clean architecture. For development the project uses an in memory MongoDB to be just cloned and ready to run. More documentation can be found in the wiki.
