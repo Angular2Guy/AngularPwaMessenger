@@ -9,7 +9,7 @@ Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Bo
 * [An Angular PWA From Front-End to Backend: Creating a Login Process](https://dzone.com/articles/draft-an-angular-pwa-from-frontend-to-backend-the)
 * [An Angular PWA From Front-End to Backend: Send/Receive Messages](https://dzone.com/articles/an-angular-pwa-from-front-end-to-backend-sendrecei)
 * [An Angular PWA From Front-End to Backend: Kubernetes Deployment](https://dzone.com/articles/an-angular-pwa-from-front-end-to-backend-kubernete)
-* [Angular Translations Have Arrived](https://dzone.com/articles/angular-translations-have-arrived)
+* [Angular Translations Have Arrived](https://angular2guy.wordpress.com/2021/07/31/angular-translations-have-arrived/)
 
 ## What is the goal?
 
