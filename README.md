@@ -21,17 +21,15 @@ The application is an encrypted chat system that can be run offline. The PWA is 
 
 ## Minikube setup
 
-The application can be run in a Minikube cluster. The cluster runs the docker images for the AngularPwaMessenger and the Mongodb. The Mongodb has a persistent volume to store its data between restarts. The configuraton of the application can be found in the helm directory and is done as a helm chart. To run it minikube, kubectl and helm need to be installed. Further documentation can be found in the wiki.
+The application can be run in a Minikube cluster. The cluster runs the docker images for the AngularPwaMessenger and the Mongodb. The Mongodb has a persistent volume to store its data between restarts. The configuraton of the application can be found in the helm directory and is done as a helm chart. It uses the resource limit support of Jdk 16 to limit memory. Kubernetes limits the cpu use and uses the startupprobes and livenessprobes that Spring Actuator provides. To run it minikube, kubectl and helm need to be installed. Further documentation can be found in the wiki.
 
 ## Setup
 
 MongoDB 3.4.x or newer.
 
-Eclipse 2018-09 or newer.
+Eclipse IDE for Enterprise Java and Web Developers newest version.
 
-Install Eclipse Plugin 'Java 16 Support for Eclipse 2021-03' of the Eclipse Marktplace.(free)
-
-Maven 3.3.3 or newer.
+Maven 3.5.4 or newer.
 
 Java 16 or newer
 
