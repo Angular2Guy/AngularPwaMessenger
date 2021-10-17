@@ -16,6 +16,13 @@ The application is an encrypted chat system that can be run offline. The PWA is 
 
 The application can be run in a Minikube cluster. The cluster runs the docker images for the AngularPwaMessenger and the Mongodb. The Mongodb has a persistent volume to store its data between restarts. The configuraton of the application can be found in the helm directory and is done as a helm chart. To run it minikube, kubectl and helm need to be installed. Further documentation can be found in the wiki.
 
+## Monitoring
+The Spring Actuator interface with Prometheus interface can be used as it is described in this article: 
+
+[Monitoring Spring Boot with Prometheus and Grafana](https://ordina-jworks.github.io/monitoring/2020/11/16/monitoring-spring-prometheus-grafana.html)
+
+To test the setup the application has to be started and the Docker Images for Prometheus and Grafana have to be started and configured. The scripts 'runGraphana.sh' and 'runPrometheus.sh' can be used as a starting point.
+
 ## Setup
 
 MongoDB 3.4.x or newer.
