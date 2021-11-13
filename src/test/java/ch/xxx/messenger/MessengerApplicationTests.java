@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class MessengerApplicationTests {
 
-	@Test
+//	@Test
 	public void contextLoads() {
 	}
 
