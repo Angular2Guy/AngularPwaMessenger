@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: angularpwa-ingress 
@@ -16,6 +16,9 @@ spec:
    http:
      paths:       
      - backend:
-         serviceName: angularpwa
-         servicePort: 8080
+         service:
+           name: angularpwa
+           port: 
+             number: 8080
        path: /?(.*)
+       pathType: Prefix
