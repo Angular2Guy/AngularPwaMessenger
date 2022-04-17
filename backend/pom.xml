@@ -18,16 +18,6 @@
 	<name>AngularPwaMessenger</name>
 	<description>Demo project for Spring Boot</description>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.build.finalName>AngularPwaMessenger</project.build.finalName>
-		<java.version>17</java.version>
-		<docker.image.prefix>angular2guy</docker.image.prefix>
-		<!-- <npm.test.script>test-chromium</npm.test.script> -->
-		<npm.test.script>test</npm.test.script>
-	</properties>
-
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
