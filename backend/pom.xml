@@ -14,7 +14,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<packaging>jar</packaging>
-	<artifactId>messenger-frontend</artifactId>
+	<artifactId>messenger-backend</artifactId>
 	<name>AngularPwaMessenger</name>
 	<description>Demo project for Spring Boot</description>
 
