@@ -24,16 +24,13 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
-
 @Configuration
 @EnableScheduling
 public class SpringMongoConfig {
 	private static final Logger log = LoggerFactory.getLogger(SpringMongoConfig.class);
 	
-    @Value("${spring.data.mongodb.host}")
-    private String mongoHost;
+    @Value("${spring.data.mongodb.uri}")
+    private String mongoUri;
     
     private final MongoMappingContext mongoMappingContext;
     
@@ -43,16 +40,10 @@ public class SpringMongoConfig {
 
     @PostConstruct
     public void init() {
+		log.info("MongoUri={}", this.mongoUri);
     	this.mongoMappingContext.setAutoIndexCreation(true);
     	log.info("Mongo AutoIndexCreation: {}", this.mongoMappingContext.isAutoIndexCreation());
     }
-    
-    @Bean
-    public MongoClient reactiveMongoClient()  {
-    	String myHost = System.getenv("MONGODB_HOST");		
-		log.info("MONGODB_HOST="+myHost);
-        return MongoClients.create("mongodb://"+(myHost==null ? mongoHost : myHost));
-    }	    
     
     @Bean
 	public ServerCodecConfigurer serverCodecConfigurer() {
