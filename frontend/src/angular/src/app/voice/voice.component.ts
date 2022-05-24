@@ -13,11 +13,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-phone-call',
-  templateUrl: './phone-call.component.html',
-  styleUrls: ['./phone-call.component.scss']
+  selector: 'app-voice',
+  templateUrl: './voice.component.html',
+  styleUrls: ['./voice.component.scss']
 })
-export class PhoneCallComponent implements OnInit {
+export class VoiceComponent implements OnInit {
 
   constructor() { }
 

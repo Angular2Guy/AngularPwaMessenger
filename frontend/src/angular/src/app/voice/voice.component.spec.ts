@@ -12,7 +12,7 @@
  */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PhoneCallComponent } from './phone-call.component';
+import { VoiceComponent } from './voice.component';
 
 /*describe('PhoneCallComponent', () => {
   let component: PhoneCallComponent;

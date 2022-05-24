@@ -1,9 +1,9 @@
 <mat-toolbar color="primary">
 	<span i18n="@@mainMessenger">Messenger</span>
 	<span class="example-fill-remaining-space"></span>	
-	<span *ngIf="myUser !== null && selFeature === myFeature.chat" class="icon" (click)="switchContent()"><span class="material-icons-outlined">phone</span></span>
-	<span *ngIf="myUser !== null && selFeature === myFeature.phone" class="icon" (click)="switchContent()"><span class="material-icons-outlined">chat_bubble_outline</span></span>
-	<span *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><span class="material-icons">attachment_alt</span></span>
+	<span *ngIf="myUser !== null && selFeature === myFeature.chat" class="icon" (click)="switchContent()"><span class="icon-container material-icons">phone</span></span>
+	<span *ngIf="myUser !== null && selFeature === myFeature.phone" class="icon" (click)="switchContent()"><span class="icon-container material-icons">chat_bubble_outline</span></span>
+	<span *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><span class="icon-container material-icons">attachment_alt</span></span>
 	<span *ngIf="myUser !== null" class="icon" (click)="openCameraDialog()"><span class="material-icons">camera_alt</span></span>
 	<span *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></span>
 	<span *ngIf="myUser === null"><button mat-button (click)="openLoginDialog()" i18n="@@mainLogin">Login</button></span>		
@@ -15,6 +15,6 @@
   </mat-sidenav>
   <mat-sidenav-content opened mode="side">
   	<app-messages *ngIf="selFeature === myFeature.chat" [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
-  	<app-phone-call *ngIf="selFeature === myFeature.phone"></app-phone-call>
+  	<app-voice *ngIf="selFeature === myFeature.phone"></app-voice>
   </mat-sidenav-content>
 </mat-sidenav-container>
