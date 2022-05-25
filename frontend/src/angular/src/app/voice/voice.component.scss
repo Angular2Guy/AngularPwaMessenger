@@ -27,7 +27,11 @@ $caller-palette: mat.$lime-palette;
 
 .caller {
 	flex: 0 0 auto;
-	height: 200px;
+	height: fit-content;
 	width:  200px;
 	background-color: mat.get-color-from-palette($caller-palette, 100);
+}
+
+.video-button {
+	margin: 5px 0 5px 5px;
 }

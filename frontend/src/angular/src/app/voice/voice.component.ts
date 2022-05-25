@@ -18,7 +18,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./voice.component.scss']
 })
 export class VoiceComponent implements OnInit {
-
+  callerVideoActivated = false;
   constructor() { }
 
   ngOnInit(): void {
