@@ -78,7 +78,7 @@ public class MyArchitectureTests {
 
 	@Test
 	public void ruleExceptionsType() {
-		ArchRule exceptionType = ArchRuleDefinition.classes().that().resideInAPackage("..domain.exceptions..").should()
+		ArchRule exceptionType = ArchRuleDefinition.classes().that().resideInAPackage("..domain.exception..").should()
 				.beAssignableTo(RuntimeException.class).orShould().beAssignableTo(DefaultErrorAttributes.class);
 		exceptionType.check(this.importedClasses);
 	}
@@ -86,8 +86,8 @@ public class MyArchitectureTests {
 	@Test
 	public void ruleCronJobMethodsAnnotations() {
 		ArchRule exceptionType = ArchRuleDefinition.methods().that().arePublic().and().areDeclaredInClassesThat()
-				.resideInAPackage("..adapter.cron.ScheduledTask").should().beAnnotatedWith(PostConstruct.class)
-				.orShould().beAnnotatedWith(Scheduled.class).andShould().beAnnotatedWith(SchedulerLock.class);
+				.resideInAPackage("..adapter.cron..").should().beAnnotatedWith(SchedulerLock.class)
+				.andShould().beAnnotatedWith(Scheduled.class).orShould().beAnnotatedWith(PostConstruct.class);
 		exceptionType.check(this.importedClasses);
 	}
 

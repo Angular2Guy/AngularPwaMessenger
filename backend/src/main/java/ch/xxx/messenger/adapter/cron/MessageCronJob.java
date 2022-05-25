@@ -12,6 +12,8 @@
  */
 package ch.xxx.messenger.adapter.cron;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,11 @@ public class MessageCronJob {
 	
 	public MessageCronJob(MessageService messageService) {
 		this.messageService = messageService;
+	}
+	
+	@PostConstruct
+	public void init() {
+		LOG.info("Message ttl: {}", this.messageTtl);
 	}
 	
 	/**
