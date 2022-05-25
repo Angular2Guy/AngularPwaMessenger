@@ -19,6 +19,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VoiceComponent implements OnInit {
   callerVideoActivated = false;
+  calledVideoActivated = false;
   constructor() { }
 
   ngOnInit(): void {

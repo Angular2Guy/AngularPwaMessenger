@@ -19,7 +19,10 @@ $caller-palette: mat.$lime-palette;
     display: block;
     padding-bottom: 100%;
 }
-.called-content {
+.called-content {	
+	display:flex;
+	flex-direction: column;
+	align-items: stretch;
 	height: 100%;
 	//@debug mat.get-color-from-palette($called-palette, 50);	
 	background-color: mat.get-color-from-palette($called-palette, 50);
@@ -33,5 +36,10 @@ $caller-palette: mat.$lime-palette;
 }
 
 .video-button {
-	margin: 5px 0 5px 5px;
+	//margin: 5px 0 5px 5px;
+	flex: 1 1 auto;
+}
+
+.caller-video {
+	margin: auto;
 }

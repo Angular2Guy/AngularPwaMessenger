@@ -1,15 +1,33 @@
 <div>
 	<div class="video-container">
 		<div class="called">
-			<div class="called-content">Called</div>
+			<div class="called-content">
+				<div>Called</div>
+				<video #caller_video [autoplay]="true" [muted]="true" class="caller-video"></video>
+				<div>
+					<button mat-button class="video-button"
+						*ngIf="!calledVideoActivated"
+						(click)="calledVideoActivated = true"
+						i18n="@@voiceActivateCalledVideo">Activate</button>
+					<button mat-button class="video-button"
+						*ngIf="calledVideoActivated"
+						(click)="calledVideoActivated = false"
+						i18n="@@voiceDeactivateCalledVideo">Deactivate</button>
+				</div>
+			</div>
 		</div>
 		<div class="caller">
-		<div>Caller</div>
-		 <video #caller_video [autoplay]="true" [muted]="true" width="200px" height="200px"></video>
-		 <div>
-		 <button mat-button class="video-button" *ngIf="!callerVideoActivated" (click)="callerVideoActivated = true" i18n="@@voiceActivateCallerVideo">Activate</button>
-		 <button mat-button class="video-button" *ngIf="callerVideoActivated" (click)="callerVideoActivated = false" i18n="@@voiceDeactivateCallerVideo">Deactivate</button>
-		 </div>
+			<div>Caller</div>
+			<video #caller_video [autoplay]="true" [muted]="true" width="200px"
+				height="200px"></video>
+			<div>
+				<button mat-button class="video-button"
+					*ngIf="!callerVideoActivated" (click)="callerVideoActivated = true"
+					i18n="@@voiceActivateCallerVideo">Activate</button>
+				<button mat-button class="video-button" *ngIf="callerVideoActivated"
+					(click)="callerVideoActivated = false"
+					i18n="@@voiceDeactivateCallerVideo">Deactivate</button>
+			</div>
 		</div>
 	</div>
 </div>
