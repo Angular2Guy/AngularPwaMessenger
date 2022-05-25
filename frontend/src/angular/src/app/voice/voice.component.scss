@@ -1,0 +1,33 @@
+@use '@angular/material' as mat;
+
+$called-palette: mat.$blue-palette;
+
+$caller-palette: mat.$lime-palette;
+
+.video-container {
+	display: flex;
+	align-itms: flex-start;	
+}
+
+.called {
+	flex: 1 0 auto;
+	position: relative;	
+}
+
+.called:after {
+	content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+.called-content {
+	height: 100%;
+	//@debug mat.get-color-from-palette($called-palette, 50);	
+	background-color: mat.get-color-from-palette($called-palette, 50);
+}
+
+.caller {
+	flex: 0 0 auto;
+	height: 200px;
+	width:  200px;
+	background-color: mat.get-color-from-palette($caller-palette, 100);
+}
