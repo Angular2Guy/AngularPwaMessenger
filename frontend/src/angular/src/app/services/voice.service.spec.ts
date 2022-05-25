@@ -10,23 +10,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
-@Component({
-  selector: 'app-voice',
-  templateUrl: './voice.component.html',
-  styleUrls: ['./voice.component.scss']
-})
-export class VoiceComponent implements OnInit {
-  @ViewChild('caller_video') callerVideo: ElementRef;
-  @ViewChild('called_video') calledVideo: ElementRef;
-  
-  callerVideoActivated = false;
-  calledVideoActivated = false;
-  
-  constructor() { }
+import { VoiceService } from './voice.service';
 
-  ngOnInit(): void {
-  }
 
-}
+/*describe('VoiceService', () => {
+  let service: VoiceService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(VoiceService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
+*/
