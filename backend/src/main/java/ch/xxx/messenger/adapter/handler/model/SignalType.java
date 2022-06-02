@@ -10,25 +10,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+package ch.xxx.messenger.adapter.handler.model;
 
-@Component({
-  selector: 'app-voice',
-  templateUrl: './voice.component.html',
-  styleUrls: ['./voice.component.scss']
-})
-export class VoiceComponent implements OnInit {
-  @ViewChild('caller_video') callerVideo: ElementRef;
-  @ViewChild('called_video') calledVideo: ElementRef;
-  
-  callerVideoActivated = false;
-  calledVideoActivated = false;
-  callerMuted = false;
-  calledMuted = false;
-  
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+public enum SignalType {
+	Login,
+	UserId,
+	Offer,
+	Answer,
+	Ice,
+	NewMember,
 }

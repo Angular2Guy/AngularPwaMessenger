@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 
-@Configuration
+//@Configuration
 public class WebSocketConfig {
 	private ReactiveWebSocketHandler webSocketHandler;
 	
