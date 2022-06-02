@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  wsPath: '/signalingsocket',
+  RTCPeerConfiguration: {
+    iceServers: [
+      {
+        urls: 'stun:stun1.l.google.com:19302'
+      }
+    ]
+  }
 };
 
 /*
