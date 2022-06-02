@@ -17,13 +17,13 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import ch.xxx.messenger.adapter.handler.SignalingHandler;
+import ch.xxx.messenger.adapter.handler.SocketHandler;
 
 @Configuration
 @EnableWebSocket
 public class SignalingConfiguration implements WebSocketConfigurer{
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new SignalingHandler(), "/signalingsocket");
+		registry.addHandler(new SocketHandler(), "/signalingsocket").setAllowedOrigins("*");
 	}
 }
