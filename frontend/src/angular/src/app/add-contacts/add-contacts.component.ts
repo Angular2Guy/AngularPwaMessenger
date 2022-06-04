@@ -11,7 +11,7 @@
    limitations under the License.
  */
 import { Component, OnInit, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
 import { ContactService } from '../services/contact.service';
@@ -29,7 +29,7 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     @Output() addNewContact = new EventEmitter<Contact>();
     @Input() userId: string;
     @Input() myContacts: Contact[];
-    myControl = new FormControl();
+    myControl = new UntypedFormControl();
     filteredOptions: Contact[] = [];
     contactsLoading = false;
     myControlSub: Subscription = null;
