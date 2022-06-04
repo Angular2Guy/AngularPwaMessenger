@@ -44,4 +44,4 @@ Nodejs 14.15.x or newer
 
 Npm 6.14.x or newer
 
-Angular Cli 13 or newer.
+Angular Cli 14 or newer.
