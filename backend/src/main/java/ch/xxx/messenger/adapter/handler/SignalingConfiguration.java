@@ -10,14 +10,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package ch.xxx.messenger.adapter.config;
+package ch.xxx.messenger.adapter.handler;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-
-import ch.xxx.messenger.adapter.handler.SocketHandler;
 
 @Configuration
 @EnableWebSocket

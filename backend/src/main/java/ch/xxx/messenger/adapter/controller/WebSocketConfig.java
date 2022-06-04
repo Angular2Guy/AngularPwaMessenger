@@ -12,31 +12,25 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 
-//@Configuration
+@Configuration
 public class WebSocketConfig {
-	private ReactiveWebSocketHandler webSocketHandler;
-	
-	public WebSocketConfig(ReactiveWebSocketHandler webSocketHandler) {
-		this.webSocketHandler = webSocketHandler;
-	}
-	
-	@Bean
-	public HandlerMapping webSocketHandlerMapping() {
-	    Map<String, ReactiveWebSocketHandler> map = new HashMap<>();
-	    map.put("/event-emitter", webSocketHandler);
-	 
-	    SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
-	    handlerMapping.setOrder(1);
-	    handlerMapping.setUrlMap(map);
-	    return handlerMapping;
-	}
+//	private ReactiveWebSocketHandler webSocketHandler;
+//	
+//	public WebSocketConfig(ReactiveWebSocketHandler webSocketHandler) {
+//		this.webSocketHandler = webSocketHandler;
+//	}
+//	
+//	@Bean
+//	public HandlerMapping webSocketHandlerMapping() {
+//	    Map<String, ReactiveWebSocketHandler> map = new HashMap<>();
+//	    map.put("/event-emitter", webSocketHandler);
+//	 
+//	    SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
+//	    handlerMapping.setOrder(1);
+//	    handlerMapping.setUrlMap(map);
+//	    return handlerMapping;
+//	}
 	
 }
