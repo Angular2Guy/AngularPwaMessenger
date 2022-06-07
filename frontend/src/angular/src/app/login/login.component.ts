@@ -13,7 +13,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MyUser } from '../model/myUser';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MainComponent } from '../main/main.component';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocaldbService } from '../services/localdb.service';
@@ -22,6 +22,12 @@ import { JwttokenService } from '../services/jwttoken.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { CryptoService } from '../services/crypto.service';
 
+enum FormFields {
+	Username = 'username',
+	Password = 'password',
+	Password2 = 'password2',
+	Email = 'email'   
+} 
 
 @Component( {
   selector: 'app-login',
@@ -29,12 +35,13 @@ import { CryptoService } from '../services/crypto.service';
   styleUrls: ['./login.component.scss']
 } )
 export class LoginComponent implements OnInit {
-  signinForm: UntypedFormGroup;
-  loginForm: UntypedFormGroup;
+  signinForm: FormGroup;
+  loginForm: FormGroup;
   loginFailed = false;
   signinFailed = false;
   pwMatching = true;
   private connected = false;
+  FormFields = FormFields;
 
   constructor( public dialogRef: MatDialogRef<MainComponent>,
     @Inject( MAT_DIALOG_DATA ) public data: any,
@@ -43,18 +50,18 @@ export class LoginComponent implements OnInit {
     private jwttokenService: JwttokenService,
     private netConnectionService: NetConnectionService,
     private cryptoService: CryptoService,
-    fb: UntypedFormBuilder ) {
+    fb: FormBuilder ) {
     this.signinForm = fb.group( {
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-      password2: ['', Validators.required],
-      email: ['', Validators.required]
+      [FormFields.Username]: ['', Validators.required],
+      [FormFields.Password]: ['', Validators.required],
+      [FormFields.Password2]: ['', Validators.required],
+      [FormFields.Email]: ['', Validators.required]
     }, {
         validator: this.validate.bind( this )
       } );
     this.loginForm = fb.group( {
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      [FormFields.Username]: ['', Validators.required],
+      [FormFields.Password]: ['', Validators.required]
     } );
   }
 
@@ -63,17 +70,17 @@ export class LoginComponent implements OnInit {
     this.netConnectionService.connectionMonitor.subscribe( conn => this.connected = conn );
   }
 
-  validate( group: UntypedFormGroup ) {
-    if ( group.get( 'password' ).touched || group.get( 'password2' ).touched ) {
-      this.pwMatching = group.get( 'password' ).value === group.get( 'password2' ).value && group.get( 'password' ).value !== '';
+  validate( group: FormGroup ) {
+    if ( group.get(FormFields.Password).touched || group.get(FormFields.Password2).touched ) {
+      this.pwMatching = group.get(FormFields.Password).value === group.get(FormFields.Password2).value && group.get(FormFields.Password).value !== '';
       if ( !this.pwMatching ) {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        group.get( 'password' ).setErrors( { MatchPassword: true } );
+        group.get(FormFields.Password).setErrors( { MatchPassword: true } );
 // eslint-disable-next-line @typescript-eslint/naming-convention
-        group.get( 'password2' ).setErrors( { MatchPassword: true } );
+        group.get(FormFields.Password2).setErrors( { MatchPassword: true } );
       } else {
-        group.get( 'password' ).setErrors( null );
-        group.get( 'password2' ).setErrors( null );
+        group.get(FormFields.Password).setErrors( null );
+        group.get(FormFields.Password2).setErrors( null );
       }
     }
     return this.pwMatching;
@@ -81,16 +88,16 @@ export class LoginComponent implements OnInit {
 
   onSigninClick(): void {
     const myUser = new MyUser();
-    myUser.username = this.signinForm.get( 'username' ).value;
-    myUser.password = this.signinForm.get( 'password' ).value;
-    myUser.email = this.signinForm.get( 'email' ).value;
-    this.cryptoService.hashPW( this.signinForm.get( 'password' ).value ).then( value =>
+    myUser.username = this.signinForm.get(FormFields.Username).value;
+    myUser.password = this.signinForm.get(FormFields.Password).value;
+    myUser.email = this.signinForm.get(FormFields.Email).value;
+    this.cryptoService.hashPW( this.signinForm.get(FormFields.Password).value ).then( value =>
       this.cryptoService.generateKeys( value ) ).then( result => {
         myUser.privateKey = result.b;
         myUser.publicKey = result.a;
-      } ).then( () => this.cryptoService.hashServerPW( this.signinForm.get( 'password' ).value ) )
+      } ).then( () => this.cryptoService.hashServerPW( this.signinForm.get(FormFields.Password).value ) )
       .then( value => myUser.password = value)
-      .then(() => this.cryptoService.generateKey( this.signinForm.get( 'password' ).value, null ))
+      .then(() => this.cryptoService.generateKey( this.signinForm.get(FormFields.Password).value, null ))
       .then(myValue => {
         myUser.salt = myValue.b;
         this.authenticationService.postSignin( myUser ).subscribe( us => this.signin( us ), err => console.log( err ) );
@@ -99,11 +106,11 @@ export class LoginComponent implements OnInit {
 
   onLoginClick(): void {
     const myUser = new MyUser();
-    myUser.username = this.loginForm.get( 'username' ).value;
-    myUser.password = this.loginForm.get( 'password' ).value;
+    myUser.username = this.loginForm.get(FormFields.Username).value;
+    myUser.password = this.loginForm.get(FormFields.Password).value;
     //      console.log(myUser);
     if ( this.connected ) {
-      this.cryptoService.hashServerPW( this.loginForm.get( 'password' ).value ).then( value => {
+      this.cryptoService.hashServerPW( this.loginForm.get(FormFields.Password).value ).then( value => {
         myUser.password = value;
         this.authenticationService.postLogin( myUser ).subscribe( us => {
           const myLocalUser: LocalUser = {
@@ -121,17 +128,17 @@ export class LoginComponent implements OnInit {
             .then( localUserList => localUserList.toArray() )
             .then( localUserArray => {
               if ( localUserArray.length > 0 ) {
-                us.password = this.loginForm.get( 'password' ).value;
+                us.password = this.loginForm.get(FormFields.Password).value;
                 this.login( us, localUserArray[0] );
               } else {
-                this.createLocalUser( us , this.loginForm.get( 'password' ).value).then( result => {
-                  us.password = this.loginForm.get( 'password' ).value;
+                this.createLocalUser( us , this.loginForm.get(FormFields.Password).value).then( result => {
+                  us.password = this.loginForm.get(FormFields.Password).value;
                   this.login( us, result );
                 } );
               }
             } );
         }, () => {
-          myUser.password = this.loginForm.get( 'password' ).value;
+          myUser.password = this.loginForm.get(FormFields.Password).value;
           this.localLogin( myUser );
           });
       } );
@@ -143,7 +150,7 @@ export class LoginComponent implements OnInit {
   signin( us: MyUser ): void {
     this.data.myUser = null;
     if ( us.username !== null ) {
-      this.createLocalUser( us, this.signinForm.get( 'password' ).value ).then( () => {
+      this.createLocalUser( us, this.signinForm.get(FormFields.Password).value ).then( () => {
         this.signinFailed = false;
         this.dialogRef.close();
       } );

@@ -14,7 +14,7 @@
 <form [formGroup]="messageForm" novalidate>
 	<mat-form-field class="message-input">
 		<div class="myInput">
-			<textarea matInput placeholder="Your Message" formControlName="message"></textarea>
+			<textarea matInput placeholder="Your Message" formControlName="{{formKeyMessage}}"></textarea>
 			<div class="send-icon" (click)="sendMessage()">
 				<i class="material-icons">send_alt</i>
 			</div>

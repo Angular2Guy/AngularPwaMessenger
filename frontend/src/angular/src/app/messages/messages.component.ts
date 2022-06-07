@@ -13,7 +13,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Message } from '../model/message';
 import { Contact } from '../model/contact';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LocaldbService } from '../services/localdb.service';
 import { Constants } from '../common/constants';
 
@@ -30,11 +30,12 @@ export class MessagesComponent implements OnInit {
   receiver: Contact;
   @Output()
   sendMsg = new EventEmitter<Message>();
-  messageForm: UntypedFormGroup;
+  messageForm: FormGroup;
+  readonly formKeyMessage = 'message';
 
-  constructor(private fb: UntypedFormBuilder) {
+  constructor(private fb: FormBuilder) {
     this.messageForm = fb.group({
-      message: ['', Validators.required],
+      [this.formKeyMessage]: ['', Validators.required],
     });
   }
 
