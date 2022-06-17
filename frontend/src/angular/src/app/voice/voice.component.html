@@ -18,7 +18,7 @@
 		</div>
 		<div class="local">
 			<div>Caller</div>
-			<video #local_video [autoplay]="true" [muted]="localMuted" height="150px" width="200px"></video>
+			<video #local_video [autoplay]="true" [muted]="localMuted" class="local-video"></video>
 			<div>
 				<button mat-button class="video-button"
 					*ngIf="!localVideoActivated" (click)="startLocalVideo()"
