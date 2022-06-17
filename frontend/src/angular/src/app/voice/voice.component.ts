@@ -10,6 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
+ // based on: https://github.com/wliegel/youtube_webrtc_tutorial
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { VoiceService } from '../services/voice.service';
 import { VoiceMsg} from '../model/voiceMsg';
