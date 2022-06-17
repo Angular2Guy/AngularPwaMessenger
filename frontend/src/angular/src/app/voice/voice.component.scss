@@ -28,7 +28,7 @@ $caller-palette: mat.$lime-palette;
 	background-color: mat.get-color-from-palette($called-palette, 50);
 }
 
-.caller {
+.local {
 	flex: 0 0 auto;
 	height: fit-content;
 	width:  200px;

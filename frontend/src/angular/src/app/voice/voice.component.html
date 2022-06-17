@@ -16,15 +16,13 @@
 				</div>
 			</div>
 		</div>
-		<div class="caller">
+		<div class="local">
 			<div>Caller</div>
-			<video #local_video [autoplay]="true" [muted]="localMuted" width="200px"
-				height="200px"></video>
+			<video #local_video [autoplay]="true" [muted]="localMuted" height="150px" width="200px"></video>
 			<div>
 				<button mat-button class="video-button"
 					*ngIf="!localVideoActivated" (click)="startLocalVideo()"
 					i18n="@@voiceActivateCallerVideo">Activate</button>
-				<video #caller_video [autoplay]="true"></video>
 				<button mat-button class="video-button" *ngIf="localVideoActivated"
 					(click)="stopLocalVideo()"
 					i18n="@@voiceDeactivateCallerVideo">Deactivate</button>
