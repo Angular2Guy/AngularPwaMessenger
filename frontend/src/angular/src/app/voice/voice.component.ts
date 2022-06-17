@@ -11,6 +11,7 @@
    limitations under the License.
  */
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { VoiceService } from '../services/voice.service';
 
 @Component({
   selector: 'app-voice',
@@ -26,7 +27,10 @@ export class VoiceComponent implements OnInit {
   callerMuted = false;
   calledMuted = false;
   
-  constructor() { }
+  private peerConnection: RTCPeerConnection;
+  private localStream: MediaStream;
+  
+  constructor(private voiceService: VoiceService) { }
 
   ngOnInit(): void {
   }
