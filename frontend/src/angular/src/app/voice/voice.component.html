@@ -6,13 +6,21 @@
 				<video #remote_video [autoplay]="true" [muted]="remoteMuted" class="call-video"></video>
 				<div>
 					<button mat-button class="video-button"
-						*ngIf="!remoteVideoActivated"
-						(click)="remoteVideoActivated = true"
-						i18n="@@voiceActivateCalledVideo">Activate</button>					
+						*ngIf="!inCall"
+						(click)="call()"
+						i18n="@@voiceCall">Call</button>					
 					<button mat-button class="video-button"
-						*ngIf="remoteVideoActivated"
-						(click)="remoteVideoActivated = false"
-						i18n="@@voiceDeactivateCalledVideo">Deactivate</button>
+						*ngIf="inCall"
+						(click)="hangup()"
+						i18n="@@voiceHangup">Hangup</button>
+					<button mat-button class="video-button"
+						*ngIf="!remoteMuted"
+						(click)="remoteMuted = true"
+						i18n="@@voiceMute">Mute</button>
+					<button mat-button class="video-button"
+						*ngIf="remoteMuted"
+						(click)="remoteMuted = false"
+						i18n="@@voiceUnmute">Unmute</button>
 				</div>
 			</div>
 		</div>
@@ -26,6 +34,14 @@
 				<button mat-button class="video-button" *ngIf="localVideoActivated"
 					(click)="stopLocalVideo()"
 					i18n="@@voiceDeactivateCallerVideo">Deactivate</button>
+				<button mat-button class="video-button"
+						*ngIf="!localMuted"
+						(click)="localMuted = true"
+						i18n="@@voiceMute">Mute</button>
+				<button mat-button class="video-button"
+						*ngIf="localMuted"
+						(click)="localMuted = false"
+						i18n="@@voiceUnmute">Unmute</button>
 			</div>
 		</div>
 	</div>

@@ -38,7 +38,6 @@ export class VoiceComponent implements AfterViewInit {
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('remote_video') remoteVideo: ElementRef;
 
-  remoteVideoActivated = false;
   localVideoActivated = false;
   remoteMuted = false;
   localMuted = false;
