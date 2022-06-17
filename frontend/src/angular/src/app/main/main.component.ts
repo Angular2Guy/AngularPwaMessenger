@@ -29,7 +29,7 @@ import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
 
 // eslint-disable-next-line no-shadow
-enum MyFeature { chat, phone, }
+enum MyFeature { chat, phone }
 
 @Component( {
   selector: 'app-main',
@@ -141,6 +141,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.jwttokenService.jwtToken = null;
     this.contacts = [];
     this.messages = [];
+    this.selFeature = MyFeature.chat;
     if ( this.interval ) {
       clearInterval( this.interval );
     }
