@@ -4,7 +4,7 @@
     "secure": false
   },
   "/signalingsocket": {
-    "target": "http://localhost:8080/",
+    "target": "http://localhost:8080/signalingsocket",
     "secure": false,
     "ws": true
   }

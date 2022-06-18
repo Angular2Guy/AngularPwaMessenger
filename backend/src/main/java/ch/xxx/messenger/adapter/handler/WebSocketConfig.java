@@ -12,36 +12,16 @@
  */
 package ch.xxx.messenger.adapter.handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @Configuration
-public class WebSocketConfig {
-	private ReactiveWebSocketHandler webSocketHandler;
-	
-	public WebSocketConfig(ReactiveWebSocketHandler webSocketHandler) {
-		this.webSocketHandler = webSocketHandler;
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer{
+	@Override
+	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+		registry.addHandler(new SocketHandler(), "/signalingsocket").setAllowedOrigins("*");
 	}
-	
-	@Bean
-	public HandlerMapping webSocketHandlerMapping() {
-	    Map<String, ReactiveWebSocketHandler> map = new HashMap<>();
-	    map.put("/signalingsocket", webSocketHandler);
-	 
-	    SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
-	    handlerMapping.setOrder(1);
-	    handlerMapping.setUrlMap(map);
-	    return handlerMapping;
-	}
-	
-    @Bean
-    public WebSocketHandlerAdapter handlerAdapter() {
-        return new WebSocketHandlerAdapter();
-    }
 }
