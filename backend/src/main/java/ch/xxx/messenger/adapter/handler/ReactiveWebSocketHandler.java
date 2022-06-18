@@ -12,16 +12,18 @@
  */
 package ch.xxx.messenger.adapter.handler;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.WebSocketSession;
 
-@Configuration
-@EnableWebSocket
-public class SignalingConfiguration implements WebSocketConfigurer{
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new SocketHandler(), "/signalingsocket").setAllowedOrigins("*");
-	}
+import reactor.core.publisher.Mono;
+
+@Component
+public class ReactiveWebSocketHandler implements WebSocketHandler {
+
+    @Override
+    public Mono<Void> handle(WebSocketSession webSocketSession) {
+        return webSocketSession.send(webSocketSession.receive());
+    }
+	
 }
