@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  wsPath: 'ws://localhost:8080/signalingsocket',
+  wsPath: 'ws://localhost:4200/signalingsocket',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   RTCPeerConfiguration: {
     iceServers: [
       {

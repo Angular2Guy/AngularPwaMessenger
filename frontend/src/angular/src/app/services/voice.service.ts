@@ -27,10 +27,6 @@ export class VoiceService {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public messages$ = this.messagesSubject.asObservable();
 
-  /**
-   * Creates a new WebSocket subject and send it to the messages subject
-   * @param cfg if true the observable will be retried.
-   */
   public connect(): void {
 
     if (!this.socket$ || this.socket$.closed) {
@@ -51,9 +47,6 @@ export class VoiceService {
     this.socket$.next(msg);
   }
 
-  /**
-   * Return a custom WebSocket subject which reconnects after failure
-   */
   private getNewWebSocket(): WebSocketSubject<any> {
     return webSocket({
       url: WS_ENDPOINT,
