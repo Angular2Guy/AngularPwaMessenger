@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  wsPath: '/signalingsocket',
+  wsPath: 'ws://localhost:8080/signalingsocket',
   RTCPeerConfiguration: {
     iceServers: [
       {

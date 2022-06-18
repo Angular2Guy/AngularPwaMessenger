@@ -23,8 +23,8 @@ export const WS_ENDPOINT = environment.wsPath;
 })
 export class VoiceService {
   private socket$: WebSocketSubject<any>;
-
   private messagesSubject = new Subject<VoiceMsg>();
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   public messages$ = this.messagesSubject.asObservable();
 
   /**
