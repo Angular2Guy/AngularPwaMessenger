@@ -54,9 +54,9 @@ export class VoiceComponent implements AfterViewInit {
     this.createPeerConnection();
 
     // Add the tracks from the local stream to the RTCPeerConnection
-    this.localStream.getTracks().forEach(
-      track => this.peerConnection.addTrack(track, this.localStream)
-    );
+//    this.localStream.getTracks().forEach(
+//      track => this.peerConnection.addTrack(track, this.localStream)
+//    );
 
     try {
       const offer: RTCSessionDescriptionInit = await this.peerConnection.createOffer(offerOptions);
@@ -83,22 +83,26 @@ export class VoiceComponent implements AfterViewInit {
 
   startLocalVideo(): void {
     console.log('starting local stream');
-    this.localStream.getTracks().forEach(track => {
-      track.enabled = true;
-    });
-    this.localVideo.nativeElement.srcObject = this.localStream;
+    if(!this.localVideoActivated) {
+       this.localStream.getTracks().forEach(track => {
+          track.enabled = true;
+       });
+       this.localVideo.nativeElement.srcObject = this.localStream;
 
-    this.localVideoActivated = true;
+       this.localVideoActivated = true;
+    }
   }
 
   stopLocalVideo(): void {
     console.log('stop local stream');
-    this.localStream.getTracks().forEach(track => {
-      track.enabled = false;
-    });
-    this.localVideo.nativeElement.srcObject = undefined;
+    if(this.localVideoActivated) {
+       this.localStream.getTracks().forEach(track => {
+          track.enabled = false;
+       });
+       this.localVideo.nativeElement.srcObject = undefined;
 
-    this.localVideoActivated = false;
+       this.localVideoActivated = false;
+    }
   }
 
   private addIncominMessageHandler(): void {
@@ -107,7 +111,7 @@ export class VoiceComponent implements AfterViewInit {
     // this.transactions$.subscribe();
     this.voiceService.messages$.subscribe(
       msg => {
-        // console.log('Received message: ' + msg.type);
+        console.log('Received message: ' + msg.type);
         switch (msg.type) {
           case 'offer':
             this.handleOfferMessage(msg.data);
@@ -143,15 +147,7 @@ export class VoiceComponent implements AfterViewInit {
 
     this.peerConnection.setRemoteDescription(new RTCSessionDescription(msg))
       .then(() => {
-
-        // add media stream to local video
-        this.localVideo.nativeElement.srcObject = this.localStream;
-
-        // add media tracks to remote connection
-        this.localStream.getTracks().forEach(
-          track => this.peerConnection.addTrack(track, this.localStream)
-        );
-
+        this.startLocalVideo();
       }).then(() =>
       // Build SDP for answer message
      this.peerConnection.createAnswer()
@@ -170,6 +166,8 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleAnswerMessage(msg: RTCSessionDescriptionInit): void {
     console.log('handle incoming answer');
+    console.log(this.peerConnection.currentRemoteDescription);
+    console.log(msg);
     this.peerConnection.setRemoteDescription(msg);
   }
 
@@ -179,6 +177,7 @@ export class VoiceComponent implements AfterViewInit {
   }
 
   private handleICECandidateMessage(msg: RTCIceCandidate): void {
+	console.log(msg);
     const candidate = new RTCIceCandidate(msg);
     this.peerConnection.addIceCandidate(candidate).catch(this.reportError);
   }
@@ -223,13 +222,14 @@ export class VoiceComponent implements AfterViewInit {
       // Close the peer connection
       this.peerConnection.close();
       this.peerConnection = null;
-
+	  this.stopLocalVideo();
       this.inCall = false;
     }
   }
 
   /* ########################  ERROR HANDLER  ################################## */
   private handleGetUserMediaError(e: Error): void {
+	console.log(e);
     switch (e.name) {
       case 'NotFoundError':
         alert('Unable to open your call because no camera and/or microphone were found.');
@@ -254,7 +254,7 @@ export class VoiceComponent implements AfterViewInit {
 
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
-    console.log(event);
+    // console.log(event);
     if (event.candidate) {
       this.voiceService.sendMessage({
         type: 'ice-candidate',
