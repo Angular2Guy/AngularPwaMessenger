@@ -10,6 +10,7 @@ export const environment = {
     iceServers: [
       {
         urls: 'stun:stun1.l.google.com:19302'
+        // urls: 'stun:stun.t-online.de:3478'
       }
     ]
   }
