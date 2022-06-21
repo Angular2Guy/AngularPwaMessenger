@@ -261,7 +261,7 @@ export class VoiceComponent implements AfterViewInit {
     if (event.candidate) {
       this.voiceService.sendMessage({
         type: 'ice-candidate',
-        sid: null,
+        sid: this.getEventSid(event),
         data: event.candidate
       });
     }
@@ -278,9 +278,14 @@ export class VoiceComponent implements AfterViewInit {
     }
   };
 
-  private closeVideoCallByEvent(event: Event): void {
+  private getEventSid(event: Event): string {
 	 let mySid: string = null;
      this.peerConnections.forEach((value, key) => value === event.currentTarget ? mySid = key : mySid = mySid);
+     return mySid;
+}
+
+  private closeVideoCallByEvent(event: Event): void {
+	 const mySid = this.getEventSid(event);
      this.closeVideoCall(mySid);
   }
 
