@@ -12,5 +12,6 @@
  */
 export interface VoiceMsg {
   type: string;
+  sid: string;
   data: any;
 }
