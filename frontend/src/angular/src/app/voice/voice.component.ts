@@ -50,7 +50,7 @@ export class VoiceComponent implements AfterViewInit {
   inCall = false;
 
   private peerConnections = new Map<string, RTCPeerConnection>();
-  private pendingCandidates = new Map<string, RTCPeerConnection>();
+  private pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private localStream: MediaStream;
 
   constructor(private voiceService: VoiceService) { }
@@ -160,8 +160,8 @@ export class VoiceComponent implements AfterViewInit {
       peerConnectionContainer.rtcPeerConnection.setLocalDescription(answer)
     ).then(() => {
 	  if (msg.sid in this.pendingCandidates) {
-         this.pendingCandidates[msg.sid].forEach(candidate =>
-            this.peerConnections[msg.sid].addIceCandidate(new RTCIceCandidate(candidate)));
+         this.pendingCandidates.get(msg.sid).forEach((candidate, key) =>
+            this.peerConnections.get(msg.sid).addIceCandidate(new RTCIceCandidate(candidate)));
       }
       // Send local SDP to remote party
       this.voiceService.sendMessage({type: 'answer', sid: peerConnectionContainer.sid,
@@ -172,7 +172,7 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleAnswerMessage(msg: VoiceMsg): void {
     console.log('handle incoming answer');
-    this.peerConnections[msg.sid].setRemoteDescription(msg.data);
+    this.peerConnections.get(msg.sid).setRemoteDescription(msg.data);
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
@@ -186,9 +186,9 @@ export class VoiceComponent implements AfterViewInit {
        this.peerConnections[msg.sid].addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
     } else {
        if (!(msg.sid in this.pendingCandidates)) {
-          this.pendingCandidates[msg.sid] = [];
+          this.pendingCandidates.set(msg.sid, [] as RTCIceCandidateInit[]);
        }
-       this.pendingCandidates[msg.sid].push(msg.data);
+       this.pendingCandidates.get(msg.sid).push(msg.data);
     }
   }
 
@@ -292,7 +292,8 @@ export class VoiceComponent implements AfterViewInit {
 	 let mySid: string = null;
      this.peerConnections.forEach((value, key) => value === event.currentTarget ? mySid = key : mySid = mySid);
      if(!mySid) {
-	    this.pendingCandidates.forEach((value, key) => value === event.currentTarget ? mySid = key : mySid = mySid);
+	    this.pendingCandidates.forEach((value, key) => value.filter(myCandidate => myCandidate === event.currentTarget).length > 0
+	       ? mySid = key : mySid = mySid);
      }
      return mySid;
 }
