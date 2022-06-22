@@ -57,6 +57,7 @@ export class VoiceComponent implements AfterViewInit {
 
   async call(): Promise<void> {
     const peerConnectionContainer = this.createPeerConnection();
+    this.peerConnections.set(peerConnectionContainer.sid, peerConnectionContainer.rtcPeerConnection);
 
     // Add the tracks from the local stream to the RTCPeerConnection
 //    this.localStream.getTracks().forEach(
@@ -76,9 +77,9 @@ export class VoiceComponent implements AfterViewInit {
     }
   }
 
-  hangUp(mySid: string): void {
-    this.voiceService.sendMessage({type: 'hangup', sid: mySid, data: ''});
-    this.closeVideoCall(mySid);
+  hangUp(): void {
+    this.voiceService.sendMessage({type: 'hangup', sid: null, data: ''});
+    this.closeVideoCall();
   }
 
   ngAfterViewInit(): void {
@@ -177,7 +178,7 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleHangupMessage(msg: VoiceMsg): void {
     console.log(msg);
-    this.closeVideoCall(msg.sid);
+    this.closeVideoCall();
   }
 
   private handleICECandidateMessage(msg: VoiceMsg): void {
@@ -216,28 +217,29 @@ export class VoiceComponent implements AfterViewInit {
     return new RTCPeerConnectionContainer(sid, peerConnection);
   }
 
-  private closeVideoCall(sid: string): void {
+  private closeVideoCall(): void {
     console.log('Closing call');
 
-    if (this.peerConnections[sid]) {
+    this.peerConnections.forEach((connection, sid) => {
       console.log('--> Closing the peer connection');
 
-      this.peerConnections[sid].ontrack = null;
-      this.peerConnections[sid].onicecandidate = null;
-      this.peerConnections[sid].oniceconnectionstatechange = null;
-      this.peerConnections[sid].onsignalingstatechange = null;
+      connection.ontrack = null;
+      connection.onicecandidate = null;
+      connection.oniceconnectionstatechange = null;
+      connection.onsignalingstatechange = null;
 
       // Stop all transceivers on the connection
-      this.peerConnections[sid].getTransceivers().forEach(transceiver => {
+      connection.getTransceivers().forEach(transceiver => {
         transceiver.stop();
       });
 
       // Close the peer connection
-      this.peerConnections[sid].close();
-      this.peerConnections.delete(sid);
-	  this.stopLocalVideo();
-      this.inCall = false;
-    }
+      connection.close();
+    });
+    this.peerConnections.clear();
+    this.pendingCandidates.clear();
+	this.stopLocalVideo();
+    this.inCall = false;
   }
 
   /* ########################  ERROR HANDLER  ################################## */
@@ -257,7 +259,7 @@ export class VoiceComponent implements AfterViewInit {
         break;
     }
 
-    this.closeVideoCall(sid);
+    this.closeVideoCall();
   }
 
   private reportError = (e: Error) => {
@@ -299,8 +301,8 @@ export class VoiceComponent implements AfterViewInit {
 }
 
   private closeVideoCallByEvent(event: Event): void {
-	 const mySid = this.getEventSid(event);
-     this.closeVideoCall(mySid);
+	 // const mySid = this.getEventSid(event);
+     this.closeVideoCall();
   }
 
   private handleSignalingStateChangeEvent = (event: Event) => {
