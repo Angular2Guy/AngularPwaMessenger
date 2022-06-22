@@ -212,7 +212,7 @@ export class VoiceComponent implements AfterViewInit {
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
     peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
     peerConnection.ontrack = this.handleTrackEvent;
-    this.peerConnections[sid] = peerConnection;
+    this.peerConnections.set(sid,peerConnection);
     return new RTCPeerConnectionContainer(sid, peerConnection);
   }
 
