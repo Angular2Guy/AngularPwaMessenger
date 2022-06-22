@@ -159,6 +159,10 @@ export class VoiceComponent implements AfterViewInit {
       // Set local SDP
       peerConnectionContainer.rtcPeerConnection.setLocalDescription(answer)
     ).then(() => {
+	  if (msg.sid in this.pendingCandidates) {
+         this.pendingCandidates[msg.sid].forEach(candidate =>
+            this.peerConnections[msg.sid].addIceCandidate(new RTCIceCandidate(candidate)));
+      }
       // Send local SDP to remote party
       this.voiceService.sendMessage({type: 'answer', sid: peerConnectionContainer.sid,
          data: peerConnectionContainer.rtcPeerConnection.localDescription});
@@ -178,8 +182,14 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleICECandidateMessage(msg: VoiceMsg): void {
 	console.log(msg);
-    const candidate = new RTCIceCandidate(msg.data);
-    this.peerConnections[msg.sid].addIceCandidate(candidate).catch(this.reportError);
+	if (msg.sid in this.peerConnections) {
+       this.peerConnections[msg.sid].addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
+    } else {
+       if (!(msg.sid in this.pendingCandidates)) {
+          this.pendingCandidates[msg.sid] = [];
+       }
+       this.pendingCandidates[msg.sid].push(msg.data);
+    }
   }
 
   private async requestMediaDevices(): Promise<void> {
@@ -281,6 +291,9 @@ export class VoiceComponent implements AfterViewInit {
   private getEventSid(event: Event): string {
 	 let mySid: string = null;
      this.peerConnections.forEach((value, key) => value === event.currentTarget ? mySid = key : mySid = mySid);
+     if(!mySid) {
+	    this.pendingCandidates.forEach((value, key) => value === event.currentTarget ? mySid = key : mySid = mySid);
+     }
      return mySid;
 }
 
