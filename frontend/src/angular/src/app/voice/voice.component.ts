@@ -118,7 +118,7 @@ export class VoiceComponent implements AfterViewInit {
     this.voiceService.messages$.subscribe(
       msg => {
         console.log('Received message: ' + msg.type);
-        console.log(msg);
+        // console.log(msg);
         switch (msg.type) {
           case 'offer':
             this.handleOfferMessage(msg);
@@ -145,12 +145,13 @@ export class VoiceComponent implements AfterViewInit {
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer');
     const peerConnectionContainer = this.createPeerConnection();
+    this.peerConnections.set(msg.sid, peerConnectionContainer.rtcPeerConnection);
 
     if (!this.localStream) {
       this.startLocalVideo();
     }
 
-    peerConnectionContainer.rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+    peerConnectionContainer.rtcPeerConnection.setLocalDescription(new RTCSessionDescription(msg.data))
       .then(() => {
         this.startLocalVideo();
       }).then(() =>
@@ -160,7 +161,7 @@ export class VoiceComponent implements AfterViewInit {
       // Set local SDP
       peerConnectionContainer.rtcPeerConnection.setLocalDescription(answer)
     ).then(() => {
-	  if (msg.sid in this.pendingCandidates) {
+	  if (!!this.pendingCandidates.get(msg.sid)) {
          this.pendingCandidates.get(msg.sid).forEach((candidate, key) =>
             this.peerConnections.get(msg.sid).addIceCandidate(new RTCIceCandidate(candidate)));
       }
@@ -173,7 +174,9 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleAnswerMessage(msg: VoiceMsg): void {
     console.log('handle incoming answer');
-    this.peerConnections.get(msg.sid).setRemoteDescription(msg.data);
+    console.log(msg);
+    console.log(this.peerConnections.get(msg.sid));
+    this.peerConnections.get(msg.sid).setRemoteDescription(msg.data).then(x => console.log(x));
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
