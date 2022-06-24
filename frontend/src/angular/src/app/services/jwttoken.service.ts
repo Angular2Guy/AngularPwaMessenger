@@ -11,7 +11,7 @@
    limitations under the License.
  */
 import { Injectable } from '@angular/core';
-import { JwtToken } from '../model/jwtToken';
+import { JwtToken } from '../model/jwt-token';
 
 @Injectable( {
   providedIn: 'root'

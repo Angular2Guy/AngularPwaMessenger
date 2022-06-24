@@ -17,7 +17,7 @@ import { map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/op
 import { ContactService } from '../services/contact.service';
 import { Contact } from '../model/contact';
 import { LocaldbService } from '../services/localdb.service';
-import { LocalContact } from '../model/localContact';
+import { LocalContact } from '../model/local-contact';
 
 @Component( {
     selector: 'app-add-contacts',

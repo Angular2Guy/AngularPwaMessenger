@@ -12,9 +12,9 @@
  */
 import { Injectable } from '@angular/core';
 import Dexie from 'dexie';
-import { LocalContact } from '../model/localContact';
-import { LocalMessage } from '../model/localMessage';
-import { LocalUser } from '../model/localUser';
+import { LocalContact } from '../model/local-contact';
+import { LocalMessage } from '../model/local-message';
+import { LocalUser } from '../model/local-user';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 

@@ -11,8 +11,8 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MyUser } from '../model/myUser';
-import { AuthCheck } from '../model/authCheck';
+import { MyUser } from '../model/my-user';
+import { AuthCheck } from '../model/auth-check';
 import { Observable } from 'rxjs';
 import { JwttokenService } from './jwttoken.service';
 

@@ -11,7 +11,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Tuple } from '../common/tuple';
-import { PrivateKey } from '../model/privateKey';
+import { PrivateKey } from '../model/private-key';
 
 @Injectable( {
   providedIn: 'root'

@@ -15,7 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { Observable } from 'rxjs';
-import { SyncMsgs } from '../model/syncMsgs';
+import { SyncMsgs } from '../model/sync-msgs';
 
 @Injectable({
   providedIn: 'root'

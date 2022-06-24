@@ -14,7 +14,7 @@ import { Injectable } from '@angular/core';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {environment} from '../../environments/environment';
 import {Subject} from 'rxjs';
-import {VoiceMsg} from '../model/voiceMsg';
+import {VoiceMsg} from '../model/voice-msg';
 
 export const WS_ENDPOINT = environment.wsPath;
 

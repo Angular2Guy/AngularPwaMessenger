@@ -12,12 +12,12 @@
  */
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MyUser } from '../model/myUser';
+import { MyUser } from '../model/my-user';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MainComponent } from '../main/main.component';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocaldbService } from '../services/localdb.service';
-import { LocalUser } from '../model/localUser';
+import { LocalUser } from '../model/local-user';
 import { JwttokenService } from '../services/jwttoken.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { CryptoService } from '../services/crypto.service';
@@ -26,7 +26,7 @@ enum FormFields {
 	Username = 'username',
 	Password = 'password',
 	Password2 = 'password2',
-	Email = 'email'   
+	Email = 'email'
 } 
 
 @Component( {

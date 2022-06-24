@@ -13,7 +13,7 @@
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { VoiceService } from '../services/voice.service';
-import { VoiceMsg} from '../model/voiceMsg';
+import { VoiceMsg} from '../model/voice-msg';
 import { environment } from 'src/environments/environment';
 
 const offerOptions = {
