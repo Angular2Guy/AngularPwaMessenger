@@ -59,15 +59,10 @@ export class VoiceComponent implements AfterViewInit {
     const peerConnectionContainer = this.createPeerConnection();
     this.peerConnections.set(peerConnectionContainer.sid, peerConnectionContainer.rtcPeerConnection);
 
-    // Add the tracks from the local stream to the RTCPeerConnection
-//    this.localStream.getTracks().forEach(
-//      track => this.peerConnection.addTrack(track, this.localStream)
-//    );
-
     try {
-      const offer: RTCSessionDescriptionInit = await peerConnectionContainer.rtcPeerConnection.createOffer(offerOptions);
+      const offer = await this.peerConnections.get(peerConnectionContainer.sid).createOffer(offerOptions);
       // Establish the offer as the local peer's current description.
-      await peerConnectionContainer.rtcPeerConnection.setLocalDescription(offer);
+      await peerConnectionContainer.rtcPeerConnection.setLocalDescription(new RTCSessionDescription(offer));
 
       this.inCall = true;
 
@@ -145,38 +140,39 @@ export class VoiceComponent implements AfterViewInit {
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer');
     const peerConnectionContainer = this.createPeerConnection();
-    this.peerConnections.set(msg.sid, peerConnectionContainer.rtcPeerConnection);
+    this.peerConnections.set(peerConnectionContainer.sid, peerConnectionContainer.rtcPeerConnection);
 
     if (!this.localStream) {
       this.startLocalVideo();
     }
 
-    peerConnectionContainer.rtcPeerConnection.setLocalDescription(new RTCSessionDescription(msg.data))
+    this.peerConnections.get(peerConnectionContainer.sid).setRemoteDescription(new RTCSessionDescription(msg.data))
       .then(() => {
         this.startLocalVideo();
       }).then(() =>
       // Build SDP for answer message
-     peerConnectionContainer.rtcPeerConnection.createAnswer()
+     this.peerConnections.get(peerConnectionContainer.sid).createAnswer()
+        .then(answer => {console.log(this.peerConnections.get(peerConnectionContainer.sid)); return answer;})
     ).then((answer) =>
       // Set local SDP
-      peerConnectionContainer.rtcPeerConnection.setLocalDescription(answer)
-    ).then(() => {
-	  if (!!this.pendingCandidates.get(msg.sid)) {
-         this.pendingCandidates.get(msg.sid).forEach((candidate, key) =>
-            this.peerConnections.get(msg.sid).addIceCandidate(new RTCIceCandidate(candidate)));
+      this.peerConnections.get(peerConnectionContainer.sid).setLocalDescription(answer).then(() => answer)
+    ).then(answer => {
+	  /*
+	  if (!!this.pendingCandidates.get(peerConnectionContainer.sid)) {
+         this.pendingCandidates.get(peerConnectionContainer.sid).forEach((candidate, key) =>
+            this.peerConnections.get(peerConnectionContainer.sid).addIceCandidate(new RTCIceCandidate(candidate)));
       }
-      // Send local SDP to remote party
-      this.voiceService.sendMessage({type: 'answer', sid: peerConnectionContainer.sid,
-         data: peerConnectionContainer.rtcPeerConnection.localDescription});
+      */
+      // Send local SDP to remote part
+      this.voiceService.sendMessage({type: 'answer', sid: msg.sid,
+         data: answer});
       this.inCall = true;
-    }).catch(e => this.handleGetUserMediaError(e, msg.sid));
+    }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.sid));
   }
 
   private handleAnswerMessage(msg: VoiceMsg): void {
     console.log('handle incoming answer');
-    console.log(msg);
-    console.log(this.peerConnections.get(msg.sid));
-    this.peerConnections.get(msg.sid).setRemoteDescription(msg.data).then(x => console.log(x));
+    this.peerConnections.get(msg.sid).setRemoteDescription(new RTCSessionDescription(msg.data)).then(x => console.log(x));
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
@@ -301,7 +297,7 @@ export class VoiceComponent implements AfterViewInit {
 	       ? mySid = key : mySid = mySid);
      }
      return mySid;
-}
+   }
 
   private closeVideoCallByEvent(event: Event): void {
 	 // const mySid = this.getEventSid(event);
