@@ -31,7 +31,7 @@ const mediaConstraints = {
 };
 
 class RTCPeerConnectionContainer{
-	constructor(public sid: string, public rtcPeerConnection: RTCPeerConnection){}
+	constructor(public localId: string, public remoteId: string, public rtcPeerConnection: RTCPeerConnection){}
 }
 
 @Component({
@@ -49,7 +49,7 @@ export class VoiceComponent implements AfterViewInit {
 
   inCall = false;
 
-  private peerConnections = new Map<string, RTCPeerConnection>();
+  private peerConnections = new Map<string, RTCPeerConnectionContainer>();
   private pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private localStream: MediaStream;
 
@@ -57,23 +57,23 @@ export class VoiceComponent implements AfterViewInit {
 
   async call(): Promise<void> {
     const peerConnectionContainer = this.createPeerConnection();
-    this.peerConnections.set(peerConnectionContainer.sid, peerConnectionContainer.rtcPeerConnection);
+    this.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     try {
-      const offer = await this.peerConnections.get(peerConnectionContainer.sid).createOffer(offerOptions);
+      const offer = await this.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createOffer(offerOptions);
       // Establish the offer as the local peer's current description.
       await peerConnectionContainer.rtcPeerConnection.setLocalDescription(new RTCSessionDescription(offer));
 
       this.inCall = true;
 
-      this.voiceService.sendMessage({type: 'offer', sid: peerConnectionContainer.sid,  data: offer});
+      this.voiceService.sendMessage({type: 'offer', sid: peerConnectionContainer.localId, remoteId: null, data: offer});
     } catch (err) {
-      this.handleGetUserMediaError(err, peerConnectionContainer.sid);
+      this.handleGetUserMediaError(err, peerConnectionContainer.localId);
     }
   }
 
   hangUp(): void {
-    this.voiceService.sendMessage({type: 'hangup', sid: null, data: ''});
+    this.voiceService.sendMessage({type: 'hangup', sid: null, remoteId: null, data: ''});
     this.closeVideoCall();
   }
 
@@ -138,24 +138,25 @@ export class VoiceComponent implements AfterViewInit {
   /* ########################  MESSAGE HANDLER  ################################## */
 
   private handleOfferMessage(msg: VoiceMsg): void {
-    console.log('handle incoming offer');
+    console.log('handle incoming offer sid:: '+msg.sid);
     const peerConnectionContainer = this.createPeerConnection();
-    this.peerConnections.set(peerConnectionContainer.sid, peerConnectionContainer.rtcPeerConnection);
+    peerConnectionContainer.remoteId = msg.sid;
+    this.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     if (!this.localStream) {
       this.startLocalVideo();
     }
 
-    this.peerConnections.get(peerConnectionContainer.sid).setRemoteDescription(new RTCSessionDescription(msg.data))
+    this.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
       .then(() => {
         this.startLocalVideo();
       }).then(() =>
       // Build SDP for answer message
-     this.peerConnections.get(peerConnectionContainer.sid).createAnswer()
-        .then(answer => {console.log(this.peerConnections.get(peerConnectionContainer.sid)); return answer;})
+     this.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createAnswer()
+        .then(answer => {console.log(this.peerConnections.get(peerConnectionContainer.localId)); return answer;})
     ).then((answer) =>
       // Set local SDP
-      this.peerConnections.get(peerConnectionContainer.sid).setLocalDescription(answer).then(() => answer)
+      this.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.setLocalDescription(answer).then(() => answer)
     ).then(answer => {
 	  /*
 	  if (!!this.pendingCandidates.get(peerConnectionContainer.sid)) {
@@ -164,15 +165,16 @@ export class VoiceComponent implements AfterViewInit {
       }
       */
       // Send local SDP to remote part
-      this.voiceService.sendMessage({type: 'answer', sid: msg.sid,
+      this.voiceService.sendMessage({type: 'answer', sid: msg.sid, remoteId: peerConnectionContainer.localId,
          data: answer});
       this.inCall = true;
-    }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.sid));
+    }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.localId));
   }
 
   private handleAnswerMessage(msg: VoiceMsg): void {
-    console.log('handle incoming answer');
-    this.peerConnections.get(msg.sid).setRemoteDescription(new RTCSessionDescription(msg.data)).then(x => console.log(x));
+    console.log('handle incoming answer sid: ' +msg.sid);
+    this.peerConnections.get(msg.sid).remoteId = msg.remoteId;
+    this.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data)).then(x => console.log(x));
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
@@ -182,10 +184,10 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleICECandidateMessage(msg: VoiceMsg): void {
 	console.log(msg);
-	if (msg.sid in this.peerConnections) {
-       this.peerConnections[msg.sid].addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
+	if (msg.sid in this.peerConnections.keys) {
+       this.peerConnections.get(msg.sid).rtcPeerConnection.addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
     } else {
-       if (!(msg.sid in this.pendingCandidates)) {
+       if (!(msg.sid in this.pendingCandidates.keys)) {
           this.pendingCandidates.set(msg.sid, [] as RTCIceCandidateInit[]);
        }
        this.pendingCandidates.get(msg.sid).push(msg.data);
@@ -212,28 +214,29 @@ export class VoiceComponent implements AfterViewInit {
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
     peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
     peerConnection.ontrack = this.handleTrackEvent;
-    this.peerConnections.set(sid,peerConnection);
-    return new RTCPeerConnectionContainer(sid, peerConnection);
+    const container = new RTCPeerConnectionContainer(sid, null, peerConnection);
+    this.peerConnections.set(sid, container);
+    return container;
   }
 
   private closeVideoCall(): void {
     console.log('Closing call');
 
-    this.peerConnections.forEach((connection, sid) => {
+    this.peerConnections.forEach((container, sid) => {
       console.log('--> Closing the peer connection');
 
-      connection.ontrack = null;
-      connection.onicecandidate = null;
-      connection.oniceconnectionstatechange = null;
-      connection.onsignalingstatechange = null;
+      container.rtcPeerConnection.ontrack = null;
+      container.rtcPeerConnection.onicecandidate = null;
+      container.rtcPeerConnection.oniceconnectionstatechange = null;
+      container.rtcPeerConnection.onsignalingstatechange = null;
 
       // Stop all transceivers on the connection
-      connection.getTransceivers().forEach(transceiver => {
+      container.rtcPeerConnection.getTransceivers().forEach(transceiver => {
         transceiver.stop();
       });
 
       // Close the peer connection
-      connection.close();
+      container.rtcPeerConnection.close();
     });
     this.peerConnections.clear();
     this.pendingCandidates.clear();
@@ -268,11 +271,12 @@ export class VoiceComponent implements AfterViewInit {
 
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
-    // console.log(event);
+     console.log(event);
     if (event.candidate) {
       this.voiceService.sendMessage({
         type: 'ice-candidate',
         sid: this.getEventSid(event),
+        remoteId: this.peerConnections.get(this.getEventSid(event)).remoteId,
         data: event.candidate
       });
     }
@@ -291,7 +295,7 @@ export class VoiceComponent implements AfterViewInit {
 
   private getEventSid(event: Event): string {
 	 let mySid: string = null;
-     this.peerConnections.forEach((value, key) => value === event.currentTarget ? mySid = key : mySid = mySid);
+     this.peerConnections.forEach((value, key) => value.rtcPeerConnection === event.currentTarget ? mySid = key : mySid = mySid);
      if(!mySid) {
 	    this.pendingCandidates.forEach((value, key) => value.filter(myCandidate => myCandidate === event.currentTarget).length > 0
 	       ? mySid = key : mySid = mySid);

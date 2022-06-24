@@ -13,5 +13,6 @@
 export interface VoiceMsg {
   type: string;
   sid: string;
+  remoteId: string;
   data: any;
 }
