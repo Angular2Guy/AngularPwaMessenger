@@ -184,13 +184,13 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleICECandidateMessage(msg: VoiceMsg): void {
 	console.log(msg);
-	if (msg.sid in this.peerConnections.keys) {
-       this.peerConnections.get(msg.sid).rtcPeerConnection.addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
+	if (msg.remoteId in this.peerConnections.keys) {
+       this.peerConnections.get(msg.remoteId).rtcPeerConnection.addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
     } else {
-       if (!(msg.sid in this.pendingCandidates.keys)) {
-          this.pendingCandidates.set(msg.sid, [] as RTCIceCandidateInit[]);
+       if (!(msg.remoteId in this.pendingCandidates.keys)) {
+          this.pendingCandidates.set(msg.remoteId, [] as RTCIceCandidateInit[]);
        }
-       this.pendingCandidates.get(msg.sid).push(msg.data);
+       this.pendingCandidates.get(msg.remoteId).push(msg.data);
     }
   }
 
@@ -272,7 +272,7 @@ export class VoiceComponent implements AfterViewInit {
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
      console.log(event);
-    if (event.candidate) {
+    if (event.candidate && this.peerConnections.get(this.getEventSid(event)).remoteId) {
       this.voiceService.sendMessage({
         type: 'ice-candidate',
         sid: this.getEventSid(event),
