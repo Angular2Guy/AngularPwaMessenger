@@ -174,7 +174,8 @@ export class VoiceComponent implements AfterViewInit {
   private handleAnswerMessage(msg: VoiceMsg): void {
     console.log('handle incoming answer sid: ' +msg.sid);
     this.peerConnections.get(msg.sid).remoteId = msg.remoteId;
-    this.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data)).then(x => console.log(x));
+    this.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+       .then(() => console.log('answer handled'));
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
@@ -185,6 +186,7 @@ export class VoiceComponent implements AfterViewInit {
   private handleICECandidateMessage(msg: VoiceMsg): void {
 	console.log(msg);
 	if (msg.remoteId in this.peerConnections.keys) {
+	   console.log(msg.remoteId, this.peerConnections.get(msg.remoteId).rtcPeerConnection);
        this.peerConnections.get(msg.remoteId).rtcPeerConnection.addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
     } else {
        if (!(msg.remoteId in this.pendingCandidates.keys)) {
@@ -209,11 +211,12 @@ export class VoiceComponent implements AfterViewInit {
     console.log('creating PeerConnection...');
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
     const sid = window.crypto.randomUUID();
+    const self = this;
 
-    peerConnection.onicecandidate = this.handleICECandidateEvent;
-    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
-    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
-    peerConnection.ontrack = this.handleTrackEvent;
+    peerConnection.onicecandidate = this.handleICECandidateEvent;//.bind(self);
+    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;//.bind(self);
+    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;//.bind(self);
+    peerConnection.ontrack = this.handleTrackEvent;//.bind(self);
     const container = new RTCPeerConnectionContainer(sid, null, peerConnection);
     this.peerConnections.set(sid, container);
     return container;
@@ -289,7 +292,7 @@ export class VoiceComponent implements AfterViewInit {
       case 'failed':
       case 'disconnected':
         this.closeVideoCallByEvent(event);
-        break;
+        break;     console.log(event);
     }
   };
 
@@ -304,12 +307,13 @@ export class VoiceComponent implements AfterViewInit {
    }
 
   private closeVideoCallByEvent(event: Event): void {
-	 // const mySid = this.getEventSid(event);
+	 const mySid = this.getEventSid(event);
+	 console.log(mySid, event);
      this.closeVideoCall();
   }
 
   private handleSignalingStateChangeEvent = (event: Event) => {
-    console.log(event);
+    console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState);
     switch (((event.currentTarget) as RTCPeerConnection).signalingState) {
       case 'closed':
         this.closeVideoCallByEvent(event);

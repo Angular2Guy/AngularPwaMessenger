@@ -43,7 +43,7 @@ export class VoiceService {
   }
 
   sendMessage(msg: VoiceMsg): void {
-    console.log('sending message: ' + msg.type);
+    console.log('sending message: ' + msg.type + ' sid: '+msg.sid +' remoteId: '+msg.remoteId);
     this.socket$.next(msg);
   }
 
