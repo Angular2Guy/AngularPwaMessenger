@@ -271,8 +271,8 @@ export class VoiceComponent implements AfterViewInit {
 
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
-     console.log(event);
     if (event.candidate && this.peerConnections.get(this.getEventSid(event)).remoteId) {
+      console.log(event);
       this.voiceService.sendMessage({
         type: 'ice-candidate',
         sid: this.getEventSid(event),
