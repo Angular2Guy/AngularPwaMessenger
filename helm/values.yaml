@@ -17,5 +17,6 @@ secret:
 envApp:
   normal: 
     MONGODB_HOST: mongodb
+    SHUTDOWN_PHASE: 10s
   secret:
     JWTTOKEN_SECRET: secret-key1234567890abcdefghijklmnopqrstuvwxyz
