@@ -18,10 +18,16 @@ import {VoiceMsg} from '../model/voice-msg';
 
 export const WS_ENDPOINT = environment.wsPath;
 
+export class RTCPeerConnectionContainer{
+	constructor(public localId: string, public remoteId: string, public rtcPeerConnection: RTCPeerConnection){}
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class VoiceService {
+  public peerConnections = new Map<string, RTCPeerConnectionContainer>();
+  public pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private socket$: WebSocketSubject<any>;
   private messagesSubject = new Subject<VoiceMsg>();
   // eslint-disable-next-line @typescript-eslint/member-ordering

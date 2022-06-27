@@ -12,7 +12,7 @@
  */
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { VoiceService } from '../services/voice.service';
+import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg} from '../model/voice-msg';
 import { environment } from 'src/environments/environment';
 
@@ -30,10 +30,6 @@ const mediaConstraints = {
   // video: {width: 160, height: 120}  //  4:3
 };
 
-class RTCPeerConnectionContainer{
-	constructor(public localId: string, public remoteId: string, public rtcPeerConnection: RTCPeerConnection){}
-}
-
 @Component({
   selector: 'app-voice',
   templateUrl: './voice.component.html',
@@ -49,18 +45,16 @@ export class VoiceComponent implements AfterViewInit {
 
   inCall = false;
 
-  private peerConnections = new Map<string, RTCPeerConnectionContainer>();
-  private pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private localStream: MediaStream;
 
   constructor(private voiceService: VoiceService) { }
 
   async call(): Promise<void> {
     const peerConnectionContainer = this.createPeerConnection();
-    this.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
+    this.voiceService.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     try {
-      const offer = await this.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createOffer(offerOptions);
+      const offer = await this.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createOffer(offerOptions);
       // Establish the offer as the local peer's current description.
       await peerConnectionContainer.rtcPeerConnection.setLocalDescription(new RTCSessionDescription(offer));
 
@@ -141,22 +135,24 @@ export class VoiceComponent implements AfterViewInit {
     console.log('handle incoming offer sid:: '+msg.sid);
     const peerConnectionContainer = self.createPeerConnection();
     peerConnectionContainer.remoteId = msg.sid;
-    self.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
+    self.voiceService.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     if (!self.localStream) {
       this.startLocalVideo();
     }
 
-    self.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+    self.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection
+      .setRemoteDescription(new RTCSessionDescription(msg.data))
       .then(() => {
         self.startLocalVideo();
       }).then(() =>
       // Build SDP for answer message
-     this.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createAnswer()
-        .then(answer => {console.log(self.peerConnections.get(peerConnectionContainer.localId)); return answer;})
+     this.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createAnswer()
+        .then(answer => {console.log(self.voiceService.peerConnections.get(peerConnectionContainer.localId)); return answer;})
     ).then((answer) =>
       // Set local SDP
-      self.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.setLocalDescription(answer).then(() => answer)
+      self.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection
+      .setLocalDescription(answer).then(() => answer)
     ).then(answer => {
       // Send local SDP to remote part
       self.voiceService.sendMessage({type: 'answer', sid: msg.sid, remoteId: peerConnectionContainer.localId,
@@ -167,8 +163,8 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleAnswerMessage(msg: VoiceMsg, self: VoiceComponent): void {
     console.log('handle incoming answer sid: ' +msg.sid);
-    self.peerConnections.get(msg.sid).remoteId = msg.remoteId;
-    self.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+    self.voiceService.peerConnections.get(msg.sid).remoteId = msg.remoteId;
+    self.voiceService.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
        .then(() => console.log('answer handled'));
   }
 
@@ -179,14 +175,15 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleICECandidateMessage(msg: VoiceMsg, self: VoiceComponent): void {
 	console.log(msg);
-	if (msg.remoteId in self.peerConnections.keys) {
-	   console.log(msg.remoteId, this.peerConnections.get(msg.remoteId).rtcPeerConnection);
-       self.peerConnections.get(msg.remoteId).rtcPeerConnection.addIceCandidate(new RTCIceCandidate(msg.data)).catch(self.reportError);
+	if (msg.remoteId in self.voiceService.peerConnections.keys) {
+	   console.log(msg.remoteId, self.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
+       self.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection
+       .addIceCandidate(new RTCIceCandidate(msg.data)).catch(self.reportError);
     } else {
-       if (!(msg.remoteId in self.pendingCandidates.keys)) {
-          self.pendingCandidates.set(msg.remoteId, [] as RTCIceCandidateInit[]);
+       if (!(msg.remoteId in self.voiceService.pendingCandidates.keys)) {
+          self.voiceService.pendingCandidates.set(msg.remoteId, [] as RTCIceCandidateInit[]);
        }
-       self.pendingCandidates.get(msg.remoteId).push(msg.data);
+       self.voiceService.pendingCandidates.get(msg.remoteId).push(msg.data);
     }
   }
 
@@ -212,14 +209,14 @@ export class VoiceComponent implements AfterViewInit {
     peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;//.bind(self);
     peerConnection.ontrack = this.handleTrackEvent;//.bind(self);
     const container = new RTCPeerConnectionContainer(sid, null, peerConnection);
-    this.peerConnections.set(sid, container);
+    this.voiceService.peerConnections.set(sid, container);
     return container;
   }
 
   private closeVideoCall(): void {
     console.log('Closing call');
 
-    this.peerConnections.forEach((container, sid) => {
+    this.voiceService.peerConnections.forEach((container, sid) => {
       console.log('--> Closing the peer connection');
 
       container.rtcPeerConnection.ontrack = null;
@@ -235,8 +232,8 @@ export class VoiceComponent implements AfterViewInit {
       // Close the peer connection
       container.rtcPeerConnection.close();
     });
-    this.peerConnections.clear();
-    this.pendingCandidates.clear();
+    this.voiceService.peerConnections.clear();
+    this.voiceService.pendingCandidates.clear();
 	this.stopLocalVideo();
     this.inCall = false;
   }
@@ -268,12 +265,12 @@ export class VoiceComponent implements AfterViewInit {
 
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
-    if (event.candidate && this.peerConnections.get(this.getEventSid(event)).remoteId) {
+    if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event)).remoteId) {
       console.log(event);
       this.voiceService.sendMessage({
         type: 'ice-candidate',
         sid: this.getEventSid(event),
-        remoteId: this.peerConnections.get(this.getEventSid(event)).remoteId,
+        remoteId: this.voiceService.peerConnections.get(this.getEventSid(event)).remoteId,
         data: event.candidate
       });
     }
@@ -293,9 +290,9 @@ export class VoiceComponent implements AfterViewInit {
 
   private getEventSid(event: Event): string {
 	 let mySid: string = null;
-     this.peerConnections.forEach((value, key) => value.rtcPeerConnection === event.currentTarget ? mySid = key : mySid = mySid);
+     this.voiceService.peerConnections.forEach((value, key) => value.rtcPeerConnection === event.currentTarget ? mySid = key : mySid = mySid);
      if(!mySid) {
-	    this.pendingCandidates.forEach((value, key) => value.filter(myCandidate => myCandidate === event.currentTarget).length > 0
+	    this.voiceService.pendingCandidates.forEach((value, key) => value.filter(myCandidate => myCandidate === event.currentTarget).length > 0
 	       ? mySid = key : mySid = mySid);
      }
      return mySid;
