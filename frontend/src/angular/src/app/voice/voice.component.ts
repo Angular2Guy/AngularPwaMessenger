@@ -133,7 +133,7 @@ export class VoiceComponent implements AfterViewInit {
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer sid:: '+msg.sid);
     const peerConnectionContainer = this.createPeerConnection();
-    peerConnectionContainer.remoteId = msg.sid;
+    peerConnectionContainer.remoteId = msg.sid;    
     this.voiceService.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     if (!this.localStream) {
@@ -173,13 +173,15 @@ export class VoiceComponent implements AfterViewInit {
   }
 
   private handleICECandidateMessage(msg: VoiceMsg): void {
-	console.log(msg);
-	if (msg.remoteId in this.voiceService.peerConnections.keys) {
-	   console.log(msg.remoteId, this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
+	console.log('ICECandidateMessage sid: '+msg.sid+' remoteId: '+msg.remoteId);
+	//console.log(msg);
+	//console.log(this.voiceService.peerConnections.get(msg.remoteId));
+	if (!!this.voiceService.peerConnections.get(msg.remoteId)) {
+	   //console.log(msg.remoteId, this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
        this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection
        .addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
     } else {
-       if (!(msg.remoteId in this.voiceService.pendingCandidates.keys)) {
+       if (!this.voiceService.peerConnections.get(msg.remoteId)) {
           this.voiceService.pendingCandidates.set(msg.remoteId, [] as RTCIceCandidateInit[]);
        }
        this.voiceService.pendingCandidates.get(msg.remoteId).push(msg.data);
@@ -264,7 +266,7 @@ export class VoiceComponent implements AfterViewInit {
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event)).remoteId) {
-      console.log(event);
+      //console.log(event);
       this.voiceService.sendMessage({
         type: 'ice-candidate',
         sid: this.getEventSid(event),
