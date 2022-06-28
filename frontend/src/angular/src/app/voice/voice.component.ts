@@ -54,7 +54,8 @@ export class VoiceComponent implements AfterViewInit {
     this.voiceService.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     try {
-      const offer = await this.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createOffer(offerOptions);
+      const offer = await this.voiceService.peerConnections.get(peerConnectionContainer.localId)
+         .rtcPeerConnection.createOffer(offerOptions);
       // Establish the offer as the local peer's current description.
       await peerConnectionContainer.rtcPeerConnection.setLocalDescription(new RTCSessionDescription(offer));
 
@@ -69,6 +70,8 @@ export class VoiceComponent implements AfterViewInit {
   hangUp(): void {
     this.voiceService.sendMessage({type: 'hangup', sid: null, remoteId: null, data: ''});
     this.closeVideoCall();
+    this.remoteMuted = true;
+    this.remoteVideo.nativeElement.srcObject = null;
   }
 
   ngAfterViewInit(): void {
@@ -133,7 +136,7 @@ export class VoiceComponent implements AfterViewInit {
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer sid:: '+msg.sid);
     const peerConnectionContainer = this.createPeerConnection();
-    peerConnectionContainer.remoteId = msg.sid;    
+    peerConnectionContainer.remoteId = msg.sid;
     this.voiceService.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
     if (!this.localStream) {
@@ -204,10 +207,10 @@ export class VoiceComponent implements AfterViewInit {
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
     const sid = window.crypto.randomUUID();
 
-    peerConnection.onicecandidate = this.handleICECandidateEvent;//.bind(self);
-    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;//.bind(self);
-    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;//.bind(self);
-    peerConnection.ontrack = this.handleTrackEvent;//.bind(self);
+    peerConnection.onicecandidate = this.handleICECandidateEvent;
+    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
+    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
+    peerConnection.ontrack = this.handleTrackEvent;
     const container = new RTCPeerConnectionContainer(sid, null, peerConnection);
     this.voiceService.peerConnections.set(sid, container);
     return container;
@@ -264,6 +267,18 @@ export class VoiceComponent implements AfterViewInit {
   };
 
   /* ########################  EVENT HANDLER  ################################## */
+  private addRemoteStream = (event: RTCTrackEvent) => {
+    console.log('Add remote stream');
+    const remoteStream = event.streams.length === 0 ? null :  event.streams[0];
+    if(!!remoteStream) {
+       remoteStream.getTracks().forEach(track => {
+          track.enabled = true;
+       });
+       this.remoteVideo.nativeElement.srcObject = remoteStream;
+       this.remoteMuted = false;
+    }
+};
+
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event)).remoteId) {
       //console.log(event);
@@ -290,10 +305,11 @@ export class VoiceComponent implements AfterViewInit {
 
   private getEventSid(event: Event): string {
 	 let mySid: string = null;
-     this.voiceService.peerConnections.forEach((value, key) => value.rtcPeerConnection === event.currentTarget ? mySid = key : mySid = mySid);
+     this.voiceService.peerConnections
+        .forEach((value, key) => value.rtcPeerConnection === event.currentTarget ? mySid = key : mySid = mySid);
      if(!mySid) {
-	    this.voiceService.pendingCandidates.forEach((value, key) => value.filter(myCandidate => myCandidate === event.currentTarget).length > 0
-	       ? mySid = key : mySid = mySid);
+	    this.voiceService.pendingCandidates.forEach((value, key) =>
+	       value.filter(myCandidate => myCandidate === event.currentTarget).length > 0 ? mySid = key : mySid = mySid);
      }
      return mySid;
    }
