@@ -53,6 +53,12 @@ export class VoiceComponent implements AfterViewInit {
     const peerConnectionContainer = this.createPeerConnection();
     this.voiceService.peerConnections.set(peerConnectionContainer.localId, peerConnectionContainer);
 
+    if (!this.localStream) {
+      this.startLocalVideo();
+    }
+
+    this.localStream.getTracks().forEach(myTrack => peerConnectionContainer.rtcPeerConnection.addTrack(myTrack, this.localStream));
+
     try {
       const offer = await this.voiceService.peerConnections.get(peerConnectionContainer.localId)
          .rtcPeerConnection.createOffer(offerOptions);
@@ -143,6 +149,8 @@ export class VoiceComponent implements AfterViewInit {
       this.startLocalVideo();
     }
 
+    this.localStream.getTracks().forEach(myTrack => peerConnectionContainer.rtcPeerConnection.addTrack(myTrack, this.localStream));
+
     this.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection
       .setRemoteDescription(new RTCSessionDescription(msg.data))
       .then(() => {
@@ -167,6 +175,7 @@ export class VoiceComponent implements AfterViewInit {
     console.log('handle incoming answer sid: ' +msg.sid);
     this.voiceService.peerConnections.get(msg.sid).remoteId = msg.remoteId;
     this.voiceService.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+       .then(() => console.log(msg.data))
        .then(() => console.log('answer handled'));
   }
 
@@ -178,7 +187,7 @@ export class VoiceComponent implements AfterViewInit {
   private handleICECandidateMessage(msg: VoiceMsg): void {
 	console.log('ICECandidateMessage sid: '+msg.sid+' remoteId: '+msg.remoteId);
 	//console.log(msg);
-	//console.log(this.voiceService.peerConnections.get(msg.remoteId));
+	console.log(this.voiceService.peerConnections.get(msg.remoteId));
 	if (!!this.voiceService.peerConnections.get(msg.remoteId)) {
 	   //console.log(msg.remoteId, this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
        this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection
@@ -267,18 +276,6 @@ export class VoiceComponent implements AfterViewInit {
   };
 
   /* ########################  EVENT HANDLER  ################################## */
-  private addRemoteStream = (event: RTCTrackEvent) => {
-    console.log('Add remote stream');
-    const remoteStream = event.streams.length === 0 ? null :  event.streams[0];
-    if(!!remoteStream) {
-       remoteStream.getTracks().forEach(track => {
-          track.enabled = true;
-       });
-       this.remoteVideo.nativeElement.srcObject = remoteStream;
-       this.remoteMuted = false;
-    }
-};
-
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event)).remoteId) {
       //console.log(event);
@@ -299,7 +296,6 @@ export class VoiceComponent implements AfterViewInit {
       case 'disconnected':
         this.closeVideoCallByEvent(event);
         break;
-      console.log(event);
     }
   };
 
@@ -330,8 +326,16 @@ export class VoiceComponent implements AfterViewInit {
   };
 
   private handleTrackEvent = (event: RTCTrackEvent) => {
-    console.log(event);
+	console.log('handle track event', event);
+    // console.log(event);
+    const myStream = event.streams.length === 0 ? null :  event.streams[0];
+    if(!!myStream) {
+       myStream.getTracks().forEach(track => {
+          track.enabled = true;
+       });
+       this.remoteVideo.nativeElement.srcObject = myStream;
+       this.remoteMuted = false;
+    }
     this.remoteVideo.nativeElement.srcObject = event.streams[0];
   };
-
 }
