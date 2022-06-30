@@ -158,7 +158,9 @@ export class VoiceComponent implements AfterViewInit {
       }).then(() =>
       // Build SDP for answer message
      this.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection.createAnswer()
-        .then(answer => {console.log(this.voiceService.peerConnections.get(peerConnectionContainer.localId)); return answer;})
+        //.then(answer => {
+	    //   console.log(this.voiceService.peerConnections.get(peerConnectionContainer.localId));
+	    //   return answer;})
     ).then((answer) =>
       // Set local SDP
       this.voiceService.peerConnections.get(peerConnectionContainer.localId).rtcPeerConnection
@@ -187,7 +189,7 @@ export class VoiceComponent implements AfterViewInit {
   private handleICECandidateMessage(msg: VoiceMsg): void {
 	console.log('ICECandidateMessage sid: '+msg.sid+' remoteId: '+msg.remoteId);
 	//console.log(msg);
-	console.log(this.voiceService.peerConnections.get(msg.remoteId));
+	//console.log(this.voiceService.peerConnections.get(msg.remoteId));
 	if (!!this.voiceService.peerConnections.get(msg.remoteId)) {
 	   //console.log(msg.remoteId, this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
        this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection
@@ -317,7 +319,8 @@ export class VoiceComponent implements AfterViewInit {
   }
 
   private handleSignalingStateChangeEvent = (event: Event) => {
-    console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState);
+	console.log('signalingStateChangeEvent: '+console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState));
+    //console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState);
     switch (((event.currentTarget) as RTCPeerConnection).signalingState) {
       case 'closed':
         this.closeVideoCallByEvent(event);
