@@ -12,6 +12,7 @@
  */
 package ch.xxx.messenger.domain.common;
 
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -55,7 +56,7 @@ public class JwtTokenProvider {
 		Date issuedAt = issuedAtOpt.orElse(new Date());
 		Date validity = new Date(issuedAt.getTime() + validityInMilliseconds);
 
-		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
 		return Jwts.builder().setClaims(claims).setIssuedAt(issuedAt).setExpiration(validity)
 				.signWith(key, SignatureAlgorithm.HS256).compact();
 	}
@@ -64,7 +65,7 @@ public class JwtTokenProvider {
 		if (!token.isPresent()) {
 			return Optional.empty();
 		}
-		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
 		return Optional.of(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token.get()));
 	}
 
@@ -76,7 +77,7 @@ public class JwtTokenProvider {
 	}
 
 	public String getUsername(String token) {
-		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
 
@@ -86,7 +87,7 @@ public class JwtTokenProvider {
 		for (Role role : Role.values()) {
 			roles.add(role);
 		}
-		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
 		List<Map<String, String>> myRoles = (List<Map<String, String>>) Jwts.parserBuilder().setSigningKey(key).build()
 				.parseClaimsJws(token).getBody().get("auth");
 		return myRoles.stream().map(map -> map.values()).flatMap(Collection::stream)
@@ -103,7 +104,7 @@ public class JwtTokenProvider {
 	}
 
 	public boolean validateToken(String token) {
-		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
