@@ -33,10 +33,10 @@ export class VoiceService {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public messages$ = this.messagesSubject.asObservable();
 
-  public connect(): void {
+  public connect(jwtToken: string): void {
 
     if (!this.socket$ || this.socket$.closed) {
-      this.socket$ = this.getNewWebSocket();
+      this.socket$ = this.getNewWebSocket(jwtToken);
 
       this.socket$.subscribe(
         // Called whenever there is a message from the server
@@ -53,9 +53,9 @@ export class VoiceService {
     this.socket$.next(msg);
   }
 
-  private getNewWebSocket(): WebSocketSubject<any> {
+  private getNewWebSocket(jwtToken: string): WebSocketSubject<any> {
     return webSocket({
-      url: WS_ENDPOINT,
+      url: `${WS_ENDPOINT}?token=${encodeURI(jwtToken)}`,
       openObserver: {
         next: () => {
           console.log('[DataService]: connection ok');
@@ -65,7 +65,7 @@ export class VoiceService {
         next: () => {
           console.log('[DataService]: connection closed');
           this.socket$ = undefined;
-          this.connect();
+          this.connect(jwtToken);
         }
       }
     });

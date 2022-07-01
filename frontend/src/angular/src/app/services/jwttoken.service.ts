@@ -29,6 +29,7 @@ export class JwttokenService {
     this.localJwtToken = !token ? null : token;
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   get localLogin(): boolean {
     return this.localJwtToken ? false : true;
   }
