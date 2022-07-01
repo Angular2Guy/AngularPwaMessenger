@@ -14,6 +14,7 @@ package ch.xxx.messenger.adapter.handler;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
@@ -28,12 +29,12 @@ import ch.xxx.messenger.domain.common.JwtTokenProvider;
 import ch.xxx.messenger.domain.common.Role;
 
 @Component
-public class SocketHandler extends TextWebSocketHandler {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SocketHandler.class);
+public class SignalingHandler extends TextWebSocketHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SignalingHandler.class);
 	private JwtTokenProvider jwtTokenProvider;
 	private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
-	public SocketHandler(JwtTokenProvider jwtTokenProvider) {
+	public SignalingHandler(JwtTokenProvider jwtTokenProvider) {
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
@@ -46,15 +47,31 @@ public class SocketHandler extends TextWebSocketHandler {
 					webSocketSession.sendMessage(message);
 				}
 			}
+		} else {
+			if (this.isTokenExpired(session)) {
+				session.close();
+				this.sessions.remove(session);
+			}
 		}
 	}
 
+	private boolean isTokenExpired(WebSocketSession session) {
+		Optional<String> optionalToken = extractToken(session);
+		return optionalToken.stream().allMatch(myToken -> 0 >= this.jwtTokenProvider.getTtl(myToken));
+	}
+
 	private boolean userRoleCheck(WebSocketSession session) {
-		String token = session.getUri().getQuery().split("token=")[1];
+		Optional<String> optionalToken = extractToken(session);
 		// LOGGER.info(token);
-		boolean isUser = this.jwtTokenProvider.getAuthorities(token).stream()
-				.anyMatch(myRole -> Role.USERS.equals(myRole));
-		return isUser;
+		return optionalToken.stream()
+				.filter(myToken -> this.jwtTokenProvider.validateToken(myToken))
+				.anyMatch(myToken -> this.jwtTokenProvider.getAuthorities(myToken).stream()
+						.anyMatch(myRole -> Role.USERS.equals(myRole)));
+	}
+
+	private Optional<String> extractToken(WebSocketSession session) {
+		String[] tokens = session.getUri().getQuery().split("token=");
+		return tokens.length > 1 ? Optional.ofNullable(tokens[1]) : Optional.empty();
 	}
 
 	@Override

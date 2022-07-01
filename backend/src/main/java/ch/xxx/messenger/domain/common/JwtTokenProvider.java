@@ -81,6 +81,17 @@ public class JwtTokenProvider {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
 
+	public long getTtl(String token) {
+		try {
+			SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+			Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
+					.getExpiration();
+			return expiration.getTime() - System.currentTimeMillis();
+		} catch (JwtException | IllegalArgumentException e) {
+			return -1;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public Collection<Role> getAuthorities(String token) {
 		Collection<Role> roles = new LinkedList<>();

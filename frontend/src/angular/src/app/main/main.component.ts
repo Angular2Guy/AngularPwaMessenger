@@ -27,7 +27,6 @@ import { TranslationsService } from '../services/translations.service';
 import { Subscription } from 'rxjs';
 import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
-import { VoiceService } from '../services/voice.service';
 
 // eslint-disable-next-line no-shadow
 enum MyFeature { chat, phone }
@@ -57,7 +56,7 @@ export class MainComponent implements OnInit, OnDestroy {
     private translationsService: TranslationsService,
     public dialog: MatDialog,
     private cryptoService: CryptoService,
-    private voiceService: VoiceService,
+    //private voiceService: VoiceService,
  	private sanitizer: DomSanitizer ) { }
 
   @HostListener( 'window:resize', ['$event'] )
@@ -75,7 +74,7 @@ export class MainComponent implements OnInit, OnDestroy {
       clearInterval( this.interval );
     }
     this.conMonSub.unsubscribe();
-    this.voiceService.disconnect();
+    // this.voiceService.disconnect();
   }
 
   switchContent(): void {
@@ -124,7 +123,7 @@ export class MainComponent implements OnInit, OnDestroy {
           userId: this.myUser.userId
         };
         this.contacts = [];
-        this.selectedContact = null;        
+        this.selectedContact = null;
         this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
           this.selectedContact = values && values.length > 0 ? values[0] : null;
@@ -145,7 +144,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.contacts = [];
     this.messages = [];
     this.selFeature = MyFeature.chat;
-    this.voiceService.disconnect();
+    //this.voiceService.disconnect();
     if ( this.interval ) {
       clearInterval( this.interval );
     }
@@ -267,7 +266,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
       this.storeReceivedMessages();
-      this.voiceService.connect(this.jwttokenService.jwtToken);
+      // this.voiceService.connect(this.jwttokenService.jwtToken);
     }
   }
 

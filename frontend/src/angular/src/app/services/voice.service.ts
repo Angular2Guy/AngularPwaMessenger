@@ -59,7 +59,7 @@ export class VoiceService {
 	this.ngUnsubscribeSocket.unsubscribe();
   }
 
-  sendMessage(msg: VoiceMsg): void {
+  public sendMessage(msg: VoiceMsg): void {
     console.log('sending message: ' + msg.type + ' sid: '+msg.sid +' remoteId: '+msg.remoteId);
     this.socket$.next(msg);
   }

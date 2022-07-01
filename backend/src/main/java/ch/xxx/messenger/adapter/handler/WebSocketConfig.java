@@ -20,9 +20,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer{
-	private SocketHandler socketHandler;
+	private SignalingHandler socketHandler;
 	
-	public WebSocketConfig(SocketHandler socketHandler) {
+	public WebSocketConfig(SignalingHandler socketHandler) {
 		this.socketHandler = socketHandler;
 	}
 	
