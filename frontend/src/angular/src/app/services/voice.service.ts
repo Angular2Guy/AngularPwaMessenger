@@ -13,7 +13,7 @@
 import { Injectable } from '@angular/core';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {environment} from '../../environments/environment';
-import {Subject} from 'rxjs';
+import {Subject, takeUntil} from 'rxjs';
 import {VoiceMsg} from '../model/voice-msg';
 
 export const WS_ENDPOINT = environment.wsPath;
@@ -30,15 +30,18 @@ export class VoiceService {
   public pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private socket$: WebSocketSubject<any>;
   private messagesSubject = new Subject<VoiceMsg>();
+  private readonly ngUnsubscribeMsg: Subject<void> = new Subject<void>();
+  private readonly ngUnsubscribeSocket: Subject<void> = new Subject<void>();
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  public messages$ = this.messagesSubject.asObservable();
+  public messages$ = this.messagesSubject.pipe(takeUntil(this.ngUnsubscribeMsg));
+  private webSocketConnectionRequested = false;
 
   public connect(jwtToken: string): void {
-
+	this.webSocketConnectionRequested = true;
     if (!this.socket$ || this.socket$.closed) {
       this.socket$ = this.getNewWebSocket(jwtToken);
 
-      this.socket$.subscribe(
+      this.socket$.pipe(takeUntil(this.ngUnsubscribeSocket)).subscribe(
         // Called whenever there is a message from the server
         msg => {
           console.log('Received message of type: ' + msg.type);
@@ -46,6 +49,14 @@ export class VoiceService {
         }
       );
     }
+  }
+
+  public disconnect(): void {
+	this.webSocketConnectionRequested = false;
+	this.ngUnsubscribeMsg.next();
+	this.ngUnsubscribeMsg.unsubscribe();
+	this.ngUnsubscribeSocket.next();
+	this.ngUnsubscribeSocket.unsubscribe();
   }
 
   sendMessage(msg: VoiceMsg): void {
@@ -65,7 +76,9 @@ export class VoiceService {
         next: () => {
           console.log('[DataService]: connection closed');
           this.socket$ = undefined;
-          this.connect(jwtToken);
+          if(!!this.webSocketConnectionRequested) {
+            this.connect(jwtToken);
+          }
         }
       }
     });
