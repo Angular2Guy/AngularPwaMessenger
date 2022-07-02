@@ -11,19 +11,19 @@
    limitations under the License.
  */
 export class Tuple<A,B> {
-  private _a: A;
-  private _b: B;
+  private localA: A;
+  private localB: B;
 
   constructor(a: A, b: B) {
-    this._a = a;
-    this._b = b;
+    this.localA = a;
+    this.localB = b;
   }
 
   get a(): A {
-    return this._a;
+    return this.localA;
   }
 
   get b(): B {
-    return this._b;
+    return this.localB;
   }
 }

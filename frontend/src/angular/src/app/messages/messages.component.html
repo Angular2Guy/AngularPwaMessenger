@@ -1,5 +1,5 @@
 <div *ngFor="let message of messages">
-	<div *ngIf="receiver != null"
+	<div *ngIf="receiver !== null"
 		[class.receiver]="message.fromId === receiver.userId"
 		[class.sender]="message.toId === receiver.userId">
 		<span>
