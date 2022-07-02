@@ -12,9 +12,9 @@
  */
 import { TestBed } from '@angular/core/testing';
 
-import { JwttokenService } from './jwttoken.service';
+import { JwtTokenService } from './jwt-token.service';
 
-//describe('JwttokenService', () => {
+//describe('JwtTokenService', () => {
 //  beforeEach(() => TestBed.configureTestingModule({}));
 //
 //  it('should be created', () => {

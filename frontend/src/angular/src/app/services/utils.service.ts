@@ -11,14 +11,14 @@
    limitations under the License.
  */
 import { HttpHeaders } from '@angular/common/http';
-import { JwttokenService } from '../services/jwttoken.service';
+import { JwtTokenService } from '../services/jwt-token.service';
 import { Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root'
   })
 export class UtilsService {
-    constructor(private jwttokenService: JwttokenService) {}
+    constructor(private jwttokenService: JwtTokenService) {}
 
     createHeader() {
         return new HttpHeaders()

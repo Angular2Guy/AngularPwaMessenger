@@ -14,7 +14,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MyUser } from '../model/my-user';
 import { AuthCheck } from '../model/auth-check';
 import { Observable } from 'rxjs';
-import { JwttokenService } from './jwttoken.service';
+import { JwtTokenService } from './jwt-token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,7 @@ import { JwttokenService } from './jwttoken.service';
 export class AuthenticationService {
   private reqOptionsArgs = { headers: new HttpHeaders().set( 'Content-Type', 'application/json' ) };
   private readonly authUrl = '/rest/auth';
-  constructor(private http: HttpClient, private jwttokenService: JwttokenService) { }
+  constructor(private http: HttpClient, private jwttokenService: JwtTokenService) { }
 
   postLogin(user: MyUser): Observable<MyUser> {
     return this.http.post<MyUser>(this.authUrl+'/login', user, this.reqOptionsArgs);

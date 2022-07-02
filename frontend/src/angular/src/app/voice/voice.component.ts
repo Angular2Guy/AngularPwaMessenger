@@ -15,7 +15,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg} from '../model/voice-msg';
 import { environment } from 'src/environments/environment';
-import { JwttokenService } from '../services/jwttoken.service';
+import { JwtTokenService } from '../services/jwt-token.service';
 
 const offerOptions = {
   offerToReceiveAudio: true,
@@ -48,7 +48,7 @@ export class VoiceComponent implements AfterViewInit {
 
   private localStream: MediaStream;
 
-  constructor(private voiceService: VoiceService, private jwttokenService: JwttokenService) { }
+  constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService) { }
 
   async call(): Promise<void> {
     const peerConnectionContainer = this.createPeerConnection();

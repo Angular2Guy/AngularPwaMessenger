@@ -19,7 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '../login/login.component';
 import { MyUser } from '../model/my-user';
 import { SyncMsgs } from '../model/sync-msgs';
-import { JwttokenService } from '../services/jwttoken.service';
+import { JwtTokenService } from '../services/jwt-token.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
@@ -27,6 +27,7 @@ import { TranslationsService } from '../services/translations.service';
 import { Subscription } from 'rxjs';
 import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
+import { VoiceService } from '../services/voice.service';
 
 // eslint-disable-next-line no-shadow
 enum MyFeature { chat, phone }
@@ -50,13 +51,13 @@ export class MainComponent implements OnInit, OnDestroy {
   private conMonSub: Subscription;
 
   constructor( private localdbService: LocaldbService,
-    private jwttokenService: JwttokenService,
+    private jwttokenService: JwtTokenService,
     private netConnectionService: NetConnectionService,
     private messageService: MessageService,
     private translationsService: TranslationsService,
     public dialog: MatDialog,
     private cryptoService: CryptoService,
-    //private voiceService: VoiceService,
+    private voiceService: VoiceService,
  	private sanitizer: DomSanitizer ) { }
 
   @HostListener( 'window:resize', ['$event'] )
@@ -74,7 +75,6 @@ export class MainComponent implements OnInit, OnDestroy {
       clearInterval( this.interval );
     }
     this.conMonSub.unsubscribe();
-    // this.voiceService.disconnect();
   }
 
   switchContent(): void {
@@ -144,7 +144,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.contacts = [];
     this.messages = [];
     this.selFeature = MyFeature.chat;
-    //this.voiceService.disconnect();
+    this.voiceService.disconnect();
     if ( this.interval ) {
       clearInterval( this.interval );
     }
@@ -266,7 +266,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
       this.storeReceivedMessages();
-      // this.voiceService.connect(this.jwttokenService.jwtToken);
+      this.voiceService.connect(this.jwttokenService.jwtToken);
     }
   }
 

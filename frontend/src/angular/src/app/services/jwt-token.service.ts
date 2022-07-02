@@ -16,7 +16,7 @@ import { JwtToken } from '../model/jwt-token';
 @Injectable( {
   providedIn: 'root'
 } )
-export class JwttokenService {
+export class JwtTokenService {
   private localJwtToken: string = null;
 
   constructor() { }

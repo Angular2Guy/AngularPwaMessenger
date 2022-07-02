@@ -18,7 +18,7 @@ import { MainComponent } from '../main/main.component';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocaldbService } from '../services/localdb.service';
 import { LocalUser } from '../model/local-user';
-import { JwttokenService } from '../services/jwttoken.service';
+import { JwtTokenService } from '../services/jwt-token.service';
 import { NetConnectionService } from '../services/net-connection.service';
 import { CryptoService } from '../services/crypto.service';
 
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
     @Inject( MAT_DIALOG_DATA ) public data: any,
     private authenticationService: AuthenticationService,
     private localdbService: LocaldbService,
-    private jwttokenService: JwttokenService,
+    private jwttokenService: JwtTokenService,
     private netConnectionService: NetConnectionService,
     private cryptoService: CryptoService,
     fb: FormBuilder ) {
