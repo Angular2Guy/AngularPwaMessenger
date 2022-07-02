@@ -12,6 +12,7 @@ $caller-palette: mat.$lime-palette;
 .called {
 	flex: 1 0 auto;
 	position: relative;	
+	width: calc(100% - 200px);
 }
 
 .called:after {
@@ -42,8 +43,9 @@ $caller-palette: mat.$lime-palette;
 }
 
 .call-video {
-	width: 60vh;
+	width: calc(100% - 10px);
 	margin: auto;
+	padding: 5px;
 }
 
 .local-video {
