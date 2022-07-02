@@ -15,6 +15,6 @@
   </mat-sidenav>
   <mat-sidenav-content opened mode="side">
   	<app-messages *ngIf="selFeature === myFeature.chat" [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
-  	<app-voice *ngIf="selFeature === myFeature.phone"></app-voice>
+  	<app-voice *ngIf="selFeature === myFeature.phone" [sender]="ownContact" [receiver]="selectedContact"></app-voice>
   </mat-sidenav-content>
 </mat-sidenav-container>

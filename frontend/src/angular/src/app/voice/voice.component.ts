@@ -11,11 +11,12 @@
    limitations under the License.
  */
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg} from '../model/voice-msg';
 import { environment } from 'src/environments/environment';
 import { JwtTokenService } from '../services/jwt-token.service';
+import { Contact } from '../model/contact';
 
 const offerOptions = {
   offerToReceiveAudio: true,
@@ -39,6 +40,11 @@ const mediaConstraints = {
 export class VoiceComponent implements AfterViewInit {
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('remote_video') remoteVideo: ElementRef;
+
+  @Input()
+  receiver: Contact;
+  @Input()
+  sender: Contact;
 
   localVideoActivated = false;
   remoteMuted = false;
