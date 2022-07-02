@@ -19,7 +19,7 @@ import {VoiceMsg} from '../model/voice-msg';
 export const WS_ENDPOINT = environment.wsPath;
 
 export class RTCPeerConnectionContainer{
-	constructor(public localId: string, public remoteId: string, public rtcPeerConnection: RTCPeerConnection){}
+	constructor(public senderId: string, public receiverId: string, public rtcPeerConnection: RTCPeerConnection){}
 }
 
 @Injectable({
@@ -60,7 +60,7 @@ export class VoiceService {
   }
 
   public sendMessage(msg: VoiceMsg): void {
-    console.log('sending message: ' + msg.type + ' sid: '+msg.sid +' remoteId: '+msg.remoteId);
+    console.log('sending message: ' + msg.type + ' sid: '+msg.senderId +' remoteId: '+msg.receiverId);
     this.socket$.next(msg);
   }
 

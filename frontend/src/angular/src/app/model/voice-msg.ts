@@ -12,7 +12,7 @@
  */
 export interface VoiceMsg {
   type: string;
-  sid: string;
-  remoteId: string;
+  senderId: string;
+  receiverId: string;
   data: any;
 }
