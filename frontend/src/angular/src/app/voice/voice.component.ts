@@ -178,7 +178,7 @@ export class VoiceComponent implements AfterViewInit {
     console.log('handle incoming answer sid: ' +msg.sid);
     this.voiceService.peerConnections.get(msg.sid).remoteId = msg.remoteId;
     this.voiceService.peerConnections.get(msg.sid).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
-       .then(() => console.log(msg.data))
+       // .then(() => console.log(msg.data))
        .then(() => console.log('answer handled'));
   }
 
@@ -292,7 +292,7 @@ export class VoiceComponent implements AfterViewInit {
   };
 
   private handleICEConnectionStateChangeEvent = (event: Event) => {
-    console.log(event);
+    console.log('ICEConnectionStateChangeEvent: ' + ((event.currentTarget) as RTCPeerConnection).connectionState);
     switch (((event.currentTarget) as RTCPeerConnection).iceConnectionState) {
       case 'closed':
       case 'failed':
@@ -320,7 +320,7 @@ export class VoiceComponent implements AfterViewInit {
   }
 
   private handleSignalingStateChangeEvent = (event: Event) => {
-	console.log('signalingStateChangeEvent: '+console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState));
+	console.log('signalingStateChangeEvent: '+ ((event.currentTarget) as RTCPeerConnection).signalingState);
     //console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState);
     switch (((event.currentTarget) as RTCPeerConnection).signalingState) {
       case 'closed':
@@ -330,7 +330,7 @@ export class VoiceComponent implements AfterViewInit {
   };
 
   private handleTrackEvent = (event: RTCTrackEvent) => {
-	console.log('handle track event', event);
+	((event.currentTarget) as RTCPeerConnection).getStats().then(value => console.log('handle track event: '+JSON.stringify(value)));
     // console.log(event);
     const myStream = event.streams.length === 0 ? null :  event.streams[0];
     if(!!myStream) {
