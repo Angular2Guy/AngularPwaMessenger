@@ -42,7 +42,8 @@ public class SignalingHandler extends TextWebSocketHandler {
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws InterruptedException, IOException {
 		if (userRoleCheck(session)) {
-			for (WebSocketSession webSocketSession : this.sessions) {
+			for (WebSocketSession webSocketSession : this.sessions) {				
+				removeStaleSession(webSocketSession);
 				if (webSocketSession.isOpen() && session.getId().equals(webSocketSession.getId())) {
 					webSocketSession.sendMessage(message);
 				}
@@ -55,6 +56,14 @@ public class SignalingHandler extends TextWebSocketHandler {
 		}
 	}
 
+	private void removeStaleSession(WebSocketSession webSocketSession) throws IOException {
+		if (!this.extractToken(webSocketSession).stream()
+				.anyMatch(myToken -> this.jwtTokenProvider.validateToken(myToken))) {
+			webSocketSession.close();
+			this.sessions.remove(webSocketSession);
+		}
+	}
+
 	private boolean isTokenExpired(WebSocketSession session) {
 		Optional<String> optionalToken = extractToken(session);
 		return optionalToken.stream().allMatch(myToken -> 0 >= this.jwtTokenProvider.getTtl(myToken));
@@ -63,8 +72,7 @@ public class SignalingHandler extends TextWebSocketHandler {
 	private boolean userRoleCheck(WebSocketSession session) {
 		Optional<String> optionalToken = extractToken(session);
 		// LOGGER.info(token);
-		return optionalToken.stream()
-				.filter(myToken -> this.jwtTokenProvider.validateToken(myToken))
+		return optionalToken.stream().filter(myToken -> this.jwtTokenProvider.validateToken(myToken))
 				.anyMatch(myToken -> this.jwtTokenProvider.getAuthorities(myToken).stream()
 						.anyMatch(myRole -> Role.USERS.equals(myRole)));
 	}
