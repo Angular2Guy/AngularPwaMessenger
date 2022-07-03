@@ -5,6 +5,7 @@
     "http-server": "http-server -p 4300 -c-1 dist",
     "ng": "ng",
     "start": "ng serve --hmr --proxy-config proxy.conf.json",
+    "start-ssl": "npm run start -- --ssl --ssl-cert ../../../helm/server.crt --ssl-key ../../../helm/server.key --host 0.0.0.0 --disable-host-check",
     "build": "ng build --localize --configuration production",
     "test": "ng test --browsers ChromeHeadless --watch=false --code-coverage=true",
     "test-chromium": "ng test --browsers ChromiumHeadless --watch=false --code-coverage=true",
