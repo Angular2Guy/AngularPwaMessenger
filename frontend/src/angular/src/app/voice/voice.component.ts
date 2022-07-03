@@ -74,14 +74,14 @@ export class VoiceComponent implements AfterViewInit {
 
       this.inCall = true;
 
-      this.voiceService.sendMessage({type: VoiceMsgType.offer, senderId: peerConnectionContainer.senderId, receiverId: null, data: offer});
+      this.voiceService.sendMessage({type: VoiceMsgType.offer, senderId: peerConnectionContainer.senderId, receiverId: this.receiver.userId, data: offer});
     } catch (err) {
       this.handleGetUserMediaError(err, peerConnectionContainer.senderId);
     }
   }
 
   hangUp(): void {
-    this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: null, receiverId: null, data: ''});
+    this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: this.sender.userId, receiverId: this.receiver.userId, data: ''});
     this.closeVideoCall();
     this.remoteMuted = true;
     this.remoteVideo.nativeElement.srcObject = null;
@@ -174,16 +174,16 @@ export class VoiceComponent implements AfterViewInit {
       .setLocalDescription(answer).then(() => answer)
     ).then(answer => {
       // Send local SDP to remote part
-      this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: msg.senderId, receiverId: peerConnectionContainer.senderId,
+      this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: peerConnectionContainer.senderId, receiverId: peerConnectionContainer.receiverId,
          data: answer});
       this.inCall = true;
     }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.senderId));
   }
 
   private handleAnswerMessage(msg: VoiceMsg): void {
-    console.log('handle incoming answer sid: ' +msg.senderId);
-    this.voiceService.peerConnections.get(msg.senderId).senderId = msg.receiverId;
-    this.voiceService.peerConnections.get(msg.senderId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+    console.log('handle incoming answer sid: ' +msg.receiverId);
+    this.voiceService.peerConnections.get(msg.receiverId).senderId = msg.senderId;
+    this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
        // .then(() => console.log(msg.data))
        .then(() => console.log('answer handled'));
   }
@@ -223,8 +223,8 @@ export class VoiceComponent implements AfterViewInit {
   private createPeerConnection(): RTCPeerConnectionContainer {
     console.log('creating PeerConnection...');
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
-    const senderId = window.crypto.randomUUID();
-    //const senderId = this.sender.userId;
+    //const senderId = window.crypto.randomUUID();
+    const senderId = this.sender.userId;
 
     peerConnection.onicecandidate = this.handleICECandidateEvent;
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
