@@ -13,7 +13,7 @@
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
-import { VoiceMsg} from '../model/voice-msg';
+import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
 import { environment } from 'src/environments/environment';
 import { JwtTokenService } from '../services/jwt-token.service';
 import { Contact } from '../model/contact';
@@ -74,14 +74,14 @@ export class VoiceComponent implements AfterViewInit {
 
       this.inCall = true;
 
-      this.voiceService.sendMessage({type: 'offer', senderId: peerConnectionContainer.senderId, receiverId: null, data: offer});
+      this.voiceService.sendMessage({type: VoiceMsgType.offer, senderId: peerConnectionContainer.senderId, receiverId: null, data: offer});
     } catch (err) {
       this.handleGetUserMediaError(err, peerConnectionContainer.senderId);
     }
   }
 
   hangUp(): void {
-    this.voiceService.sendMessage({type: 'hangup', senderId: null, receiverId: null, data: ''});
+    this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: null, receiverId: null, data: ''});
     this.closeVideoCall();
     this.remoteMuted = true;
     this.remoteVideo.nativeElement.srcObject = null;
@@ -124,16 +124,16 @@ export class VoiceComponent implements AfterViewInit {
         console.log('Received message: ' + msg.type);
         // console.log(msg);
         switch (msg.type) {
-          case 'offer':
+          case VoiceMsgType.offer:
             this.handleOfferMessage(msg);
             break;
-          case 'answer':
+          case VoiceMsgType.answer:
             this.handleAnswerMessage(msg);
             break;
-          case 'hangup':
+          case VoiceMsgType.hangup:
             this.handleHangupMessage(msg);
             break;
-          case 'ice-candidate':
+          case VoiceMsgType.iceCandidate:
             this.handleICECandidateMessage(msg);
             break;
           default:
@@ -174,7 +174,7 @@ export class VoiceComponent implements AfterViewInit {
       .setLocalDescription(answer).then(() => answer)
     ).then(answer => {
       // Send local SDP to remote part
-      this.voiceService.sendMessage({type: 'answer', senderId: msg.senderId, receiverId: peerConnectionContainer.senderId,
+      this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: msg.senderId, receiverId: peerConnectionContainer.senderId,
          data: answer});
       this.inCall = true;
     }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.senderId));
@@ -223,14 +223,15 @@ export class VoiceComponent implements AfterViewInit {
   private createPeerConnection(): RTCPeerConnectionContainer {
     console.log('creating PeerConnection...');
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
-    const sid = window.crypto.randomUUID();
+    const senderId = window.crypto.randomUUID();
+    //const senderId = this.sender.userId;
 
     peerConnection.onicecandidate = this.handleICECandidateEvent;
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
     peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
     peerConnection.ontrack = this.handleTrackEvent;
-    const container = new RTCPeerConnectionContainer(sid, null, peerConnection);
-    this.voiceService.peerConnections.set(sid, container);
+    const container = new RTCPeerConnectionContainer(senderId, null, peerConnection);
+    this.voiceService.peerConnections.set(senderId, container);
     return container;
   }
 
@@ -289,7 +290,7 @@ export class VoiceComponent implements AfterViewInit {
     if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event)).receiverId) {
       //console.log(event);
       this.voiceService.sendMessage({
-        type: 'ice-candidate',
+        type: VoiceMsgType.iceCandidate,
         senderId: this.getEventSid(event),
         receiverId: this.voiceService.peerConnections.get(this.getEventSid(event)).receiverId,
         data: event.candidate

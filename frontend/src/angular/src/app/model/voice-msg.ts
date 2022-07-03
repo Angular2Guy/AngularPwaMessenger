@@ -11,8 +11,15 @@
    limitations under the License.
  */
 export interface VoiceMsg {
-  type: string;
+  type: VoiceMsgType;
   senderId: string;
   receiverId: string;
   data: any;
+}
+
+export enum VoiceMsgType {
+	offer = 'offer',
+	answer = 'answer',
+	hangup = 'hangup',
+	iceCandidate = 'ice-candidate'
 }
