@@ -45,14 +45,16 @@ public class SignalingHandler extends TextWebSocketHandler {
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws InterruptedException, IOException {
 		if (userRoleCheck(session)) {
-			// LOGGER.info(message.getPayload());
 			SenderReceiver senderReceiver = this.extractSenderReceiver(message);
 			String sessionUsername = extractSessionUsername(session);
 			for (WebSocketSession webSocketSession : this.sessions) {
 				removeStaleSession(webSocketSession);
 				String webSocketSessionUsername = this.extractSessionUsername(webSocketSession);
+				LOGGER.info("Msg sender: {}, Msg receiver: {}, Session sender: {}, WebSocket receiver: {}",
+						senderReceiver.sender, senderReceiver.receiver, sessionUsername, webSocketSessionUsername);
 				if (webSocketSession.isOpen() && senderReceiver.sender.equalsIgnoreCase(sessionUsername)
 						&& senderReceiver.receiver.equalsIgnoreCase(webSocketSessionUsername)) {
+					LOGGER.info("Msg send: {}",message.getPayload());
 					webSocketSession.sendMessage(message);
 				}
 			}
@@ -71,10 +73,10 @@ public class SignalingHandler extends TextWebSocketHandler {
 	private SenderReceiver extractSenderReceiver(TextMessage message) {
 		List<String> fragments = List.of(message.getPayload().split("\\,"));
 		String senderId = fragments.stream().filter(myFragment -> myFragment.contains("senderId")).findAny().stream()
-				.map(myFragment -> myFragment.split("\\:")[1].replace('"', '"')).findFirst()
+				.map(myFragment -> myFragment.split("\\:")[1].replace('"', ' ').trim()).findFirst()
 				.orElseThrow(() -> new RuntimeException("SenderId not found in message"));
 		String receiverId = fragments.stream().filter(myFragment -> myFragment.contains("receiverId")).findAny()
-				.stream().map(myFragment -> myFragment.split("\\:")[1].replace('"', '"')).findFirst()
+				.stream().map(myFragment -> myFragment.split("\\:")[1].replace('"', ' ').trim()).findFirst()
 				.orElseThrow(() -> new RuntimeException("ReceiverId not found in message"));
 		return new SenderReceiver(senderId, receiverId);
 	}
