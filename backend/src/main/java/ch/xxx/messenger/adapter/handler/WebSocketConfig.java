@@ -12,22 +12,31 @@
  */
 package ch.xxx.messenger.adapter.handler;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistration;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer{
 	private SignalingHandler socketHandler;
+	private Environment environment;
 	
-	public WebSocketConfig(SignalingHandler socketHandler) {
+	public WebSocketConfig(SignalingHandler socketHandler, Environment environment) {
 		this.socketHandler = socketHandler;
+		this.environment = environment;
 	}
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(this.socketHandler, "/signalingsocket");
+		WebSocketHandlerRegistration handlerRegistration = registry.addHandler(this.socketHandler, "/signalingsocket");
+		if(List.of(this.environment.getActiveProfiles()).stream().noneMatch(myProfile -> myProfile.toLowerCase().contains("prod"))) {
+			handlerRegistration.setAllowedOrigins("*");
+		}		
 	}
 }

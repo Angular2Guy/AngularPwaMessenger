@@ -74,14 +74,15 @@ export class VoiceComponent implements AfterViewInit {
 
       this.inCall = true;
 
-      this.voiceService.sendMessage({type: VoiceMsgType.offer, senderId: peerConnectionContainer.senderId, receiverId: this.receiver.userId, data: offer});
+      this.voiceService.sendMessage({type: VoiceMsgType.offer, senderId: peerConnectionContainer.senderId,
+         receiverId: this.receiver.name, data: offer});
     } catch (err) {
       this.handleGetUserMediaError(err, peerConnectionContainer.senderId);
     }
   }
 
   hangUp(): void {
-    this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: this.sender.userId, receiverId: this.receiver.userId, data: ''});
+    this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: this.sender.name, receiverId: this.receiver.name, data: ''});
     this.closeVideoCall();
     this.remoteMuted = true;
     this.remoteVideo.nativeElement.srcObject = null;
@@ -174,8 +175,8 @@ export class VoiceComponent implements AfterViewInit {
       .setLocalDescription(answer).then(() => answer)
     ).then(answer => {
       // Send local SDP to remote part
-      this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: peerConnectionContainer.senderId, receiverId: peerConnectionContainer.receiverId,
-         data: answer});
+      this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: peerConnectionContainer.senderId,
+         receiverId: peerConnectionContainer.receiverId, data: answer});
       this.inCall = true;
     }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.senderId));
   }
@@ -224,7 +225,7 @@ export class VoiceComponent implements AfterViewInit {
     console.log('creating PeerConnection...');
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
     //const senderId = window.crypto.randomUUID();
-    const senderId = this.sender.userId;
+    const senderId = this.sender.name;
 
     peerConnection.onicecandidate = this.handleICECandidateEvent;
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
