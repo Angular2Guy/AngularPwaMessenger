@@ -4,7 +4,10 @@
 
 export const environment = {
   production: false,
+  onLocalhost: true,
   wsPath: 'ws://localhost:4200/signalingsocket',
+  // for Angular Cli development with generated ssl certificate(helm directory)
+  // wsPath: 'wss://dns-name.dns-domain1.dns-domain1:4200/signalingsocket',
   // eslint-disable-next-line @typescript-eslint/naming-convention
   RTCPeerConfiguration: {
     iceServers: [
