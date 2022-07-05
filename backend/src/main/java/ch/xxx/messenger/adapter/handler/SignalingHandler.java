@@ -31,6 +31,7 @@ import ch.xxx.messenger.domain.common.Role;
 @Component
 public class SignalingHandler extends TextWebSocketHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SignalingHandler.class);
+	private static final String LOCALHOSTTOKEN = "$%&";
 	private JwtTokenProvider jwtTokenProvider;
 	private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
@@ -52,9 +53,10 @@ public class SignalingHandler extends TextWebSocketHandler {
 				String webSocketSessionUsername = this.extractSessionUsername(webSocketSession);
 				LOGGER.info("Msg sender: {}, Msg receiver: {}, Session sender: {}, WebSocket receiver: {}",
 						senderReceiver.sender, senderReceiver.receiver, sessionUsername, webSocketSessionUsername);
-				if (webSocketSession.isOpen() && senderReceiver.sender.equalsIgnoreCase(sessionUsername)
-						&& senderReceiver.receiver.equalsIgnoreCase(webSocketSessionUsername)) {
-					LOGGER.info("Msg send: {}",message.getPayload());
+				if (webSocketSession.isOpen() && (checkSenderReceiver(senderReceiver, sessionUsername,
+						webSocketSessionUsername)
+						|| checkSenderLocalhostToken(senderReceiver, sessionUsername, webSocketSessionUsername))) {
+					LOGGER.info("Msg send: {}", message.getPayload());
 					webSocketSession.sendMessage(message);
 				}
 			}
@@ -63,6 +65,19 @@ public class SignalingHandler extends TextWebSocketHandler {
 				session.close();
 			}
 		}
+	}
+
+	private boolean checkSenderLocalhostToken(SenderReceiver senderReceiver, String sessionUsername,
+			String webSocketSessionUsername) {
+		return (senderReceiver.sender.contains(LOCALHOSTTOKEN) || senderReceiver.receiver.contains(LOCALHOSTTOKEN))
+				&& senderReceiver.sender.contains(webSocketSessionUsername)
+				&& senderReceiver.receiver.contains(webSocketSessionUsername);
+	}
+
+	private boolean checkSenderReceiver(SenderReceiver senderReceiver, String sessionUsername,
+			String webSocketSessionUsername) {
+		return senderReceiver.sender.equalsIgnoreCase(sessionUsername)
+				&& senderReceiver.receiver.equalsIgnoreCase(webSocketSessionUsername);
 	}
 
 	private String extractSessionUsername(WebSocketSession session) {

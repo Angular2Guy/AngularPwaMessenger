@@ -49,10 +49,11 @@ export class VoiceComponent implements AfterViewInit {
   localVideoActivated = false;
   remoteMuted = false;
   localMuted = false;
-
+  onLocalhost = environment.onLocalhost;
   inCall = false;
 
   private localStream: MediaStream;
+  private localhostReceiver = '';
 
   constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService) { }
 
@@ -75,18 +76,20 @@ export class VoiceComponent implements AfterViewInit {
       this.inCall = true;
 
       this.voiceService.sendMessage({type: VoiceMsgType.offer, senderId: peerConnectionContainer.senderId,
-         receiverId: this.receiver.name, data: offer});
+         receiverId: peerConnectionContainer.receiverId, data: offer});
     } catch (err) {
       this.handleGetUserMediaError(err, peerConnectionContainer.senderId);
     }
   }
 
   hangUp(): void {
-    this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: this.sender.name, receiverId: this.receiver.name, data: ''});
+    this.voiceService.sendMessage({type: VoiceMsgType.hangup,
+       senderId: this.sender.name, receiverId: environment.onLocalhost ? this.localhostReceiver : this.receiver.name, data: ''});
     this.closeVideoCall();
   }
 
   ngAfterViewInit(): void {
+	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
     this.addIncominMessageHandler();
     this.requestMediaDevices();
   }
@@ -149,9 +152,10 @@ export class VoiceComponent implements AfterViewInit {
     console.log('handle incoming offer sid:: '+msg.senderId);
     const peerConnectionContainer = this.createPeerConnection();
     peerConnectionContainer.receiverId = msg.senderId;
+    peerConnectionContainer.senderId = environment.onLocalhost ? this.localhostReceiver : peerConnectionContainer.senderId;
     this.voiceService.peerConnections.set(peerConnectionContainer.senderId, peerConnectionContainer);
 
-    if (!this.localStream) {
+    if (!this.localVideoActivated) {
       this.startLocalVideo();
     }
 
@@ -181,7 +185,7 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleAnswerMessage(msg: VoiceMsg): void {
     console.log('handle incoming answer sid: ' +msg.receiverId);
-    this.voiceService.peerConnections.get(msg.receiverId).senderId = msg.senderId;
+    console.log( this.voiceService.peerConnections.get(msg.receiverId));
     this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
        // .then(() => console.log(msg.data))
        .then(() => console.log('answer handled'));
@@ -196,12 +200,12 @@ export class VoiceComponent implements AfterViewInit {
 	console.log('ICECandidateMessage sid: '+msg.senderId+' remoteId: '+msg.receiverId);
 	//console.log(msg);
 	//console.log(this.voiceService.peerConnections.get(msg.remoteId));
-	if (!!this.voiceService.peerConnections.get(msg.receiverId)) {
+	if (!!this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection?.currentRemoteDescription) {
 	   //console.log(msg.remoteId, this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
        this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection
        .addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
     } else {
-       if (!this.voiceService.peerConnections.get(msg.receiverId)) {
+       if (!this.voiceService.pendingCandidates.get(msg.receiverId)) {
           this.voiceService.pendingCandidates.set(msg.receiverId, [] as RTCIceCandidateInit[]);
        }
        this.voiceService.pendingCandidates.get(msg.receiverId).push(msg.data);
@@ -224,13 +228,13 @@ export class VoiceComponent implements AfterViewInit {
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
     //const senderId = window.crypto.randomUUID();
     const senderId = this.sender.name;
+    const receiverId = environment.onLocalhost ? this.localhostReceiver : this.receiver.name;
 
     peerConnection.onicecandidate = this.handleICECandidateEvent;
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
     peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
     peerConnection.ontrack = this.handleTrackEvent;
-    const container = new RTCPeerConnectionContainer(senderId, null, peerConnection);
-    this.voiceService.peerConnections.set(senderId, container);
+    const container = new RTCPeerConnectionContainer(senderId, receiverId, peerConnection);
     return container;
   }
 
@@ -288,7 +292,7 @@ export class VoiceComponent implements AfterViewInit {
 
   /* ########################  EVENT HANDLER  ################################## */
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
-    if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event)).receiverId) {
+    if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event))?.receiverId) {
       //console.log(event);
       this.voiceService.sendMessage({
         type: VoiceMsgType.iceCandidate,

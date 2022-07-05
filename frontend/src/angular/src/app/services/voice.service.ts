@@ -24,6 +24,7 @@ export class RTCPeerConnectionContainer{
   providedIn: 'root'
 })
 export class VoiceService {
+  public readonly localHostToken = '$%&';
   public peerConnections = new Map<string, RTCPeerConnectionContainer>();
   public pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private socket$: WebSocketSubject<any>;
