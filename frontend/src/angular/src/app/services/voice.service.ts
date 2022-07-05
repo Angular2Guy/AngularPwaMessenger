@@ -16,8 +16,6 @@ import {environment} from '../../environments/environment';
 import {Subject, takeUntil} from 'rxjs';
 import {VoiceMsg} from '../model/voice-msg';
 
-export const WS_ENDPOINT = environment.wsPath;
-
 export class RTCPeerConnectionContainer{
 	constructor(public senderId: string, public receiverId: string, public rtcPeerConnection: RTCPeerConnection){}
 }
@@ -35,6 +33,12 @@ export class VoiceService {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public messages$ = this.messagesSubject.pipe(takeUntil(this.ngUnsubscribeMsg));
   private webSocketConnectionRequested = false;
+  private readonly wsEndpoint = null;
+
+  public constructor() {
+	const signalingHost = window.location.host;
+	this.wsEndpoint = environment.onLocalhost ? environment.wsPath : environment.wssPath.replace('REPLACEME', signalingHost);
+  }
 
   public connect(jwtToken: string): void {
 	this.webSocketConnectionRequested = true;
@@ -66,7 +70,7 @@ export class VoiceService {
 
   private getNewWebSocket(jwtToken: string): WebSocketSubject<any> {
     return webSocket({
-      url: `${WS_ENDPOINT}?token=${encodeURI(jwtToken)}`,
+      url: `${this.wsEndpoint}?token=${encodeURI(jwtToken)}`,
       openObserver: {
         next: () => {
           console.log('[DataService]: connection ok');
