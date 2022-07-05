@@ -60,7 +60,7 @@ export class VoiceComponent implements AfterViewInit {
     const peerConnectionContainer = this.createPeerConnection();
     this.voiceService.peerConnections.set(peerConnectionContainer.senderId, peerConnectionContainer);
 
-    if (!this.localStream) {
+    if (!this.localVideoActivated) {
       this.startLocalVideo();
     }
 
@@ -84,8 +84,6 @@ export class VoiceComponent implements AfterViewInit {
   hangUp(): void {
     this.voiceService.sendMessage({type: VoiceMsgType.hangup, senderId: this.sender.name, receiverId: this.receiver.name, data: ''});
     this.closeVideoCall();
-    this.remoteMuted = true;
-    this.remoteVideo.nativeElement.srcObject = null;
   }
 
   ngAfterViewInit(): void {
@@ -111,7 +109,7 @@ export class VoiceComponent implements AfterViewInit {
        this.localStream.getTracks().forEach(track => {
           track.enabled = false;
        });
-       this.localVideo.nativeElement.srcObject = undefined;
+       this.localVideo.nativeElement.srcObject = null;
 
        this.localVideoActivated = false;
     }
@@ -258,6 +256,8 @@ export class VoiceComponent implements AfterViewInit {
     this.voiceService.peerConnections.clear();
     this.voiceService.pendingCandidates.clear();
 	this.stopLocalVideo();
+	this.remoteMuted = true;
+    this.remoteVideo.nativeElement.srcObject = null;
     this.inCall = false;
   }
 
