@@ -51,12 +51,14 @@ public class SignalingHandler extends TextWebSocketHandler {
 			for (WebSocketSession webSocketSession : this.sessions) {
 				removeStaleSession(webSocketSession);
 				String webSocketSessionUsername = this.extractSessionUsername(webSocketSession);
-				LOGGER.info("Msg sender: {}, Msg receiver: {}, Session sender: {}, WebSocket receiver: {}",
-						senderReceiver.sender, senderReceiver.receiver, sessionUsername, webSocketSessionUsername);
+				//LOGGER.info("Msg sender: {}, Msg receiver: {}, Session sender: {}, WebSocket receiver: {}",
+				//		senderReceiver.sender, senderReceiver.receiver, sessionUsername, webSocketSessionUsername);
 				if (webSocketSession.isOpen() && (checkSenderReceiver(senderReceiver, sessionUsername,
 						webSocketSessionUsername)
 						|| checkSenderLocalhostToken(senderReceiver, sessionUsername, webSocketSessionUsername))) {
-					LOGGER.info("Msg send: {}", message.getPayload());
+					//LOGGER.info("Msg send: {}", message.getPayload());
+					LOGGER.debug("Msg send with params: Msg sender: {}, Msg receiver: {}, Session sender: {}, WebSocket receiver: {}",
+							senderReceiver.sender, senderReceiver.receiver, sessionUsername, webSocketSessionUsername);
 					webSocketSession.sendMessage(message);
 				}
 			}
