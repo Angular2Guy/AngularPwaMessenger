@@ -14,11 +14,12 @@
 	</div>
 </mat-toolbar>
 <mat-sidenav-container class="container" [ngStyle]="{'height.px': windowHeight}">
-  <mat-sidenav opened mode="side" class="contact-list">
+  <mat-sidenav #contact_list [mode]="contactListMode" class="contact-list">
   	<app-contacts [selectedContact]="selectedContact" [contacts]="contacts" (selContact)="selectContact($event)"></app-contacts>
   </mat-sidenav>
-  <mat-sidenav-content opened mode="side">
-  	<app-messages *ngIf="selFeature === myFeature.chat" [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
-  	<app-voice *ngIf="selFeature === myFeature.phone" [sender]="ownContact" [receiver]="selectedContact"></app-voice>
+  <mat-sidenav-content>
+    <div class="login-message-container" *ngIf="myUser === null" i18n="@@mainLoginMessage"><div class="login-message">Please Login</div></div>
+  	<app-messages *ngIf="myUser !== null && selFeature === myFeature.chat" [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
+  	<app-voice *ngIf="myUser !== null && selFeature === myFeature.phone" [sender]="ownContact" [receiver]="selectedContact"></app-voice>
   </mat-sidenav-content>
 </mat-sidenav-container>

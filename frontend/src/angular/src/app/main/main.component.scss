@@ -72,6 +72,20 @@
 	display: flex;
 	padding-top: 5px;
 }
+
+.login-message-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+}
+
+.login-message {
+	height: fit-content;
+	width: fit-content;
+}
+
 @media (max-width: 900px), (max-height: 480px) {
    .custom-toolbar {
 	   height: fit-content;

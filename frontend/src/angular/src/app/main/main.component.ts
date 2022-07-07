@@ -10,8 +10,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MediaMatcher } from '@angular/cdk/layout';
 import { Contact } from '../model/contact';
 import { Message } from '../model/message';
 import { LocaldbService } from '../services/localdb.service';
@@ -28,6 +29,7 @@ import { Subscription } from 'rxjs';
 import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
 import { VoiceService } from '../services/voice.service';
+import { MatDrawerMode, MatSidenav } from '@angular/material/sidenav';
 
 // eslint-disable-next-line no-shadow
 enum MyFeature { chat, phone }
@@ -37,15 +39,17 @@ enum MyFeature { chat, phone }
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 } )
-export class MainComponent implements OnInit, OnDestroy {
-  windowHeight: number;
-  ownContact: Contact;
-  contacts: Contact[] = [];
-  selectedContact: Contact;
-  messages: Message[] = [];
-  myUser: MyUser = null;
-  myFeature = MyFeature;
-  selFeature = MyFeature.chat;
+export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('contact_list') contactList: MatSidenav;
+  public windowHeight: number;
+  public ownContact: Contact;
+  public contacts: Contact[] = [];
+  public selectedContact: Contact;
+  public messages: Message[] = [];
+  public myUser: MyUser = null;
+  public myFeature = MyFeature;
+  public selFeature = MyFeature.chat;
+  public contactListMode: MatDrawerMode = 'side';
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
@@ -58,7 +62,9 @@ export class MainComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private cryptoService: CryptoService,
     private voiceService: VoiceService,
- 	private sanitizer: DomSanitizer ) { }
+    private mediaMatcher: MediaMatcher,
+ 	private sanitizer: DomSanitizer ) {	
+ }
 
   @HostListener( 'window:resize', ['$event'] )
   onResize( event: any ): void {
@@ -67,7 +73,23 @@ export class MainComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.windowHeight = window.innerHeight - 84;
-    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );
+    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );    
+  }
+
+  ngAfterViewInit(): void {
+    const mediaQueryList = this.mediaMatcher.matchMedia('(max-width: 900px) or (max-height: 480px)');
+    mediaQueryList.onchange = (event => this.updateContactListLayout(event));
+  }
+
+  private updateContactListLayout(event: MediaQueryListEvent = null) {
+	const mediaQueryList = this.mediaMatcher.matchMedia('(max-width: 900px) or (max-height: 480px)');
+	if((!!event && !!event?.matches) || !!mediaQueryList?.matches) { 
+	      this.contactList.close();
+	      this.contactList.mode = 'over';
+	   } else {
+	      this.contactList.open();
+	      this.contactList.mode = 'side';	
+	   };
   }
 
   ngOnDestroy(): void {
@@ -133,6 +155,7 @@ export class MainComponent implements OnInit, OnDestroy {
           }
           this.interval = setInterval( () => this.syncMsgs(), 15000 );
         } );
+        this.updateContactListLayout();
       }
     } );
   }
