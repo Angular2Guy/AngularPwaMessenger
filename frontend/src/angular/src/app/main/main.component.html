@@ -3,10 +3,10 @@
 	<div i18n="@@mainMessenger">Messenger</div>
 	<div class="example-fill-remaining-space"></div>
 	<div class="icon-bar">	
-	<div *ngIf="myUser !== null && selFeature === myFeature.chat" class="icon" (click)="switchContent()"><span class="icon-container material-icons">phone</span></div>
-	<div *ngIf="myUser !== null && selFeature === myFeature.phone" class="icon" (click)="switchContent()"><span class="icon-container material-icons">chat_bubble_outline</span></div>
-	<div *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><span class="icon-container material-icons">attachment_alt</span></div>
-	<div *ngIf="myUser !== null" class="icon" (click)="openCameraDialog()"><span class="material-icons">camera_alt</span></div>
+	   <div *ngIf="myUser !== null && selFeature === myFeature.chat" class="icon" (click)="switchContent()"><span class="icon-container material-icons">phone</span></div>
+	   <div *ngIf="myUser !== null && selFeature === myFeature.phone" class="icon" (click)="switchContent()"><span class="icon-container material-icons">chat_bubble_outline</span></div>
+	   <div *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><span class="icon-container material-icons">attachment_alt</span></div>
+	   <div *ngIf="myUser !== null" class="icon" (click)="openCameraDialog()"><span class="material-icons">camera_alt</span></div>
 	</div>
 	<div *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></div>
 	<div *ngIf="myUser === null"><button mat-button (click)="openLoginDialog()" i18n="@@mainLogin">Login</button></div>		
@@ -18,7 +18,7 @@
   	<app-contacts [selectedContact]="selectedContact" [contacts]="contacts" (selContact)="selectContact($event)"></app-contacts>
   </mat-sidenav>
   <mat-sidenav-content>
-    <div class="login-message-container" *ngIf="myUser === null" i18n="@@mainLoginMessage"><div class="login-message">Please Login</div></div>
+    <div class="login-message-container mat-headline" *ngIf="myUser === null" i18n="@@mainLoginMessage"><div class="login-message">Please Login</div></div>
   	<app-messages *ngIf="myUser !== null && selFeature === myFeature.chat" [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
   	<app-voice *ngIf="myUser !== null && selFeature === myFeature.phone" [sender]="ownContact" [receiver]="selectedContact"></app-voice>
   </mat-sidenav-content>
