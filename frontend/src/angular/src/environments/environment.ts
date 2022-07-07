@@ -4,7 +4,6 @@
 
 export const environment = {
   production: false,
-  onLocalhost: true,
   wsPath: 'ws://localhost:4200/signalingsocket',
   // for Angular Cli development with generated ssl certificate(helm directory)
   wssPath: 'wss://REPLACEME/signalingsocket',

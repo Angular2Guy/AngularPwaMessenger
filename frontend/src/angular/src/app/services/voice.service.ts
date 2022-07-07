@@ -38,7 +38,11 @@ export class VoiceService {
 
   public constructor() {
 	const signalingHost = window.location.host;
-	this.wsEndpoint = environment.onLocalhost ? environment.wsPath : environment.wssPath.replace('REPLACEME', signalingHost);
+	this.wsEndpoint = this.localhostCheck() ? environment.wsPath : environment.wssPath.replace('REPLACEME', signalingHost);
+  }
+
+  public localhostCheck(): boolean {
+	return window.location.host.toLowerCase().search('localhost') >= 0;
   }
 
   public connect(jwtToken: string): void {

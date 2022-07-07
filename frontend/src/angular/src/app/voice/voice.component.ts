@@ -49,13 +49,15 @@ export class VoiceComponent implements AfterViewInit {
   localVideoActivated = false;
   remoteMuted = false;
   localMuted = false;
-  onLocalhost = environment.onLocalhost;
+  onLocalhost: boolean;
   inCall = false;
 
   private localStream: MediaStream;
   private localhostReceiver = '';
 
-  constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService) { }
+  constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService) {
+	this.onLocalhost = this.voiceService.localhostCheck();
+ }
 
   async call(): Promise<void> {
     const peerConnectionContainer = this.createPeerConnection();
@@ -84,7 +86,7 @@ export class VoiceComponent implements AfterViewInit {
 
   hangUp(): void {
     this.voiceService.sendMessage({type: VoiceMsgType.hangup,
-       senderId: this.sender.name, receiverId: environment.onLocalhost ? this.localhostReceiver : this.receiver.name, data: ''});
+       senderId: this.sender.name, receiverId: this.onLocalhost ? this.localhostReceiver : this.receiver.name, data: ''});
     this.closeVideoCall();
   }
 
@@ -152,7 +154,7 @@ export class VoiceComponent implements AfterViewInit {
     console.log('handle incoming offer sid:: '+msg.senderId);
     const peerConnectionContainer = this.createPeerConnection();
     peerConnectionContainer.receiverId = msg.senderId;
-    peerConnectionContainer.senderId = environment.onLocalhost ? this.localhostReceiver : peerConnectionContainer.senderId;
+    peerConnectionContainer.senderId = this.onLocalhost ? this.localhostReceiver : peerConnectionContainer.senderId;
     this.voiceService.peerConnections.set(peerConnectionContainer.senderId, peerConnectionContainer);
 
     if (!this.localVideoActivated) {
@@ -228,7 +230,7 @@ export class VoiceComponent implements AfterViewInit {
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
     //const senderId = window.crypto.randomUUID();
     const senderId = this.sender.name;
-    const receiverId = environment.onLocalhost ? this.localhostReceiver : this.receiver.name;
+    const receiverId = this.onLocalhost ? this.localhostReceiver : this.receiver.name;
 
     peerConnection.onicecandidate = this.handleICECandidateEvent;
     peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
