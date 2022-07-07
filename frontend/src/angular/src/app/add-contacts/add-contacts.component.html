@@ -4,15 +4,12 @@
 	</div>
 	<div>	  
 	  <mat-form-field class="input-style">
-	    <input type="text" placeholder="name" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
+	    <input type="text" placeholder="name" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto" (keyup.enter)="addContact()">
 	    <mat-autocomplete #auto="matAutocomplete">
-	      <mat-option *ngFor="let option of filteredOptions" [value]="option.name">
+	      <mat-option *ngFor="let option of filteredOptions" [value]="option.name" (click)="addContact()">
 	        {{option.name}}
 	      </mat-option>
 	    </mat-autocomplete>
 	  </mat-form-field>
-	</div>
-	<div>
-	  <button mat-button (click)="addContact()" [disabled]="filteredOptions.length !== 1" i18n="@@addContactsAdd">Add</button>
 	</div>
 </div>
