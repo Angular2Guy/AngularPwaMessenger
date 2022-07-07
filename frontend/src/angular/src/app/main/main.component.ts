@@ -53,6 +53,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
+  private headerBarHeight = 84;
 
   constructor( private localdbService: LocaldbService,
     private jwttokenService: JwtTokenService,
@@ -68,11 +69,11 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener( 'window:resize', ['$event'] )
   onResize( event: any ): void {
-    this.windowHeight = event.target.innerHeight - 84;
+    this.windowHeight = event.target.innerHeight - this.headerBarHeight;
   }
 
   ngOnInit(): void {
-    this.windowHeight = window.innerHeight - 84;
+    this.windowHeight = window.innerHeight - this.headerBarHeight;
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );    
   }
 
@@ -86,9 +87,13 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 	if((!!event && !!event?.matches) || !!mediaQueryList?.matches) { 
 	      this.contactList.close();
 	      this.contactList.mode = 'over';
+	      this.headerBarHeight = 178;
+	      this.windowHeight = window.innerHeight - this.headerBarHeight;
 	   } else {
 	      this.contactList.open();
-	      this.contactList.mode = 'side';	
+	      this.contactList.mode = 'side';
+	      this.headerBarHeight = 84;	
+	      this.windowHeight = window.innerHeight - this.headerBarHeight;
 	   };
   }
 
