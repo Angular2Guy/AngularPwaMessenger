@@ -25,7 +25,8 @@ const offerOptions = {
 
 const mediaConstraints = {
   audio: true,
-  video: {width: 1280, height: 720}
+  video: true,
+  // video: {width: 1280, height: 720}
   // video: {width: 1280, height: 720} // 16:9
   // video: {width: 960, height: 540}  // 16:9
   // video: {width: 640, height: 480}  //  4:3
@@ -187,10 +188,12 @@ export class VoiceComponent implements AfterViewInit {
 
   private handleAnswerMessage(msg: VoiceMsg): void {
     console.log('handle incoming answer sid: ' +msg.receiverId);
-    console.log( this.voiceService.peerConnections.get(msg.receiverId));
-    this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
-       // .then(() => console.log(msg.data))
-       .then(() => console.log('answer handled'));
+    //console.log( this.voiceService.peerConnections.get(msg.receiverId));
+    if(this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.signalingState !== 'stable') {
+       this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
+          // .then(() => console.log(msg.data))
+          .then(() => console.log('answer handled'));
+    }
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
