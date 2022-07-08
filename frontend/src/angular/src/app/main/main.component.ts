@@ -64,7 +64,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private cryptoService: CryptoService,
     private voiceService: VoiceService,
     private mediaMatcher: MediaMatcher,
- 	private sanitizer: DomSanitizer ) {	
+ 	private sanitizer: DomSanitizer ) {
  }
 
   @HostListener( 'window:resize', ['$event'] )
@@ -74,27 +74,12 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.windowHeight = window.innerHeight - this.headerBarHeight;
-    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );    
+    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );
   }
 
   ngAfterViewInit(): void {
     const mediaQueryList = this.mediaMatcher.matchMedia('(max-width: 900px) or (max-height: 480px)');
     mediaQueryList.onchange = (event => this.updateContactListLayout(event));
-  }
-
-  private updateContactListLayout(event: MediaQueryListEvent = null) {
-	const mediaQueryList = this.mediaMatcher.matchMedia('(max-width: 900px) or (max-height: 480px)');
-	if((!!event && !!event?.matches) || !!mediaQueryList?.matches) { 
-	      this.contactList.close();
-	      this.contactListMode = 'over';
-	      this.headerBarHeight = 178;
-	      this.windowHeight = window.innerHeight - this.headerBarHeight;
-	   } else {
-	      this.contactList.open();
-	      this.contactListMode = 'side';
-	      this.headerBarHeight = 84;
-	      this.windowHeight = window.innerHeight - this.headerBarHeight;
-	   };
   }
 
   ngOnDestroy(): void {
@@ -195,6 +180,21 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addNewContact( contact: Contact ): void {
     this.contacts.push( contact );
+  }
+
+  private updateContactListLayout(event: MediaQueryListEvent = null) {
+	const mediaQueryList = this.mediaMatcher.matchMedia('(max-width: 900px) or (max-height: 480px)');
+	if((!!event && !!event?.matches) || !!mediaQueryList?.matches) {
+	      this.contactList.close();
+	      this.contactListMode = 'over';
+	      this.headerBarHeight = 178;
+	      this.windowHeight = window.innerHeight - this.headerBarHeight;
+	   } else {
+	      this.contactList.open();
+	      this.contactListMode = 'side';
+	      this.headerBarHeight = 84;
+	      this.windowHeight = window.innerHeight - this.headerBarHeight;
+	   };
   }
 
   private receiveRemoteMsgs( syncMsgs1: SyncMsgs ) {
