@@ -17,7 +17,7 @@
     "postbuild": "npm run deploy",
     "predeploy": "rimraf ../../../backend/src/main/resources/static/*",
     "deploy": "cpx 'base/*' dist/messenger/ && cpx 'dist/messenger/**' ../../../backend/src/main/resources/static/",
-    "xi18n": "ng xi18n --ivy=true"
+    "xi18n": "ng extract-i18n --format json"
   },
   "private": true,
   "dependencies": {
