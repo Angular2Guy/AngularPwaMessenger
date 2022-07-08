@@ -9,9 +9,11 @@
 	   <div class="icon" (click)="openFileuploadDialog()"><span class="icon-container material-icons">attachment_alt</span></div>
 	   <div class="icon" (click)="openCameraDialog()"><span class="material-icons">camera_alt</span></div>
 	</div>
-	<div *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></div>
-	<div *ngIf="myUser === null" class="login-logout"><button mat-button (click)="openLoginDialog()" i18n="@@mainLogin">Login</button></div>		
-	<div *ngIf="myUser !== null" class="login-logout"><button mat-button (click)="logout()" i18n="@@mainLogout">Logout</button></div>
+	<div class="people-button">
+	   <div *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></div>
+	   <div *ngIf="myUser === null" class="login-logout"><button mat-button (click)="openLoginDialog()" i18n="@@mainLogin">Login</button></div>		
+	   <div *ngIf="myUser !== null" class="login-logout"><button mat-button (click)="logout()" i18n="@@mainLogout">Logout</button></div>
+	</div>
 	</div>
 </mat-toolbar>
 <mat-sidenav-container class="container" [ngStyle]="{'height.px': windowHeight}">

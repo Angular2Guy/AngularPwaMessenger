@@ -89,7 +89,14 @@
 }
 
 .login-logout {
+	display: flex;
 	margin-left: 20px;
+	align-content: center;
+}
+
+.people-button {
+	display: flex;
+	align-content: center;	
 }
 
 @media (max-width: 900px), (max-height: 480px) {
