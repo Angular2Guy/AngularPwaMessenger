@@ -13,13 +13,13 @@ $caller-palette: mat.$lime-palette;
 	flex: 1 0 auto;
 	position: relative;	
 	width: calc(100% - 200px);
+	&:after {
+	   content: "";
+       display: block;
+       padding-bottom: 100%;
+	}
 }
 
-.called:after {
-	content: "";
-    display: block;
-    padding-bottom: 100%;
-}
 .called-content {	
 	display:flex;
 	flex-direction: column;
@@ -54,5 +54,18 @@ $caller-palette: mat.$lime-palette;
 }
 
 @media (max-width: 900px), (max-height: 480px) {
-	
+   .video-container {
+      flex-direction: column;
+   }
+   .called {
+	  margin-top: 5px;
+	  width: 100%;
+	  &:after {
+		 padding-bottom: 0;
+	  }
+   }
+   .local {
+	  margin-top: 5px;
+	  width: 100%;
+   }
 }
