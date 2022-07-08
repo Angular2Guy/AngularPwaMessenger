@@ -2,9 +2,10 @@
 	<div class="video-container">
 		<div class="called">
 			<div class="called-content">
-				<div>Remote</div>
-				<video #remote_video [autoplay]="true" [muted]="remoteMuted" class="call-video"></video>
-				<div>
+			    <div class="portrait-orientation" i18n="@@voiceLandscapeNotSupported">Landscape orientation not supported on small devices.</div>
+				<div class="landscape-orientation">Remote</div>
+				<video #remote_video [autoplay]="true" [muted]="remoteMuted" class="call-video landscape-orientation"></video>
+				<div class="landscape-orientation">
 					<button mat-button class="video-button"
 						*ngIf="!inCall"
 						[disabled]="!receiver && !onLocalhost"
@@ -29,9 +30,9 @@
 			</div>
 		</div>
 		<div class="local">
-			<div>Local</div>
-			<video #local_video [autoplay]="true" [muted]="localMuted" class="local-video"></video>
-			<div>
+			<div class="landscape-orientation">Local</div>
+			<video #local_video [autoplay]="true" [muted]="localMuted" class="local-video landscape-orientation"></video>
+			<div class="landscape-orientation">
 				<button mat-button class="video-button"
 					*ngIf="!localVideoActivated" (click)="startLocalVideo()"
 					i18n="@@voiceActivateCallerVideo">Activate</button>

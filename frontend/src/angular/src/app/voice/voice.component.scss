@@ -4,6 +4,14 @@ $called-palette: mat.$blue-palette;
 
 $caller-palette: mat.$lime-palette;
 
+.landscape-orientation {
+	visibility: visible;
+}
+
+.portrait-orientation {
+	visibility: collapse;
+}
+
 .video-container {
 	display: flex;
 	align-items: flex-start;	
@@ -67,5 +75,14 @@ $caller-palette: mat.$lime-palette;
    .local {
 	  margin-top: 5px;
 	  width: 100%;
+   }
+}
+
+@media (max-width: 900px) and (orientation: landscape), (max-height: 480px) and (orientation: landscape) {
+   .landscape-orientation {
+	  visibility: hidden;
+   }
+   .portrait-orientation {
+	  visibility: visible;
    }
 }
