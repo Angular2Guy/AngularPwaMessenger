@@ -2,11 +2,12 @@
 <div class="toolbar-content">
 	<div i18n="@@mainMessenger">Messenger</div>
 	<div class="example-fill-remaining-space"></div>
-	<div class="icon-bar">	
-	   <div *ngIf="myUser !== null && selFeature === myFeature.chat" class="icon" (click)="switchContent()"><span class="icon-container material-icons">phone</span></div>
-	   <div *ngIf="myUser !== null && selFeature === myFeature.phone" class="icon" (click)="switchContent()"><span class="icon-container material-icons">chat_bubble_outline</span></div>
-	   <div *ngIf="myUser !== null" class="icon" (click)="openFileuploadDialog()"><span class="icon-container material-icons">attachment_alt</span></div>
-	   <div *ngIf="myUser !== null" class="icon" (click)="openCameraDialog()"><span class="material-icons">camera_alt</span></div>
+	<div class="icon-bar" *ngIf="myUser !== null">	
+	   <div *ngIf="contactListMode === 'over'" class="icon" (click)="switchContent()"><span class="icon-container material-icons">group</span></div>
+	   <div *ngIf="selFeature === myFeature.chat" class="icon" (click)="switchContent()"><span class="icon-container material-icons">phone</span></div>
+	   <div *ngIf="selFeature === myFeature.phone" class="icon" (click)="switchContent()"><span class="icon-container material-icons">chat_bubble_outline</span></div>
+	   <div class="icon" (click)="openFileuploadDialog()"><span class="icon-container material-icons">attachment_alt</span></div>
+	   <div class="icon" (click)="openCameraDialog()"><span class="material-icons">camera_alt</span></div>
 	</div>
 	<div *ngIf="myUser !== null"><app-add-contacts [userId]="myUser.userId" [myContacts]="contacts" (addNewContact)="addNewContact($event)"></app-add-contacts></div>
 	<div *ngIf="myUser === null"><button mat-button (click)="openLoginDialog()" i18n="@@mainLogin">Login</button></div>		

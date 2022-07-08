@@ -86,13 +86,13 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 	const mediaQueryList = this.mediaMatcher.matchMedia('(max-width: 900px) or (max-height: 480px)');
 	if((!!event && !!event?.matches) || !!mediaQueryList?.matches) { 
 	      this.contactList.close();
-	      this.contactList.mode = 'over';
+	      this.contactListMode = 'over';
 	      this.headerBarHeight = 178;
 	      this.windowHeight = window.innerHeight - this.headerBarHeight;
 	   } else {
 	      this.contactList.open();
-	      this.contactList.mode = 'side';
-	      this.headerBarHeight = 84;	
+	      this.contactListMode = 'side';
+	      this.headerBarHeight = 84;
 	      this.windowHeight = window.innerHeight - this.headerBarHeight;
 	   };
   }
