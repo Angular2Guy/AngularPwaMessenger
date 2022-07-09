@@ -11,12 +11,15 @@
    limitations under the License.
  */
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
 import { environment } from 'src/environments/environment';
 import { JwtTokenService } from '../services/jwt-token.service';
 import { Contact } from '../model/contact';
+import { WebrtcService } from '../services/webrtc.service';
+import { filter } from 'rxjs';
+import { Subscription } from 'dexie';
 
 const offerOptions = {
   offerToReceiveAudio: true,
@@ -38,7 +41,7 @@ const mediaConstraints = {
   templateUrl: './voice.component.html',
   styleUrls: ['./voice.component.scss']
 })
-export class VoiceComponent implements AfterViewInit {
+export class VoiceComponent implements AfterViewInit, OnDestroy {
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('remote_video') remoteVideo: ElementRef;
 
@@ -55,13 +58,18 @@ export class VoiceComponent implements AfterViewInit {
 
   private localStream: MediaStream;
   private localhostReceiver = '';
+  private componentSubscribtions: Subscription[] = [];
 
-  constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService) {
+  constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService, private webrtcService: WebrtcService) {
 	this.onLocalhost = this.voiceService.localhostCheck();
- }
+   }
+   
+   public ngOnDestroy(): void {
+   	  this.componentSubscribtions.forEach(mySub => mySub.unsubscribe());
+   }
 
-  async call(): Promise<void> {
-    const peerConnectionContainer = this.createPeerConnection();
+  public async call(): Promise<void> {
+    const peerConnectionContainer = this.webrtcService.createPeerConnection();
     this.voiceService.peerConnections.set(peerConnectionContainer.senderId, peerConnectionContainer);
 
     if (!this.localVideoActivated) {
@@ -85,19 +93,21 @@ export class VoiceComponent implements AfterViewInit {
     }
   }
 
-  hangUp(): void {
+  public hangUp(): void {
     this.voiceService.sendMessage({type: VoiceMsgType.hangup,
        senderId: this.sender.name, receiverId: this.onLocalhost ? this.localhostReceiver : this.receiver.name, data: ''});
     this.closeVideoCall();
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
 	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
-    this.addIncominMessageHandler();
+	this.componentSubscribtions.push(this.webrtcService.offerMsgSubject.pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
+	this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
+	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject.subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
     this.requestMediaDevices();
   }
 
-  startLocalVideo(): void {
+  public startLocalVideo(): void {
     console.log('starting local stream');
     if(!this.localVideoActivated) {
        this.localStream.getTracks().forEach(track => {
@@ -109,7 +119,7 @@ export class VoiceComponent implements AfterViewInit {
     }
   }
 
-  stopLocalVideo(): void {
+  public stopLocalVideo(): void {
     console.log('stop local stream');
     if(this.localVideoActivated) {
        this.localStream.getTracks().forEach(track => {
@@ -121,100 +131,26 @@ export class VoiceComponent implements AfterViewInit {
     }
   }
 
-  private addIncominMessageHandler(): void {
-    this.voiceService.connect(this.jwttokenService.jwtToken);
-    // this.transactions$.subscribe();
-    this.voiceService.messages$.subscribe(
-      msg => {
-        console.log('Received message: ' + msg.type);
-        // console.log(msg);
-        switch (msg.type) {
-          case VoiceMsgType.offer:
-            this.handleOfferMessage(msg);
-            break;
-          case VoiceMsgType.answer:
-            this.handleAnswerMessage(msg);
-            break;
-          case VoiceMsgType.hangup:
-            this.handleHangupMessage(msg);
-            break;
-          case VoiceMsgType.iceCandidate:
-            this.handleICECandidateMessage(msg);
-            break;
-          default:
-            console.log('unknown message of type ' + msg.type);
-        }
-      },
-      error => console.log(error)
-    );
-  }
-
   /* ########################  MESSAGE HANDLER  ################################## */
-
   private handleOfferMessage(msg: VoiceMsg): void {
-    console.log('handle incoming offer sid:: '+msg.senderId);
-    const peerConnectionContainer = this.createPeerConnection();
-    peerConnectionContainer.receiverId = msg.senderId;
-    peerConnectionContainer.senderId = this.onLocalhost ? this.localhostReceiver : peerConnectionContainer.senderId;
-    this.voiceService.peerConnections.set(peerConnectionContainer.senderId, peerConnectionContainer);
-
     if (!this.localVideoActivated) {
       this.startLocalVideo();
     }
 
-    this.localStream.getTracks().forEach(myTrack => peerConnectionContainer.rtcPeerConnection.addTrack(myTrack, this.localStream));
-
-    this.voiceService.peerConnections.get(peerConnectionContainer.senderId).rtcPeerConnection
-      .setRemoteDescription(new RTCSessionDescription(msg.data))
-      .then(() => {
-        this.startLocalVideo();
-      }).then(() =>
-      // Build SDP for answer message
-     this.voiceService.peerConnections.get(peerConnectionContainer.senderId).rtcPeerConnection.createAnswer()
-        //.then(answer => {
-	    //   console.log(this.voiceService.peerConnections.get(peerConnectionContainer.localId));
-	    //   return answer;})
-    ).then((answer) =>
-      // Set local SDP
-      this.voiceService.peerConnections.get(peerConnectionContainer.senderId).rtcPeerConnection
-      .setLocalDescription(answer).then(() => answer)
-    ).then(answer => {
-      // Send local SDP to remote part
-      this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: peerConnectionContainer.senderId,
-         receiverId: peerConnectionContainer.receiverId, data: answer});
-      this.inCall = true;
-    }).catch(e => this.handleGetUserMediaError(e, peerConnectionContainer.senderId));
+    const peerConnectionContainer = this.voiceService.peerConnections.get(msg.senderId);
+    this.localStream.getTracks().forEach(myTrack => !!peerConnectionContainer 
+       && peerConnectionContainer?.rtcPeerConnection?.addTrack(myTrack, this.localStream));
+       
+    this.inCall = true;
   }
 
-  private handleAnswerMessage(msg: VoiceMsg): void {
-    console.log('handle incoming answer sid: ' +msg.receiverId);
-    //console.log( this.voiceService.peerConnections.get(msg.receiverId));
-    if(this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.signalingState !== 'stable') {
-       this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.data))
-          // .then(() => console.log(msg.data))
-          .then(() => console.log('answer handled'));
-    }
+  private handleRemoteStream(remoteStream: MediaStream): void {
+	this.remoteVideo.nativeElement.srcObject = remoteStream;
+    this.remoteMuted = false;
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
     console.log(msg);
-    this.closeVideoCall();
-  }
-
-  private handleICECandidateMessage(msg: VoiceMsg): void {
-	console.log('ICECandidateMessage sid: '+msg.senderId+' remoteId: '+msg.receiverId);
-	//console.log(msg);
-	//console.log(this.voiceService.peerConnections.get(msg.remoteId));
-	if (!!this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection?.currentRemoteDescription) {
-	   //console.log(msg.remoteId, this.voiceService.peerConnections.get(msg.remoteId).rtcPeerConnection);
-       this.voiceService.peerConnections.get(msg.receiverId).rtcPeerConnection
-       .addIceCandidate(new RTCIceCandidate(msg.data)).catch(this.reportError);
-    } else {
-       if (!this.voiceService.pendingCandidates.get(msg.receiverId)) {
-          this.voiceService.pendingCandidates.set(msg.receiverId, [] as RTCIceCandidateInit[]);
-       }
-       this.voiceService.pendingCandidates.get(msg.receiverId).push(msg.data);
-    }
   }
 
   private async requestMediaDevices(): Promise<void> {
@@ -226,21 +162,6 @@ export class VoiceComponent implements AfterViewInit {
       console.error(e);
       alert(`getUserMedia() error: ${e.name}`);
     }
-  }
-
-  private createPeerConnection(): RTCPeerConnectionContainer {
-    console.log('creating PeerConnection...');
-    const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
-    //const senderId = window.crypto.randomUUID();
-    const senderId = this.sender.name;
-    const receiverId = this.onLocalhost ? this.localhostReceiver : this.receiver.name;
-
-    peerConnection.onicecandidate = this.handleICECandidateEvent;
-    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
-    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
-    peerConnection.ontrack = this.handleTrackEvent;
-    const container = new RTCPeerConnectionContainer(senderId, receiverId, peerConnection);
-    return container;
   }
 
   private closeVideoCall(): void {
@@ -289,73 +210,4 @@ export class VoiceComponent implements AfterViewInit {
 
     this.closeVideoCall();
   }
-
-  private reportError = (e: Error) => {
-    console.log('got Error: ' + e.name);
-    console.log(e);
-  };
-
-  /* ########################  EVENT HANDLER  ################################## */
-  private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
-    if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event))?.receiverId) {
-      //console.log(event);
-      this.voiceService.sendMessage({
-        type: VoiceMsgType.iceCandidate,
-        senderId: this.getEventSid(event),
-        receiverId: this.voiceService.peerConnections.get(this.getEventSid(event)).receiverId,
-        data: event.candidate
-      });
-    }
-  };
-
-  private handleICEConnectionStateChangeEvent = (event: Event) => {
-    console.log('ICEConnectionStateChangeEvent: ' + ((event.currentTarget) as RTCPeerConnection).connectionState);
-    switch (((event.currentTarget) as RTCPeerConnection).iceConnectionState) {
-      case 'closed':
-      case 'failed':
-      case 'disconnected':
-        this.closeVideoCallByEvent(event);
-        break;
-    }
-  };
-
-  private getEventSid(event: Event): string {
-	 let mySid: string = null;
-     this.voiceService.peerConnections
-        .forEach((value, key) => value.rtcPeerConnection === event.currentTarget ? mySid = key : mySid = mySid);
-     if(!mySid) {
-	    this.voiceService.pendingCandidates.forEach((value, key) =>
-	       value.filter(myCandidate => myCandidate === event.currentTarget).length > 0 ? mySid = key : mySid = mySid);
-     }
-     return mySid;
-   }
-
-  private closeVideoCallByEvent(event: Event): void {
-	 const mySid = this.getEventSid(event);
-	 console.log(mySid, event);
-     this.closeVideoCall();
-  }
-
-  private handleSignalingStateChangeEvent = (event: Event) => {
-	console.log('signalingStateChangeEvent: '+ ((event.currentTarget) as RTCPeerConnection).signalingState);
-    //console.log(event, ((event.currentTarget) as RTCPeerConnection).signalingState);
-    switch (((event.currentTarget) as RTCPeerConnection).signalingState) {
-      case 'closed':
-        this.closeVideoCallByEvent(event);
-        break;
-    }
-  };
-
-  private handleTrackEvent = (event: RTCTrackEvent) => {
-	((event.currentTarget) as RTCPeerConnection).getStats().then(value => console.log('handle track event: '+JSON.stringify(value)));
-    // console.log(event);
-    const myStream = event?.streams?.length === 0 ? null : event.streams[0];
-    if(!!myStream) {
-       myStream.getTracks().forEach(track => {
-          track.enabled = true;
-       });
-       this.remoteVideo.nativeElement.srcObject = myStream;
-       this.remoteMuted = false;
-    }
-  };
 }

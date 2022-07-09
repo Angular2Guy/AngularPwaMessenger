@@ -25,11 +25,12 @@ import { NetConnectionService } from '../services/net-connection.service';
 import { MessageService } from '../services/message.service';
 import { CryptoService } from '../services/crypto.service';
 import { TranslationsService } from '../services/translations.service';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { CameraComponent } from '../camera/camera.component';
 import { FileuploadComponent } from '../fileupload/fileupload.component';
 import { VoiceService } from '../services/voice.service';
 import { MatDrawerMode, MatSidenav } from '@angular/material/sidenav';
+import { WebrtcService } from '../services/webrtc.service';
 
 // eslint-disable-next-line no-shadow
 enum MyFeature { chat, phone }
@@ -53,6 +54,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
+  private offerMsgSub: Subscription;
   private headerBarHeight = 84;
 
   constructor( private localdbService: LocaldbService,
@@ -63,6 +65,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     public dialog: MatDialog,
     private cryptoService: CryptoService,
     private voiceService: VoiceService,
+    private webrtcService: WebrtcService,
     private mediaMatcher: MediaMatcher,
  	private sanitizer: DomSanitizer ) {
  }
@@ -75,6 +78,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.windowHeight = window.innerHeight - this.headerBarHeight;
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );
+    this.webrtcService.addIncominMessageHandler();
+    this.offerMsgSub = this.webrtcService.offerMsgSubject.pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId)).subscribe(offerMsg => this.selFeature = MyFeature.phone);
   }
 
   ngAfterViewInit(): void {
@@ -87,6 +92,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       clearInterval( this.interval );
     }
     this.conMonSub.unsubscribe();
+    this.offerMsgSub.unsubscribe();
   }
 
   switchContent(): void {

@@ -34,7 +34,7 @@ export class WebrtcService {
 	this.onLocalhost = this.voiceService.localhostCheck();
   }
 
-  addIncominMessageHandler(): void {
+  public addIncominMessageHandler(): void {
     this.voiceService.messages$.subscribe(
       msg => {
         console.log('Received message: ' + msg.type);
@@ -59,9 +59,23 @@ export class WebrtcService {
       error => console.log(error)
     );
   }
+  
+  public createPeerConnection(): RTCPeerConnectionContainer {
+    console.log('creating PeerConnection...');
+    const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
+    //const senderId = window.crypto.randomUUID();
+    const senderId = this.senderId;
+    const receiverId = this.onLocalhost ? this.localhostReceiver : this.receiverId;
 
+    peerConnection.onicecandidate = this.handleICECandidateEvent;
+    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
+    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
+    peerConnection.ontrack = this.handleTrackEvent;
+    const container = new RTCPeerConnectionContainer(senderId, receiverId, peerConnection);
+    return container;
+  }
+  
   /* ########################  MESSAGE HANDLER  ################################## */
-
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer sid:: '+msg.senderId);
     const peerConnectionContainer = this.createPeerConnection();
@@ -119,22 +133,6 @@ export class WebrtcService {
        this.voiceService.pendingCandidates.get(msg.receiverId).push(msg.data);
     }
   }
-  
-  private createPeerConnection(): RTCPeerConnectionContainer {
-    console.log('creating PeerConnection...');
-    const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
-    //const senderId = window.crypto.randomUUID();
-    const senderId = this.senderId;
-    const receiverId = this.onLocalhost ? this.localhostReceiver : this.receiverId;
-
-    peerConnection.onicecandidate = this.handleICECandidateEvent;
-    peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
-    peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
-    peerConnection.ontrack = this.handleTrackEvent;
-    const container = new RTCPeerConnectionContainer(senderId, receiverId, peerConnection);
-    return container;
-  }
-  
   
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event))?.receiverId) {
