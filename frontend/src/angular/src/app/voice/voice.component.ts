@@ -349,7 +349,7 @@ export class VoiceComponent implements AfterViewInit {
   private handleTrackEvent = (event: RTCTrackEvent) => {
 	((event.currentTarget) as RTCPeerConnection).getStats().then(value => console.log('handle track event: '+JSON.stringify(value)));
     // console.log(event);
-    const myStream = event.streams.length === 0 ? null :  event.streams[0];
+    const myStream = event?.streams?.length === 0 ? null : event.streams[0];
     if(!!myStream) {
        myStream.getTracks().forEach(track => {
           track.enabled = true;
@@ -357,6 +357,5 @@ export class VoiceComponent implements AfterViewInit {
        this.remoteVideo.nativeElement.srcObject = myStream;
        this.remoteMuted = false;
     }
-    this.remoteVideo.nativeElement.srcObject = event.streams[0];
   };
 }
