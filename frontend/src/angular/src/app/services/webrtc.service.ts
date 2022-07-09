@@ -26,8 +26,8 @@ export class WebrtcService {
   public senderId = '';
   public receiverId = '';
   public offerMsgSubject = new BehaviorSubject({type: VoiceMsgType.offer, senderId: null, receiverId: null, data: null} as VoiceMsg);
-  public hangupMsgSubject = new Subject();
-  public remoteStreamSubject = new Subject();
+  public hangupMsgSubject = new Subject<VoiceMsg>();
+  public remoteStreamSubject = new Subject<MediaStream>();
   private onLocalhost: boolean;
 
   constructor(private voiceService: VoiceService, private jwtTokenService: JwtTokenService) {
@@ -35,8 +35,6 @@ export class WebrtcService {
   }
 
   addIncominMessageHandler(): void {
-    this.voiceService.connect(this.jwtTokenService.jwtToken);
-    // this.transactions$.subscribe();
     this.voiceService.messages$.subscribe(
       msg => {
         console.log('Received message: ' + msg.type);
