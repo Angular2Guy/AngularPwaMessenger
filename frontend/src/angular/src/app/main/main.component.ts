@@ -288,7 +288,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     }, error => console.log( 'storeReceivedMessages failed.' + error) );
   }
 
-  private syncMsgs(): void {
+  private async syncMsgs(): Promise<void> {
     if ( this.ownContact && this.netConnectionService.connetionStatus && !this.jwttokenService.localLogin ) {
       const contactIds = this.contacts.map( con => con.userId );
       const syncMsgs1: SyncMsgs = {
@@ -299,16 +299,18 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
       this.storeReceivedMessages();
-      this.voiceService.connect(this.jwttokenService.jwtToken).then(result =>  {
+      const result = await this.voiceService.connect(this.jwttokenService.jwtToken);
 	    if(!!result) {
 	       this.webrtcService.addIncominMessageHandler();
 	       this.webrtcService.senderId = this.ownContact.name;
 	       this.webrtcService.receiverId = this?.selectedContact?.name;
 	       this.offerMsgSub = this.webrtcService.offerMsgSubject
 	          .pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId))
-	          .subscribe(offerMsg => this.selFeature = MyFeature.phone);
+	          .subscribe(offerMsg => {
+		         console.log(offerMsg);
+		         this.selFeature = MyFeature.phone;
+		      });
 	       }
-      });
     }
   }
 

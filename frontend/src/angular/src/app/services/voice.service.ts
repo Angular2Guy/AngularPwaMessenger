@@ -45,7 +45,7 @@ export class VoiceService {
 	return window.location.host.toLowerCase().search('localhost') >= 0;
   }
 
-  public connect(jwtToken: string): Promise<boolean> {
+  public async connect(jwtToken: string): Promise<boolean> {
 	this.webSocketConnectionRequested = true;
     if (!this.socket$ || this.socket$.closed) {
       return Promise.resolve<WebSocketSubject<any>>(this.getNewWebSocket(jwtToken))

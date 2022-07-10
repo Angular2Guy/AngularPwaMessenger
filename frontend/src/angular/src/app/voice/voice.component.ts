@@ -14,7 +14,6 @@
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
-import { environment } from 'src/environments/environment';
 import { JwtTokenService } from '../services/jwt-token.service';
 import { Contact } from '../model/contact';
 import { WebrtcService } from '../services/webrtc.service';
@@ -60,7 +59,7 @@ export class VoiceComponent implements AfterViewInit, OnDestroy {
   private localhostReceiver = '';
   private componentSubscribtions: Subscription[] = [];
 
-  constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService, private webrtcService: WebrtcService) {
+  constructor(private voiceService: VoiceService, private webrtcService: WebrtcService) {
 	this.onLocalhost = this.voiceService.localhostCheck();
    }
 
