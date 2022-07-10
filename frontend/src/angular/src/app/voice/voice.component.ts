@@ -11,7 +11,7 @@
    limitations under the License.
  */
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
 import { Contact } from '../model/contact';
@@ -29,7 +29,7 @@ const offerOptions = {
   templateUrl: './voice.component.html',
   styleUrls: ['./voice.component.scss']
 })
-export class VoiceComponent implements OnInit, OnDestroy {
+export class VoiceComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('remote_video') remoteVideo: ElementRef;
 
@@ -49,6 +49,16 @@ export class VoiceComponent implements OnInit, OnDestroy {
 
   constructor(private voiceService: VoiceService, private webrtcService: WebrtcService) {
 	this.onLocalhost = this.voiceService.localhostCheck();
+   }
+   
+   public ngAfterViewInit(): void {
+      this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
+	   .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId), debounceTime(500))
+	   .subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
+  	  this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.pipe(debounceTime(500))
+  	   .subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
+	  this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
+	   .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
    }
 
    public ngOnDestroy(): void {
@@ -90,13 +100,6 @@ export class VoiceComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
 	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
     this.requestMediaDevices();
-    this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
-	   .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId), debounceTime(500))
-	   .subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
-  	this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.pipe(debounceTime(500))
-  	   .subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
-	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
-	   .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
   }
 
   public startLocalVideo(): void {
@@ -134,6 +137,7 @@ export class VoiceComponent implements OnInit, OnDestroy {
   }
 
   private handleRemoteStream(remoteStream: MediaStream): void {
+	console.log('remote mediastream handled: ' + remoteStream.id);
 	this.remoteVideo.nativeElement.srcObject = remoteStream;
     this.remoteMuted = false;
   }

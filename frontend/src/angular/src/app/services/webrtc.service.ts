@@ -37,7 +37,7 @@ export class WebrtcService {
   public localStream: MediaStream;
   public offerMsgSubject = new BehaviorSubject({type: VoiceMsgType.offer, senderId: null, receiverId: null, data: null} as VoiceMsg);
   public hangupMsgSubject = new Subject<VoiceMsg>();
-  public remoteStreamSubject = new Subject<MediaStream>();
+  public remoteStreamSubject = new BehaviorSubject<MediaStream>({id: null} as MediaStream);
   private onLocalhost: boolean;
 
   constructor(private voiceService: VoiceService) {
@@ -196,7 +196,7 @@ export class WebrtcService {
 
   private closeVideoCallByEvent(event: Event): void {
 	 const mySid = this.getEventSid(event);
-	 console.log(mySid, event);
+	 //console.log(mySid, event);
      this.hangupMsgSubject.next({type: VoiceMsgType.hangup, senderId: null, receiverId: null, data: null} as VoiceMsg);
   }
 
@@ -216,9 +216,9 @@ export class WebrtcService {
   };
 
   private handleTrackEvent = (event: RTCTrackEvent) => {
-	((event.currentTarget) as RTCPeerConnection).getStats().then(value => console.log('handle track event: '+JSON.stringify(value)));
+	console.log('handle track event: '+ event);
     // console.log(event);
-    const myStream = event.streams.length === 0 ? null :  event.streams[0];
+    const myStream = event?.streams?.length === 0 ? null :  event.streams[0];
     if(!!myStream) {
        myStream.getTracks().forEach(track => {
           track.enabled = true;
