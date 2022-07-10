@@ -142,7 +142,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedContact = null;
         this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
-          this.selectedContact = values && values.length > 0 ? values[0] : null;
+          this.selectContact(values && values.length > 0 ? values[0] : null);
         } ).then( () => this.addMessages() ).then( () => {
           if ( this.interval ) {
             clearInterval( this.interval );
