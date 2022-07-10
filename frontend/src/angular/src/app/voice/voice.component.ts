@@ -95,7 +95,7 @@ export class VoiceComponent implements OnInit, OnDestroy {
 	   .subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
   	this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.pipe(debounceTime(500))
   	   .subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
-	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject.pipe(debounceTime(500))
+	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
 	   .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
   }
 
@@ -139,7 +139,7 @@ export class VoiceComponent implements OnInit, OnDestroy {
   }
 
   private handleHangupMessage(msg: VoiceMsg): void {
-    console.log(msg);
+    //console.log(msg);
     this.closeVideoCall();
   }
 
