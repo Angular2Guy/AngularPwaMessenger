@@ -45,19 +45,22 @@ export class VoiceService {
 	return window.location.host.toLowerCase().search('localhost') >= 0;
   }
 
-  public connect(jwtToken: string): void {
+  public connect(jwtToken: string): Promise<boolean> {
 	this.webSocketConnectionRequested = true;
     if (!this.socket$ || this.socket$.closed) {
-      this.socket$ = this.getNewWebSocket(jwtToken);
-
-      this.socket$.pipe(takeUntil(this.ngUnsubscribeSocket)).subscribe(
-        // Called whenever there is a message from the server
-        msg => {
-          console.log('Received message of type: ' + msg.type);
-          this.messagesSubject.next(msg);
-        }
-      );
+      return Promise.resolve<WebSocketSubject<any>>(this.getNewWebSocket(jwtToken))
+         .then<boolean>(mySocket => {
+	         this.socket$ = mySocket;
+	         this.socket$.pipe(takeUntil(this.ngUnsubscribeSocket)).subscribe(
+                // Called whenever there is a message from the server
+                msg => {
+                   console.log('Received message of type: ' + msg.type);
+                   this.messagesSubject.next(msg);
+                });
+            return true;
+	     });
     }
+    return Promise.resolve(false);
   }
 
   public disconnect(): void {
