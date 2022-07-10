@@ -307,7 +307,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 	       this.offerMsgSub = this.webrtcService.offerMsgSubject
 	          .pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId))
 	          .subscribe(offerMsg => {
-		         console.log(offerMsg);
+		         // console.log(offerMsg);
 		         this.selFeature = MyFeature.phone;
 		      });
 	       }

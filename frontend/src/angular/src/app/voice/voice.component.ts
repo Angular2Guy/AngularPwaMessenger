@@ -11,10 +11,9 @@
    limitations under the License.
  */
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
 import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
-import { JwtTokenService } from '../services/jwt-token.service';
 import { Contact } from '../model/contact';
 import { WebrtcService } from '../services/webrtc.service';
 import { filter } from 'rxjs';
@@ -40,7 +39,7 @@ const mediaConstraints = {
   templateUrl: './voice.component.html',
   styleUrls: ['./voice.component.scss']
 })
-export class VoiceComponent implements AfterViewInit, OnDestroy {
+export class VoiceComponent implements OnInit, OnDestroy {
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('remote_video') remoteVideo: ElementRef;
 
@@ -98,19 +97,21 @@ export class VoiceComponent implements AfterViewInit, OnDestroy {
     this.closeVideoCall();
   }
 
-  public ngAfterViewInit(): void {
+  public ngOnInit(): void {
 	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
-	this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
-	   .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
-	this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
-	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
-	   .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
-    this.requestMediaDevices();
+    this.requestMediaDevices().then(() => {
+	   this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
+	      .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
+  	   this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
+	   this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
+	      .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
+    });
   }
 
   public startLocalVideo(): void {
     console.log('starting local stream');
     if(!this.localVideoActivated) {
+	   
        this.localStream.getTracks().forEach(track => {
           track.enabled = true;
        });
@@ -134,6 +135,7 @@ export class VoiceComponent implements AfterViewInit, OnDestroy {
 
   /* ########################  MESSAGE HANDLER  ################################## */
   private handleOfferMessage(msg: VoiceMsg): void {
+	console.log('offer msg senderId: '+msg.senderId+' receiverId: '+msg.receiverId);
     if (!this.localVideoActivated) {
       this.startLocalVideo();
     }
