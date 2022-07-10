@@ -12,7 +12,6 @@
  */
 import { Injectable } from '@angular/core';
 import { VoiceMsg, VoiceMsgType } from '../model/voice-msg';
-import { JwtTokenService } from './jwt-token.service';
 import { RTCPeerConnectionContainer, VoiceService } from './voice.service';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -30,11 +29,12 @@ export class WebrtcService {
   public remoteStreamSubject = new Subject<MediaStream>();
   private onLocalhost: boolean;
 
-  constructor(private voiceService: VoiceService, private jwtTokenService: JwtTokenService) {
+  constructor(private voiceService: VoiceService) {
 	this.onLocalhost = this.voiceService.localhostCheck();
   }
 
   public addIncominMessageHandler(): void {
+	console.log('Message Handler added');
     this.voiceService.messages$.subscribe(
       msg => {
         console.log('Received message: ' + msg.type);
@@ -59,7 +59,7 @@ export class WebrtcService {
       error => console.log(error)
     );
   }
-  
+
   public createPeerConnection(): RTCPeerConnectionContainer {
     console.log('creating PeerConnection...');
     const peerConnection = new RTCPeerConnection(environment.RTCPeerConfiguration);
@@ -74,7 +74,7 @@ export class WebrtcService {
     const container = new RTCPeerConnectionContainer(senderId, receiverId, peerConnection);
     return container;
   }
-  
+
   /* ########################  MESSAGE HANDLER  ################################## */
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer sid:: '+msg.senderId);
@@ -98,7 +98,7 @@ export class WebrtcService {
     ).then(answer => {
       // Send local SDP to remote part
       this.voiceService.sendMessage({type: VoiceMsgType.answer, senderId: peerConnectionContainer.senderId,
-         receiverId: peerConnectionContainer.receiverId, data: answer});
+         receiverId: peerConnectionContainer.receiverId, data: answer} as VoiceMsg);
       this.offerMsgSubject.next(msg);
     }).catch(e => this.reportError(e));
   }
@@ -133,7 +133,7 @@ export class WebrtcService {
        this.voiceService.pendingCandidates.get(msg.receiverId).push(msg.data);
     }
   }
-  
+
   private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate && this.voiceService.peerConnections.get(this.getEventSid(event))?.receiverId) {
       //console.log(event);
@@ -198,6 +198,6 @@ export class WebrtcService {
           track.enabled = true;
        });
        this.remoteStreamSubject.next(myStream);
-    }    
+    }
   };
 }

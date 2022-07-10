@@ -63,7 +63,7 @@ export class VoiceComponent implements AfterViewInit, OnDestroy {
   constructor(private voiceService: VoiceService, private jwttokenService: JwtTokenService, private webrtcService: WebrtcService) {
 	this.onLocalhost = this.voiceService.localhostCheck();
    }
-   
+
    public ngOnDestroy(): void {
    	  this.componentSubscribtions.forEach(mySub => mySub.unsubscribe());
    }
@@ -101,9 +101,11 @@ export class VoiceComponent implements AfterViewInit, OnDestroy {
 
   public ngAfterViewInit(): void {
 	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
-	this.componentSubscribtions.push(this.webrtcService.offerMsgSubject.pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
+	this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
+	   .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
 	this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
-	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject.subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
+	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
+	   .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
     this.requestMediaDevices();
   }
 
@@ -138,9 +140,8 @@ export class VoiceComponent implements AfterViewInit, OnDestroy {
     }
 
     const peerConnectionContainer = this.voiceService.peerConnections.get(msg.senderId);
-    this.localStream.getTracks().forEach(myTrack => !!peerConnectionContainer 
+    this.localStream.getTracks().forEach(myTrack => !!peerConnectionContainer
        && peerConnectionContainer?.rtcPeerConnection?.addTrack(myTrack, this.localStream));
-       
     this.inCall = true;
   }
 

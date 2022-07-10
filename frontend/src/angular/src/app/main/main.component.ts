@@ -78,8 +78,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.windowHeight = window.innerHeight - this.headerBarHeight;
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe( online => this.onlineAgain( online ) );
-    this.webrtcService.addIncominMessageHandler();
-    this.offerMsgSub = this.webrtcService.offerMsgSubject.pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId)).subscribe(offerMsg => this.selFeature = MyFeature.phone);
   }
 
   ngAfterViewInit(): void {
@@ -171,6 +169,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectContact( contact: Contact ): void {
     this.selectedContact = contact;
+    this.webrtcService.receiverId = this.selectedContact.name;
     this.addMessages().then( () => this.syncMsgs() );
   }
 
@@ -300,7 +299,16 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
       this.storeReceivedMessages();
-      this.voiceService.connect(this.jwttokenService.jwtToken);
+      this.voiceService.connect(this.jwttokenService.jwtToken).then(result =>  {
+	    if(!!result) {
+	       this.webrtcService.addIncominMessageHandler();
+	       this.webrtcService.senderId = this.ownContact.name;
+	       this.webrtcService.receiverId = this?.selectedContact?.name;
+	       this.offerMsgSub = this.webrtcService.offerMsgSubject
+	          .pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId))
+	          .subscribe(offerMsg => this.selFeature = MyFeature.phone);
+	       }
+      });
     }
   }
 
