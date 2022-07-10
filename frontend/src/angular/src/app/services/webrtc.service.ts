@@ -16,6 +16,16 @@ import { RTCPeerConnectionContainer, VoiceService } from './voice.service';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject, Subject } from 'rxjs';
 
+const mediaConstraints = {
+  audio: true,
+  video: true,
+  // video: {width: 1280, height: 720}
+  // video: {width: 1280, height: 720} // 16:9
+  // video: {width: 960, height: 540}  // 16:9
+  // video: {width: 640, height: 480}  //  4:3
+  // video: {width: 160, height: 120}  //  4:3
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,6 +34,7 @@ export class WebrtcService {
   public localhostReceiver = '';
   public senderId = '';
   public receiverId = '';
+  public localStream: MediaStream;
   public offerMsgSubject = new BehaviorSubject({type: VoiceMsgType.offer, senderId: null, receiverId: null, data: null} as VoiceMsg);
   public hangupMsgSubject = new Subject<VoiceMsg>();
   public remoteStreamSubject = new Subject<MediaStream>();
@@ -33,8 +44,9 @@ export class WebrtcService {
 	this.onLocalhost = this.voiceService.localhostCheck();
   }
 
-  public addIncominMessageHandler(): void {
+  public async addIncominMessageHandler(): Promise<void> {
 	console.log('Message Handler added');
+	await this.requestMediaDevices();
     this.voiceService.messages$.subscribe(
       msg => {
         console.log('Received message: ' + msg.type);
@@ -75,6 +87,17 @@ export class WebrtcService {
     return container;
   }
 
+  private async requestMediaDevices(): Promise<void> {
+	if(!this.localStream) {
+       try {
+         this.localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+       } catch (e) {
+         console.error(e);
+         alert(`getUserMedia() error: ${e.name}`);
+       }
+    }
+  }
+
   /* ########################  MESSAGE HANDLER  ################################## */
   private handleOfferMessage(msg: VoiceMsg): void {
     console.log('handle incoming offer sid:: '+msg.senderId);
@@ -82,6 +105,9 @@ export class WebrtcService {
     peerConnectionContainer.receiverId = msg.senderId;
     peerConnectionContainer.senderId = this.onLocalhost ? this.localhostReceiver : peerConnectionContainer.senderId;
     this.voiceService.peerConnections.set(peerConnectionContainer.senderId, peerConnectionContainer);
+
+    this.localStream.getTracks().forEach(myTrack => !!peerConnectionContainer
+       && peerConnectionContainer?.rtcPeerConnection?.addTrack(myTrack, this.localStream));
 
     this.voiceService.peerConnections.get(peerConnectionContainer.senderId).rtcPeerConnection
       .setRemoteDescription(new RTCSessionDescription(msg.data))

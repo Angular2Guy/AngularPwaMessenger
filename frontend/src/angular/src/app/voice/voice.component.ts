@@ -24,16 +24,6 @@ const offerOptions = {
   offerToReceiveVideo: true
 };
 
-const mediaConstraints = {
-  audio: true,
-  video: true,
-  // video: {width: 1280, height: 720}
-  // video: {width: 1280, height: 720} // 16:9
-  // video: {width: 960, height: 540}  // 16:9
-  // video: {width: 640, height: 480}  //  4:3
-  // video: {width: 160, height: 120}  //  4:3
-};
-
 @Component({
   selector: 'app-voice',
   templateUrl: './voice.component.html',
@@ -54,7 +44,6 @@ export class VoiceComponent implements OnInit, OnDestroy {
   onLocalhost: boolean;
   inCall = false;
 
-  private localStream: MediaStream;
   private localhostReceiver = '';
   private componentSubscribtions: Subscription[] = [];
 
@@ -74,7 +63,8 @@ export class VoiceComponent implements OnInit, OnDestroy {
       this.startLocalVideo();
     }
 
-    this.localStream.getTracks().forEach(myTrack => peerConnectionContainer.rtcPeerConnection.addTrack(myTrack, this.localStream));
+    this.webrtcService.localStream.getTracks().forEach(myTrack =>
+       peerConnectionContainer.rtcPeerConnection.addTrack(myTrack, this.webrtcService.localStream));
 
     try {
       const offer = await this.voiceService.peerConnections.get(peerConnectionContainer.senderId)
@@ -99,23 +89,23 @@ export class VoiceComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
 	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
-    this.requestMediaDevices().then(() => {
-	   this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
-	      .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId), debounceTime(500)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
-  	   this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.pipe(debounceTime(500)).subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
-	   this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject.pipe(debounceTime(500))
-	      .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
-    });
+    this.requestMediaDevices();
+    this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
+	   .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId), debounceTime(500))
+	   .subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
+  	this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.pipe(debounceTime(500))
+  	   .subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
+	this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject.pipe(debounceTime(500))
+	   .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
   }
 
   public startLocalVideo(): void {
     console.log('starting local stream');
     if(!this.localVideoActivated) {
-	   
-       this.localStream.getTracks().forEach(track => {
+       this.webrtcService.localStream.getTracks().forEach(track => {
           track.enabled = true;
        });
-       this.localVideo.nativeElement.srcObject = this.localStream;
+       this.localVideo.nativeElement.srcObject = this.webrtcService.localStream;
 
        this.localVideoActivated = true;
     }
@@ -124,7 +114,7 @@ export class VoiceComponent implements OnInit, OnDestroy {
   public stopLocalVideo(): void {
     console.log('stop local stream');
     if(this.localVideoActivated) {
-       this.localStream.getTracks().forEach(track => {
+       this.webrtcService.localStream.getTracks().forEach(track => {
           track.enabled = false;
        });
        this.localVideo.nativeElement.srcObject = null;
@@ -140,9 +130,6 @@ export class VoiceComponent implements OnInit, OnDestroy {
       this.startLocalVideo();
     }
 
-    const peerConnectionContainer = this.voiceService.peerConnections.get(msg.senderId);
-    this.localStream.getTracks().forEach(myTrack => !!peerConnectionContainer
-       && peerConnectionContainer?.rtcPeerConnection?.addTrack(myTrack, this.localStream));
     this.inCall = true;
   }
 
@@ -156,15 +143,9 @@ export class VoiceComponent implements OnInit, OnDestroy {
     this.closeVideoCall();
   }
 
-  private async requestMediaDevices(): Promise<void> {
-    try {
-      this.localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      // pause all tracks
-      this.stopLocalVideo();
-    } catch (e) {
-      console.error(e);
-      alert(`getUserMedia() error: ${e.name}`);
-    }
+  private requestMediaDevices(): void {
+    // pause all tracks
+    this.stopLocalVideo();
   }
 
   private closeVideoCall(): void {
