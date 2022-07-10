@@ -16,7 +16,7 @@ import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.serv
 import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
 import { Contact } from '../model/contact';
 import { WebrtcService } from '../services/webrtc.service';
-import { filter } from 'rxjs';
+import { debounceTime, filter } from 'rxjs';
 import { Subscription } from 'dexie';
 
 const offerOptions = {
@@ -101,9 +101,9 @@ export class VoiceComponent implements OnInit, OnDestroy {
 	this.localhostReceiver = this.sender.name + this.voiceService.localHostToken;
     this.requestMediaDevices().then(() => {
 	   this.componentSubscribtions.push(this.webrtcService.offerMsgSubject
-	      .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
-  	   this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
-	   this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject
+	      .pipe(filter(offerMsg => !!offerMsg.senderId && !!offerMsg.receiverId), debounceTime(500)).subscribe(offerMsg => this.handleOfferMessage(offerMsg)));
+  	   this.componentSubscribtions.push(this.webrtcService.hangupMsgSubject.pipe(debounceTime(500)).subscribe(hangupMsg => this.handleHangupMessage(hangupMsg)));
+	   this.componentSubscribtions.push(this.webrtcService.remoteStreamSubject.pipe(debounceTime(500))
 	      .subscribe(remoteStream => this.handleRemoteStream(remoteStream)));
     });
   }
@@ -153,6 +153,7 @@ export class VoiceComponent implements OnInit, OnDestroy {
 
   private handleHangupMessage(msg: VoiceMsg): void {
     console.log(msg);
+    this.closeVideoCall();
   }
 
   private async requestMediaDevices(): Promise<void> {
