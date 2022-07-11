@@ -50,43 +50,35 @@ public class MessageService {
 	}
 
 	public Flux<Message> findMessages(SyncMsgs syncMsgs) {
-		List<Message> msgToUpdate = new LinkedList<>();
 		return this.myMongoRepository
 				.find(new Query().addCriteria(Criteria.where("fromId").in(syncMsgs.getContactIds())
 						.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
 								.andOperator(Criteria.where("timestamp").gt(syncMsgs.getLastUpdate())))),
 						Message.class)
-				.doOnEach(msg -> {
-					if (msg.hasValue()) {
-						msg.get().setReceived(true);
-						msgToUpdate.add(msg.get());
-					}
-				})
-				.doAfterTerminate(() -> Flux.concat(msgToUpdate.stream()
-						.flatMap(msg -> Stream.of(this.myMongoRepository.save(msg))).collect(Collectors.toList()))
-						.collectList().block());
+				.map(msg -> {
+					msg.setReceived(true);
+					return msg;
+				}).flatMap(msg -> this.myMongoRepository.save(msg));
 	}
 
 	public Flux<Message> receivedMessages(Contact contact) {
-		List<Message> msgToDelete = new LinkedList<>();
+		final List<Message> msgToDelete = new LinkedList<>();
 		return this.myMongoRepository.find(new Query().addCriteria(
 				Criteria.where("fromId").is(contact.getUserId()).andOperator(Criteria.where("received").is(true))),
-				Message.class).doOnEach(msg -> {
-					if (msg.hasValue()) {
-						msgToDelete.add(msg.get());
-					}
-				})
-				.doAfterTerminate(() -> Flux.concat(msgToDelete.stream()
-						.flatMap(msg -> Stream.of(this.myMongoRepository.remove(msg))).collect(Collectors.toList()))
-						.collectList().block());
+				Message.class).flatMap(msg -> {
+					msgToDelete.add(msg);
+					return this.myMongoRepository.remove(msg);
+				}).flatMapIterable(result -> msgToDelete);
 	}
 
 	public void cleanUpMessages(Long messageTtl) {
 		LOG.info("CleanUpOldMessages started.");
 		Date removeTimestamp = Date.from(LocalDateTime.now().minusDays(messageTtl)
 				.toInstant(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
-		this.myMongoRepository.findAllAndRemove(new Query().addCriteria(Criteria.where("timestamp").lt(removeTimestamp)),
-				Message.class).collectList().block();
+		this.myMongoRepository
+				.findAllAndRemove(new Query().addCriteria(Criteria.where("timestamp").lt(removeTimestamp)),
+						Message.class)
+				.collectList().block();
 		LOG.info("CleanUpOldMessages finished.");
 	}
 
@@ -95,7 +87,8 @@ public class MessageService {
 			msg.setSend(true);
 			msg.setTimestamp(new Date());
 			return msg;
-		}).filter(msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB))
+		}).filter(msg -> msg.getText() != null && !msg.getText().isBlank()).filter(
+				msg -> msg.getFilename() == null || (msg.getFilename() != null && msg.getText().length() < 3 * MB))
 				.collect(Collectors.toList());
 		Flux<Message> msgsFlux = this.myMongoRepository
 				.find(new Query().addCriteria(Criteria.where("fromId").is(syncMsgs.getOwnId())), Message.class)
