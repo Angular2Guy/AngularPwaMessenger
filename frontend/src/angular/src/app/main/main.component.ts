@@ -143,12 +143,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         this.localdbService.loadContacts( this.ownContact ).then( values => {
           this.contacts = values;
           this.selectContact(values && values.length > 0 ? values[0] : null);
-        } ).then( () => this.addMessages() ).then( () => {
-          if ( this.interval ) {
-            clearInterval( this.interval );
-          }
-          this.interval = setInterval( () => this.syncMsgs(), 15000 );
-        } );
+        } ).then( () => this.addMessages() ).then( () => this.updateMessageInterval());
         this.updateContactListLayout();
       }
     } );
@@ -179,12 +174,25 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       msg.text = value;
       return msg;
     } ).then( myMsg => this.localdbService.storeMessage( myMsg ) )
-      .then( () => this.addMessages().then( () => this.syncMsgs() ) );
+      .then( () => this.addMessages().then( () => {
+	     this.syncMsgs();
+	     this.updateMessageInterval();
+	  }));
 
   }
 
   addNewContact( contact: Contact ): void {
     this.contacts.push( contact );
+    if(!this.selectedContact) {
+	  this.selectContact(contact);
+    }
+  }
+
+  private updateMessageInterval() {
+	if ( this.interval ) {
+       clearInterval( this.interval );
+    }
+    this.interval = setInterval( () => this.syncMsgs(), 15000 );
   }
 
   private updateContactListLayout(event: MediaQueryListEvent = null) {
