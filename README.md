@@ -11,6 +11,10 @@ Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Bo
 * [An Angular PWA From Front-End to Backend: Kubernetes Deployment](https://angular2guy.wordpress.com/2021/07/31/an-angular-pwa-from-front-end-to-backend-kubernetes-deployment/)
 * [Angular Translations Have Arrived](https://angular2guy.wordpress.com/2021/07/31/angular-translations-have-arrived/)
 
+## Backend improvement
+
+The Spring Boot MongoDb server can now handle more concurrent users.
+
 ## What is the goal?
 
 The goal is to provide an Angular based Progressive Web App with a backend server that has a usecase. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and uses its Webflux features with the MongoDB database in clean architecture. For development the project uses an in memory MongoDB to be just cloned and ready to run. More documentation can be found in the wiki.
