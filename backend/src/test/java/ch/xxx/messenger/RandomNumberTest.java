@@ -13,6 +13,7 @@
 package ch.xxx.messenger;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Random;
 
@@ -31,13 +32,14 @@ public class RandomNumberTest {
 	// property: security.jwt.token.secret-key
 	@Test
 	public void generateBase64RandomNumber() {
-		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES*8);
-		for(int i = 0;i<8;i++) {
+		final int numberOfBytes = 32;
+		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES*numberOfBytes);
+		for(int i = 0;i<numberOfBytes;i++) {
 			buffer.putLong(i*8,rand.nextLong());
 		}
-		String encoded = Base64.getEncoder().encodeToString(buffer.array());
+		String encoded = new String(Base64.getUrlEncoder().encode(buffer.array()), StandardCharsets.UTF_8);
 		Assertions.assertFalse(encoded.isBlank());
-		Assertions.assertArrayEquals(buffer.array(), Base64.getDecoder().decode(encoded));
+		Assertions.assertArrayEquals(buffer.array(), Base64.getUrlDecoder().decode(encoded.getBytes(StandardCharsets.ISO_8859_1)));
 		//System.out.println(encoded);
 	}
 }

@@ -12,6 +12,7 @@
  */
 package ch.xxx.messenger.domain.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,6 +44,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenProvider {
+	private final static Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
 
 	@Value("${security.jwt.token.secret-key}")
 	private String secretKey;
@@ -56,7 +60,7 @@ public class JwtTokenProvider {
 		Date issuedAt = issuedAtOpt.orElse(new Date());
 		Date validity = new Date(issuedAt.getTime() + validityInMilliseconds);
 
-		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		SecretKey key = this.createHmacShaSecretKey();
 		return Jwts.builder().setClaims(claims).setIssuedAt(issuedAt).setExpiration(validity)
 				.signWith(key, SignatureAlgorithm.HS256).compact();
 	}
@@ -65,7 +69,7 @@ public class JwtTokenProvider {
 		if (!token.isPresent()) {
 			return Optional.empty();
 		}
-		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		SecretKey key = this.createHmacShaSecretKey();
 		return Optional.of(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token.get()));
 	}
 
@@ -77,13 +81,13 @@ public class JwtTokenProvider {
 	}
 
 	public String getUsername(String token) {
-		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		SecretKey key = this.createHmacShaSecretKey();
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
 
 	public long getTtl(String token) {
 		try {
-			SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+			SecretKey key = this.createHmacShaSecretKey();
 			Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
 					.getExpiration();
 			return expiration.getTime() - System.currentTimeMillis();
@@ -98,7 +102,7 @@ public class JwtTokenProvider {
 		for (Role role : Role.values()) {
 			roles.add(role);
 		}
-		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		SecretKey key = this.createHmacShaSecretKey();
 		List<Map<String, String>> myRoles = (List<Map<String, String>>) Jwts.parserBuilder().setSigningKey(key).build()
 				.parseClaimsJws(token).getBody().get("auth");
 		return myRoles.stream().map(map -> map.values()).flatMap(Collection::stream)
@@ -115,7 +119,7 @@ public class JwtTokenProvider {
 	}
 
 	public boolean validateToken(String token) {
-		SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		SecretKey key = this.createHmacShaSecretKey();
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
@@ -124,4 +128,7 @@ public class JwtTokenProvider {
 		}
 	}
 
+	private SecretKey createHmacShaSecretKey() {
+		return Keys.hmacShaKeyFor(Base64.getUrlDecoder().decode(secretKey.getBytes(StandardCharsets.ISO_8859_1)));		
+	}
 }
