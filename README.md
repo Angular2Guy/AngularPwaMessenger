@@ -1,8 +1,8 @@
-# AngularPwaMessenger
+# This is an example of a Progressive Web Application(PWA) with Angular, Spring Boot and MongoDb. 
 
 Author: Sven Loesekann
 
-Technologies: PWA, Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
+Technologies: PWA, WebRtc, WebSocket(Frontend, Backend), Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
 ## Articles
 * [An Angular PWA From Front-End to Backend: Sign In and Add Contacts](https://angular2guy.wordpress.com/2021/07/31/an-angular-pwa-from-front-end-to-backend-sign-in-and-add-contacts/)
@@ -17,11 +17,12 @@ The Spring Boot MongoDb server can now handle more concurrent users.
 
 ## What is the goal?
 
-The goal is to provide an Angular based Progressive Web App with a backend server that has a usecase. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and uses its Webflux features with the MongoDB database in clean architecture. For development the project uses an in memory MongoDB to be just cloned and ready to run. More documentation can be found in the wiki.
+The goal is to provide an Angular based Progressive Web App with a backend server that offers chats or video calls. To do that the PWA uses the Angular PWA support and Angular Material. The backend server is written with Spring Boot and uses its Webflux features with the MongoDB database in clean architecture. For development the project uses an in memory MongoDB to be just cloned and ready to run. More documentation can be found in the [blog](https://angular2guy.wordpress.com).
 
 ## What is it?
 
-The application is an encrypted chat system that can be run offline. The PWA is served by the server like any website and installs a service worker. Then it can run offline because the PWA stores the data locally in the browser. The login, the chat history and sending new messages work offline. The messages can be text of photos taken with the devices camera. When the PWA is online again the stored pending messages are send to the server and it is checked for new messages. Adding new contacts and signing in only works online. The backend server stores only the pending messages and the available contacts and is implemented in clean architecture. That is checked with an ArchUnit test. The message texts are send encrypted and are stored encrypted. (If you delete your browsers indexed DB your chat history and your contacts are gone!) 
+The application is an encrypted chat system that can be run offline. The PWA is served by the server like any website and installs a service worker. Then it can run offline because the PWA stores the data locally in the browser. The login, the chat history and sending new messages work offline. The messages can be text of photos taken with the devices camera. When the PWA is online again the stored pending messages are send to the server and it is checked for new messages. Adding new contacts and signing in only works online. The backend server stores only the pending messages and the available contacts and is implemented in clean architecture. That is checked with an ArchUnit test. The message texts are send encrypted and are stored encrypted. (If you delete your browsers indexed DB your chat history and your contacts are gone!),
+The video calls are done with WebRtc in the Angular frontend in the browser and need the ability of the browsers to connect to each other. The WebSocket is used for signaling and is supported by the Spring Boot backend.  
 
 ## Minikube setup
 
@@ -36,11 +37,11 @@ To test the setup the application has to be started and the Docker Images for Pr
 
 ## Setup
 
-MongoDB 4.1.x or newer.
+MongoDB 4.4.x or newer.
 
 Eclipse IDE for Enterprise Java and Web Developers newest version.
 
-Maven 3.5.4 or newer.
+Maven 3.8.4 or newer.
 
 Java 17 or newer
 
