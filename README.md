@@ -1,4 +1,4 @@
-# This is an example of a Progressive Web Application(PWA) with Angular, Spring Boot and MongoDb. 
+# This is an example of a Progressive Web Application(PWA) with an Angular frontend and a Spring Boot backend with MongoDb. 
 
 Author: Sven Loesekann
 
