@@ -13,7 +13,7 @@
 import { Injectable } from '@angular/core';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {environment} from '../../environments/environment';
-import {Subject, takeUntil} from 'rxjs';
+import {ReplaySubject, Subject, takeUntil} from 'rxjs';
 import {VoiceMsg} from '../model/voice-msg';
 
 export class RTCPeerConnectionContainer{
@@ -29,8 +29,7 @@ export class VoiceService {
   public pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private socket$: WebSocketSubject<any>;
   private messagesSubject = new Subject<VoiceMsg>();
-  private readonly ngUnsubscribeMsg: Subject<void> = new Subject<void>();
-  private readonly ngUnsubscribeSocket: Subject<void> = new Subject<void>();
+  private readonly ngUnsubscribeMsg = new ReplaySubject<void>(1);
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public messages$ = this.messagesSubject.pipe(takeUntil(this.ngUnsubscribeMsg));
   private webSocketConnectionRequested = false;
@@ -51,7 +50,7 @@ export class VoiceService {
       return Promise.resolve<WebSocketSubject<any>>(this.getNewWebSocket(jwtToken))
          .then<boolean>(mySocket => {
 	         this.socket$ = mySocket;
-	         this.socket$.pipe(takeUntil(this.ngUnsubscribeSocket)).subscribe(
+	         this.socket$.pipe(takeUntil(this.ngUnsubscribeMsg)).subscribe(
                 // Called whenever there is a message from the server
                 msg => {
                    console.log('Received message of type: ' + msg.type);
@@ -67,8 +66,6 @@ export class VoiceService {
 	this.webSocketConnectionRequested = false;
 	this.ngUnsubscribeMsg.next();
 	this.ngUnsubscribeMsg.unsubscribe();
-	this.ngUnsubscribeSocket.next();
-	this.ngUnsubscribeSocket.unsubscribe();
   }
 
   public sendMessage(msg: VoiceMsg): void {
