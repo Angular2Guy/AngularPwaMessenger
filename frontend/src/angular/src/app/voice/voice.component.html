@@ -3,7 +3,7 @@
 		<div class="called">
 			<div class="called-content">
 			    <div class="portrait-orientation" i18n="@@voiceLandscapeNotSupported">Landscape orientation not supported on small devices.</div>
-				<div class="landscape-orientation">Remote</div>
+				<div class="landscape-orientation" i18n="@@voiceRemote">Remote</div>
 				<video #remote_video [autoplay]="true" [muted]="remoteMuted" class="call-video landscape-orientation"></video>
 				<div class="landscape-orientation">
 					<button mat-button class="video-button"
@@ -30,7 +30,7 @@
 			</div>
 		</div>
 		<div class="local">
-			<div class="landscape-orientation">Local</div>
+			<div class="landscape-orientation" i18n="@@voiceLocal">Local</div>
 			<video #local_video [autoplay]="true" [muted]="localMuted" class="local-video landscape-orientation"></video>
 			<div class="landscape-orientation">
 				<button mat-button class="video-button"

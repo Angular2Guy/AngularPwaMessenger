@@ -31,10 +31,12 @@
     "mainLoginMessage": "{$START_TAG_DIV}Please Login{$CLOSE_TAG_DIV}",
     "onlineAgainMsg": "You are online again and your token is expired. To reconnect please logout and login again.",
     "voiceLandscapeNotSupported": "Landscape orientation not supported on small devices.",
+    "voiceRemote": "Remote",
     "voiceCall": "Call",
     "voiceHangup": "Hangup",
     "voiceMute": "Mute",
     "voiceUnmute": "Unmute",
+    "voiceLocal": "Local",
     "voiceActivateCallerVideo": "Activate",
     "voiceDeactivateCallerVideo": "Deactivate"
   }
