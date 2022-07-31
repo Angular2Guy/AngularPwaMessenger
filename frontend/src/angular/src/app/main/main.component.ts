@@ -242,40 +242,48 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   private sendRemoteMsgs( syncMsgs1: SyncMsgs ): void {
     this.localdbService.toSyncMessages( this.ownContact ).then( msgs => {
       const oriMsgs: Message[] = JSON.parse( JSON.stringify( msgs ) );
-      this.decryptLocalMsgs( msgs ).then( value => {
-        const promises: PromiseLike<Message>[] = [];
-        value.forEach( msg => {
-          const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ?
-				null : this.contacts.filter( con => con.userId = msg.toId )[0];
-          if ( !fromCon ) {
-            console.log( fromCon );
-          } else {
-            promises.push( (this.cryptoService.encryptLargeText(msg.text, fromCon.publicKey)).then( result => {
-              msg.text = result;
-              return msg;
-            } ) );
-          }
-        } );
-        Promise.all( promises ).then( myMsgs => {
+       this.decryptLocalMsgs( msgs ).then( value => {
+        this.encryptLocalMessages(value).then( myMsgs => {
           const syncMsgs2: SyncMsgs = {
             ownId: this.ownContact.userId,
             msgs: myMsgs
           };
           this.messageService.sendMessages( syncMsgs2 ).subscribe( myMsgs2 => {
-            const promises2: PromiseLike<number>[] = [];
-            msgs.forEach( msg => {
-              const newMsg = oriMsgs.filter( oriMsg => oriMsg.localId === msg.localId )[0];
-              const myMsg = myMsgs2.filter( myMsg2 => myMsg2.localId === msg.localId )[0];
-              newMsg.send = true;
-              newMsg.timestamp = myMsg.timestamp;
-              promises2.push( this.localdbService.updateMessage( newMsg ) );
-				//.then(result => console.log(msg), reject => console.log(reject));
-            } );
-            Promise.all( promises2 ).then( () => this.addMessages() );
+	        this.sendMessages(msgs, oriMsgs, myMsgs2).then( () => this.addMessages() );
           }, error => console.log( 'sendRemoteMsgs failed.' + error ) );
         } );
       } );
     } );
+  }
+
+  private sendMessages(messages: Message[], oriMsgs: Message[], myMsgs2: Message[]): Promise<number[]> {
+	const promises2: PromiseLike<number>[] = [];
+    messages.forEach( msg => {
+       const newMsg = oriMsgs.filter( oriMsg => oriMsg.localId === msg.localId )[0];
+       const myMsg = myMsgs2.filter( myMsg2 => myMsg2.localId === msg.localId )[0];
+       newMsg.send = true;
+       newMsg.timestamp = myMsg.timestamp;
+       promises2.push( this.localdbService.updateMessage( newMsg ) );
+	   //.then(result => console.log(msg), reject => console.log(reject));
+     } );
+     return Promise.all( promises2 );
+  }
+
+  private encryptLocalMessages(messages: Message[]): Promise<Message[]> {
+	const promises: PromiseLike<Message>[] = [];
+    messages.forEach( msg => {
+       const fromCon = !this.contacts.filter( con => con.userId = msg.toId ) ?
+	   null : this.contacts.filter( con => con.userId = msg.toId )[0];
+       if ( !fromCon ) {
+         console.log( fromCon );
+       } else {
+          promises.push( (this.cryptoService.encryptLargeText(msg.text, fromCon.publicKey)).then( result => {
+             msg.text = result;
+             return msg;
+          } ) );
+       }
+     } );
+     return Promise.all( promises );
   }
 
   private storeReceivedMessages(): void {
@@ -322,7 +330,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private decryptLocalMsgs( msgs: Message[] ): PromiseLike<Message[]> {
+  private async decryptLocalMsgs( msgs: Message[] ): Promise<Message[]> {
     const promises: PromiseLike<Message>[] = [];
     msgs.forEach( msg => {
       promises.push( this.cryptoService.decryptTextAes( this.myUser.password, this.myUser.salt, msg.text ).then( value => {
@@ -330,7 +338,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         return msg;
       } ) );
     } );
-    return Promise.all( promises ).then( msgs2 => msgs2 );
+    const msgs2 = await Promise.all(promises);
+      return msgs2;
   }
 
   private getLastSyncDate(): Date {
@@ -340,20 +349,20 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     return sortedMsg.length === 0 ? new Date( '2000-01-01' ) : new Date( sortedMsg[sortedMsg.length - 1].timestamp );
   }
 
-  private addMessages(): Promise<Message[]> {
-    return this.localdbService.loadMessages( this.selectedContact ).then( msgs =>
-      this.decryptLocalMsgs( msgs ).then( values => {
-        while ( this.messages.length > 0 ) {
+  private async addMessages(): Promise<Message[]> {
+    const msgs = await this.localdbService.loadMessages(this.selectedContact);
+      const values = await this.decryptLocalMsgs(msgs);
+      while (this.messages.length > 0) {
           this.messages.pop();
-        }
-        this.messages = values.map(msg => {
-			if(msg.filename) {
-				msg.text = atob(msg.text.split('base64,')[1]);
-				msg.url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([msg.text])));
-			}
-			return msg;});
-        return this.messages;
-      } ) );
+      }
+      this.messages = values.map(msg => {
+          if (msg.filename) {
+              msg.text = atob(msg.text.split('base64,')[1]);
+              msg.url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([msg.text])));
+          }
+          return msg;
+      });
+      return this.messages;
   }
 
   private onlineAgain( online: boolean ): void {
