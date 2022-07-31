@@ -14,7 +14,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Message } from '../model/message';
 import { Contact } from '../model/contact';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { LocaldbService } from '../services/localdb.service';
 import { Constants } from '../common/constants';
 
 @Component({

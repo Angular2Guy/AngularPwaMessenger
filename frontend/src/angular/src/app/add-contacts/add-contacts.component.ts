@@ -25,7 +25,6 @@ import { LocalContact } from '../model/local-contact';
     styleUrls: ['./add-contacts.component.scss']
 } )
 export class AddContactsComponent implements OnInit, OnDestroy {
-
     @Output() addNewContact = new EventEmitter<Contact>();
     @Input() userId: string;
     @Input() myContacts: Contact[];

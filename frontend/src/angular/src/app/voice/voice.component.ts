@@ -12,7 +12,7 @@
  */
  // based on: https://github.com/wliegel/youtube_webrtc_tutorial
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { RTCPeerConnectionContainer, VoiceService } from '../services/voice.service';
+import { VoiceService } from '../services/voice.service';
 import { VoiceMsg, VoiceMsgType} from '../model/voice-msg';
 import { Contact } from '../model/contact';
 import { WebrtcService } from '../services/webrtc.service';
