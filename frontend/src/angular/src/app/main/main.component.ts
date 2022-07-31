@@ -315,19 +315,23 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
       this.storeReceivedMessages();
-      const result = await this.voiceService.connect(this.jwttokenService.jwtToken);
-	    if(!!result) {
-	       this.webrtcService.addIncominMessageHandler();
-	       this.webrtcService.senderId = this.ownContact.name;
-	       this.webrtcService.receiverId = this?.selectedContact?.name;
-	       this.offerMsgSub = this.webrtcService.offerMsgSubject
-	          .pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId))
-	          .subscribe(offerMsg => {
-		         // console.log(offerMsg);
-		         this.selFeature = MyFeature.phone;
-		      });
-	       }
+      this.initWebrtcConnection();      
     }
+  }
+
+  private async initWebrtcConnection(): Promise<void> {
+	const result = await this.voiceService.connect(this.jwttokenService.jwtToken);
+	if(!!result) {
+	   this.webrtcService.addIncominMessageHandler();
+	   this.webrtcService.senderId = this.ownContact.name;
+	   this.webrtcService.receiverId = this?.selectedContact?.name;
+	   this.offerMsgSub = this.webrtcService.offerMsgSubject
+	      .pipe(filter(offerMsg => !!offerMsg.receiverId && !!offerMsg.senderId))
+	      .subscribe(offerMsg => {
+		     // console.log(offerMsg);
+		     this.selFeature = MyFeature.phone;
+		  });
+	   }
   }
 
   private async decryptLocalMsgs( msgs: Message[] ): Promise<Message[]> {
