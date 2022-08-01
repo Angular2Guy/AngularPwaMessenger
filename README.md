@@ -5,6 +5,7 @@ Author: Sven Loesekann
 Technologies: PWA, WebRtc, WebSocket(Frontend, Backend), Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
 ## Articles
+* [Videocall in the AngularPwaMessenger Part1](https://angular2guy.wordpress.com/2022/08/01/videocalls-in-the-angularpwamessenger-part1/)
 * [An Angular PWA From Front-End to Backend: Sign In and Add Contacts](https://angular2guy.wordpress.com/2021/07/31/an-angular-pwa-from-front-end-to-backend-sign-in-and-add-contacts/)
 * [An Angular PWA From Front-End to Backend: Creating a Login Process](https://angular2guy.wordpress.com/2021/07/31/an-angular-pwa-from-front-end-to-backend-creating-a-login-process/)
 * [An Angular PWA From Front-End to Backend: Send/Receive Messages](https://angular2guy.wordpress.com/2021/07/31/an-angular-pwa-from-front-end-to-backend-send-receive-messages/)
