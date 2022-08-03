@@ -315,14 +315,14 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.receiveRemoteMsgs( syncMsgs1 );
       this.sendRemoteMsgs( syncMsgs1 );
       this.storeReceivedMessages();
-      this.initWebrtcConnection();
+      this.initWebrtcConnection();      
     }
   }
 
   private async initWebrtcConnection(): Promise<void> {
 	const result = await this.voiceService.connect(this.jwttokenService.jwtToken);
 	if(!!result) {
-	   this.webrtcService.addIncomingMessageHandler();
+	   this.webrtcService.addIncominMessageHandler();
 	   this.webrtcService.senderId = this.ownContact.name;
 	   this.webrtcService.receiverId = this?.selectedContact?.name;
 	   this.offerMsgSub = this.webrtcService.offerMsgSubject

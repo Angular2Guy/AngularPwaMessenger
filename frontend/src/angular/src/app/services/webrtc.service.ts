@@ -44,10 +44,10 @@ export class WebrtcService {
 	this.onLocalhost = this.voiceService.localhostCheck();
   }
 
-  public async addIncomingMessageHandler(): Promise<void> {
+  public async addIncominMessageHandler(): Promise<void> {
 	console.log('Message Handler added');
 	await this.requestMediaDevices();
-    this.voiceService.messages.subscribe(
+    this.voiceService.messages$.subscribe(
       msg => {
         console.log('Received message: ' + msg.type);
         // console.log(msg);
