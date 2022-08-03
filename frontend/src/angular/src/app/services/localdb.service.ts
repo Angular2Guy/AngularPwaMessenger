@@ -58,19 +58,21 @@ export class LocaldbService extends Dexie {
     return this.transaction('rw', this.messages, () => this.messages.update(localMessage.id, message));
   }
 
-  loadMessages(contact: Contact): Promise<Message[]> {
-    return this.transaction('rw', this.messages, () => this.messages
-            .filter(msg => (msg.toId === contact.userId || msg.fromId === contact.userId))
-            .sortBy('timestamp')
-            ).then(localMsgs => this.localMsgToMsg(localMsgs));
+  async loadMessages(contact: Contact): Promise<Message[]> {
+    const localMsgs = await this.transaction('rw', this.messages, () => this.messages
+          .filter(msg => (msg.toId === contact.userId || msg.fromId === contact.userId))
+          .sortBy('timestamp')
+      );
+      return this.localMsgToMsg(localMsgs);
   }
 
-  toSyncMessages(contact: Contact): Promise<Message[]> {
-      return this.transaction('rw', this.messages, () => this.messages
-              .filter(msg => msg.fromId === contact.userId)
-              .filter(msg => !msg.send)
-              .filter(msg => msg.timestamp === null || typeof msg.timestamp === 'undefined')
-              .toArray()).then(localMsgs => this.localMsgToMsg(localMsgs));
+  async toSyncMessages(contact: Contact): Promise<Message[]> {
+      const localMsgs = await this.transaction('rw', this.messages, () => this.messages
+          .filter(msg => msg.fromId === contact.userId)
+          .filter(msg_1 => !msg_1.send)
+          .filter(msg_2 => msg_2.timestamp === null || typeof msg_2.timestamp === 'undefined')
+          .toArray());
+      return this.localMsgToMsg(localMsgs);
   }
 
 

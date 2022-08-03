@@ -19,8 +19,8 @@ import {
   HttpEvent,
   HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { map, catchError, finalize, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { finalize, tap } from 'rxjs/operators';
 
 @Injectable()
 export class HttpProfileInterceptor implements HttpInterceptor {
