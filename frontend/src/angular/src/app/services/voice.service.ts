@@ -27,11 +27,11 @@ export class VoiceService {
   public readonly localHostToken = '$%&';
   public peerConnections = new Map<string, RTCPeerConnectionContainer>();
   public pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
-  private socket$: WebSocketSubject<any>;
+  private socket: WebSocketSubject<any>;
   private messagesSubject = new Subject<VoiceMsg>();
   private readonly ngUnsubscribeMsg = new ReplaySubject<void>(1);
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  public messages$ = this.messagesSubject.pipe(takeUntil(this.ngUnsubscribeMsg));
+  public messages = this.messagesSubject.pipe(takeUntil(this.ngUnsubscribeMsg));
   private webSocketConnectionRequested = false;
   private readonly wsEndpoint = null;
 
@@ -46,11 +46,11 @@ export class VoiceService {
 
   public async connect(jwtToken: string): Promise<boolean> {
 	this.webSocketConnectionRequested = true;
-    if (!this.socket$ || this.socket$.closed) {
+    if (!this.socket || this.socket.closed) {
       return Promise.resolve<WebSocketSubject<any>>(this.getNewWebSocket(jwtToken))
          .then<boolean>(mySocket => {
-	         this.socket$ = mySocket;
-	         this.socket$.pipe(takeUntil(this.ngUnsubscribeMsg)).subscribe(
+	         this.socket = mySocket;
+	         this.socket.pipe(takeUntil(this.ngUnsubscribeMsg)).subscribe(
                 // Called whenever there is a message from the server
                 msg => {
                    console.log('Received message of type: ' + msg.type);
@@ -70,7 +70,7 @@ export class VoiceService {
 
   public sendMessage(msg: VoiceMsg): void {
     console.log('sending message: ' + msg.type + ' sid: '+msg.senderId +' remoteId: '+msg.receiverId);
-    this.socket$.next(msg);
+    this.socket.next(msg);
   }
 
   private getNewWebSocket(jwtToken: string): WebSocketSubject<any> {
@@ -84,7 +84,7 @@ export class VoiceService {
       closeObserver: {
         next: () => {
           console.log('[DataService]: connection closed');
-          this.socket$ = undefined;
+          this.socket = undefined;
           if(!!this.webSocketConnectionRequested) {
             this.connect(jwtToken);
           }
