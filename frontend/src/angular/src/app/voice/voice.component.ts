@@ -138,9 +138,9 @@ export class VoiceComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private handleRemoteStream(remoteStream: MediaStream): void {
 	console.log('remote mediastream handled: ' + remoteStream.id);
-	const currentSrcObject = this.remoteVideo.nativeElement.srcObject;
 	if(!!this.remoteVideo.nativeElement.srcObject) {
-		remoteStream.getTracks().forEach(myTrack => currentSrcObject.addTracks(myTrack));
+		remoteStream.getTracks().forEach(myTrack =>
+		   this.remoteVideo.nativeElement.srcObject.addTracks(myTrack));
 	} else {
 		this.remoteVideo.nativeElement.srcObject = remoteStream;
 	}
