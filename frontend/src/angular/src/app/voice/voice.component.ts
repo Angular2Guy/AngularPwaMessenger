@@ -38,11 +38,11 @@ export class VoiceComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   sender: Contact;
 
-  localVideoActivated = false;
-  remoteMuted = false;
-  localMuted = false;
-  onLocalhost: boolean;
-  inCall = false;
+  protected localVideoActivated = false;
+  protected remoteMuted = false;
+  protected localMuted = false;
+  protected onLocalhost: boolean;
+  protected inCall = false;
 
   private localhostReceiver = '';
   private componentSubscribtions: Subscription[] = [];

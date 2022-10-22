@@ -28,10 +28,10 @@ export class AddContactsComponent implements OnInit, OnDestroy {
     @Output() addNewContact = new EventEmitter<Contact>();
     @Input() userId: string;
     @Input() myContacts: Contact[];
-    myControl = new FormControl();
-    filteredOptions: Contact[] = [];
-    contactsLoading = false;
-    myControlSub: Subscription = null;
+    protected myControl = new FormControl();
+    protected filteredOptions: Contact[] = [];
+    protected contactsLoading = false;
+    protected myControlSub: Subscription = null;
 
     constructor(
             private contactService: ContactService,

@@ -35,16 +35,16 @@ enum FormFields {
   styleUrls: ['./login.component.scss']
 } )
 export class LoginComponent implements OnInit {
-  signinForm: FormGroup;
-  loginForm: FormGroup;
-  loginFailed = false;
-  signinFailed = false;
-  pwMatching = true;
-  formFields = FormFields;
+  protected signinForm: FormGroup;
+  protected loginForm: FormGroup;
+  protected loginFailed = false;
+  protected signinFailed = false;
+  protected pwMatching = true;
+  protected formFields = FormFields;
   private connected = false;
 
   constructor( public dialogRef: MatDialogRef<MainComponent>,
-    @Inject( MAT_DIALOG_DATA ) public data: any,
+    @Inject( MAT_DIALOG_DATA ) protected data: any,
     private authenticationService: AuthenticationService,
     private localdbService: LocaldbService,
     private jwttokenService: JwtTokenService,

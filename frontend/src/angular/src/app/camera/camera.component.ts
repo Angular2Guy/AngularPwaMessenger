@@ -13,9 +13,9 @@ import { Message } from '../model/message';
 export class CameraComponent implements OnInit {
   @ViewChild('videoElement', { static: true }) videoElement: ElementRef;
   @ViewChild('canvasElement', { static: true }) canvasElement: ElementRef;
-  showVideo = true;
-  base64Img: string = null;
-  showCameraMsg = false;
+  protected showVideo = true;
+  protected base64Img: string = null;
+  protected showCameraMsg = false;
   private video: HTMLVideoElement;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;

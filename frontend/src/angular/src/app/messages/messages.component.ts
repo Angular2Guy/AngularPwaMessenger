@@ -29,8 +29,8 @@ export class MessagesComponent implements OnInit {
   receiver: Contact;
   @Output()
   sendMsg = new EventEmitter<Message>();
-  messageForm: FormGroup;
-  readonly formKeyMessage = 'message';
+  protected readonly formKeyMessage = 'message';
+  protected messageForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
     this.messageForm = fb.group({

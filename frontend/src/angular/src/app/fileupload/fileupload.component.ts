@@ -22,9 +22,9 @@ import { Message } from '../model/message';
 	styleUrls: ['./fileupload.component.scss']
 })
 export class FileuploadComponent implements OnInit {
-	currentFile: File;
-	fileContent: string;
-	showFileSizeMsg: boolean;
+	protected currentFile: File;
+	protected fileContent: string;
+	protected showFileSizeMsg: boolean;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	private readonly MB: number = 1024 * 1024;
 

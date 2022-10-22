@@ -42,15 +42,15 @@ enum MyFeature { chat, phone }
 } )
 export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('contact_list') contactList: MatSidenav;
-  public windowHeight: number;
-  public ownContact: Contact;
-  public contacts: Contact[] = [];
-  public selectedContact: Contact;
-  public messages: Message[] = [];
-  public myUser: MyUser = null;
-  public myFeature = MyFeature;
-  public selFeature = MyFeature.chat;
-  public contactListMode: MatDrawerMode = 'side';
+  protected windowHeight: number;
+  protected ownContact: Contact;
+  protected contacts: Contact[] = [];
+  protected selectedContact: Contact;
+  protected messages: Message[] = [];
+  protected myUser: MyUser = null;
+  protected myFeature = MyFeature;
+  protected selFeature = MyFeature.chat;
+  protected contactListMode: MatDrawerMode = 'side';
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
@@ -62,7 +62,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private netConnectionService: NetConnectionService,
     private messageService: MessageService,
     private translationsService: TranslationsService,
-    public dialog: MatDialog,
+    protected dialog: MatDialog,
     private cryptoService: CryptoService,
     private voiceService: VoiceService,
     private webrtcService: WebrtcService,
