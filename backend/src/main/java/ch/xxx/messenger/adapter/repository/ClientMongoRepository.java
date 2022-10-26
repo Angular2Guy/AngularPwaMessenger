@@ -17,6 +17,8 @@ package ch.xxx.messenger.adapter.repository;
 
 import java.util.Collection;
 
+import javax.validation.Valid;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
@@ -37,7 +39,7 @@ public class ClientMongoRepository implements MyMongoRepository {
 		this.operations = operations;
 	}
 	
-	public <T> Mono<T> save(T objectToSave) {
+	public <T> Mono<T> save(@Valid T objectToSave) {
 		return this.operations.save(objectToSave);
 	}
 	
@@ -57,7 +59,7 @@ public class ClientMongoRepository implements MyMongoRepository {
 		return this.operations.find(query, entityClass, collectionName);
 	}
 	
-	public <T> Flux<T> insertAll(Collection<? extends T> batchToSave) {
+	public <T> Flux<T> insertAll(@Valid Collection<? extends T> batchToSave) {
 		return this.operations.insertAll(batchToSave);
 	}
 	

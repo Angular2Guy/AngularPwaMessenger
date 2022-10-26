@@ -14,6 +14,9 @@ package ch.xxx.messenger.domain.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -25,14 +28,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Message {
 	@Id
 	private ObjectId id;
+	@NotBlank
 	@Indexed
 	@JsonProperty
 	private String fromId;
+	@NotBlank
 	@Indexed
 	@JsonProperty
 	private String toId;
 	@JsonProperty
 	private Long localId;
+	@NotNull
 	@JsonProperty
 	private Date timestamp;
 	@JsonProperty

@@ -21,7 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class MessageService {
 		this.myMongoRepository = myMongoRepository;
 	}
 
-	public Flux<Message> findMessages(SyncMsgs syncMsgs) {
+	public Flux<Message> findMessages(@Valid SyncMsgs syncMsgs) {
 		return this.myMongoRepository
 				.find(new Query().addCriteria(Criteria.where("fromId").in(syncMsgs.getContactIds())
 						.orOperator(Criteria.where("toId").is(syncMsgs.getOwnId())
@@ -61,7 +62,7 @@ public class MessageService {
 				}).flatMap(msg -> this.myMongoRepository.save(msg));
 	}
 
-	public Flux<Message> receivedMessages(Contact contact) {
+	public Flux<Message> receivedMessages(@Valid Contact contact) {
 		final List<Message> msgToDelete = new LinkedList<>();
 		return this.myMongoRepository.find(new Query().addCriteria(
 				Criteria.where("fromId").is(contact.getUserId()).andOperator(Criteria.where("received").is(true))),
@@ -82,7 +83,7 @@ public class MessageService {
 		LOG.info("CleanUpOldMessages finished.");
 	}
 
-	public ResponseEntity<Flux<Message>> storeMessages(SyncMsgs syncMsgs) {
+	public ResponseEntity<Flux<Message>> storeMessages(@Valid SyncMsgs syncMsgs) {
 		List<Message> msgs = syncMsgs.getMsgs().stream().map(msg -> {
 			msg.setSend(true);
 			msg.setTimestamp(new Date());

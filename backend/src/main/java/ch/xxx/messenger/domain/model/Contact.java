@@ -12,10 +12,17 @@
  */
 package ch.xxx.messenger.domain.model;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class Contact {
+	@NotBlank
+	@Size(min = 4)
 	private String name;
 	private String base64Avatar;	
+	@NotBlank
 	private String publicKey;
+	@NotBlank
 	private String userId;
 
 	public Contact() {

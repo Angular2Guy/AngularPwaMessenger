@@ -16,14 +16,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document
 public class SyncMsgs {
+	@NotNull
 	@JsonProperty
 	private Date lastUpdate;
+	@NotBlank
 	@JsonProperty
 	private String ownId;
 	@JsonProperty

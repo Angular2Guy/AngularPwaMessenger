@@ -18,6 +18,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -34,11 +38,16 @@ public class MsgUser implements UserDetails {
 
 	@Id
 	private ObjectId id;
+	@NotNull
 	@JsonProperty
-	private Date createdAt = new Date();	
+	private Date createdAt = new Date();
+	@NotBlank
+	@Size(min=4)
 	@Indexed( unique=true)
 	@JsonProperty
 	private String username;
+	@NotBlank
+	@Size(min=4)
 	@JsonProperty
 	private String password;
 	@Indexed( unique=true)

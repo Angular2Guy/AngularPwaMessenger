@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +61,7 @@ public class AuthenticationService {
 		}
 	}
 
-	public Mono<MsgUser> userSignin(MsgUser myUser) {
+	public Mono<MsgUser> userSignin(@Valid MsgUser myUser) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
@@ -95,7 +97,7 @@ public class AuthenticationService {
 		}).map(user -> user.isConfirmed());
 	}
 
-	public Mono<MsgUser> userLogin(MsgUser myUser) {
+	public Mono<MsgUser> userLogin(@Valid MsgUser myUser) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(myUser.getUsername()));
 		if (this.confirmUrl != null && !this.confirmUrl.isBlank()) {

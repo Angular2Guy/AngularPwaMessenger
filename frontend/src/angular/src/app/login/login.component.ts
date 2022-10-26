@@ -52,16 +52,16 @@ export class LoginComponent implements OnInit {
     private cryptoService: CryptoService,
     fb: FormBuilder ) {
     this.signinForm = fb.group( {
-      [FormFields.username]: ['', Validators.required],
-      [FormFields.password]: ['', Validators.required],
-      [FormFields.password2]: ['', Validators.required],
+      [FormFields.username]: ['', [Validators.required, Validators.minLength(4)]],
+      [FormFields.password]: ['', [Validators.required, Validators.minLength(4)]],
+      [FormFields.password2]: ['', [Validators.required, Validators.minLength(4)]],
       [FormFields.email]: ['', Validators.required]
     }, {
         validator: this.validate.bind( this )
       } );
     this.loginForm = fb.group( {
-      [FormFields.username]: ['', Validators.required],
-      [FormFields.password]: ['', Validators.required]
+      [FormFields.username]: ['', [Validators.required, Validators.minLength(4)]],
+      [FormFields.password]: ['', [Validators.required, Validators.minLength(4)]],
     } );
   }
 

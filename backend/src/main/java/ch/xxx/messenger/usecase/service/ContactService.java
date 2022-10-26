@@ -12,6 +12,8 @@
  */
 package ch.xxx.messenger.usecase.service;
 
+import javax.validation.Valid;
+
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class ContactService {
 		this.myMongoRepository = myMongoRepository;
 	}
 	
-	public Flux<Contact> findContacts(Contact contact) {
+	public Flux<Contact> findContacts(@Valid Contact contact) {
 		return this.myMongoRepository
 				.find(new Query().addCriteria(
 						Criteria.where("username").regex(String.format(".*%s.*", contact.getName()))), MsgUser.class)
