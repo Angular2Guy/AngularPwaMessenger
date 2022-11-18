@@ -17,7 +17,7 @@ package ch.xxx.messenger.adapter.repository;
 
 import java.util.Collection;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;

@@ -12,8 +12,8 @@
  */
 package ch.xxx.messenger.domain.model;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class Contact {
 	@NotBlank

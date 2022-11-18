@@ -12,7 +12,7 @@
  */
 package ch.xxx.messenger.usecase.service;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
