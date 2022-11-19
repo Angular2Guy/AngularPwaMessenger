@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import ch.xxx.messenger.domain.common.JwtTokenProvider;
+import ch.xxx.messenger.domain.common.Role;
 
 @Configuration
 @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
@@ -38,10 +39,9 @@ public class WebSecurityConfig {
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		HttpSecurity result = http
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		.authorizeHttpRequests().requestMatchers("/rest/auth/**").permitAll()
-		.requestMatchers("/rest/**").authenticated()
-		.requestMatchers("/**").permitAll()
-		.anyRequest().authenticated().and()
+		.authorizeHttpRequests(authorize ->  authorize.requestMatchers("/rest/auth/**").permitAll())
+		.authorizeHttpRequests(authorize ->  authorize.requestMatchers("/rest/**").hasAuthority(Role.USERS.toString()))
+		.authorizeHttpRequests(authorize ->  authorize.requestMatchers("/**").permitAll())
 		.csrf().disable()
 		.apply(new JwtTokenFilterConfigurer(jwtTokenProvider)).and();
 		return result.build();
