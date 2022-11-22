@@ -1,7 +1,14 @@
 .contact-name {
 	margin-left: 10px;
+	height: min-content;
 }
 
 .con-selected {
 	color: green;
+}
+
+.myrow {
+	display: flex;
+	align-items: center;
+	margin: 5px 0 5px 0;
 }

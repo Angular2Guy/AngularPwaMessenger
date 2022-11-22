@@ -125,7 +125,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   openLoginDialog(): void {
     const dialogRef = this.dialog.open( LoginComponent, {
-      width: '500px',
+      width: '600px',
       data: { myUser: this.myUser }
     } );
 

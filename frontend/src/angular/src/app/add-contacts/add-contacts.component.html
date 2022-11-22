@@ -2,7 +2,6 @@
 	<div class="spinner" *ngIf="contactsLoading">
 	  <mat-progress-spinner diameter="50" color="accent" mode="indeterminate"></mat-progress-spinner>
 	</div>
-	<div>	  
 	  <mat-form-field class="input-style">
 	    <input type="text" placeholder="name" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto" (keyup.enter)="addContact()">
 	    <mat-autocomplete #auto="matAutocomplete">
@@ -11,5 +10,4 @@
 	      </mat-option>
 	    </mat-autocomplete>
 	  </mat-form-field>
-	</div>
 </div>

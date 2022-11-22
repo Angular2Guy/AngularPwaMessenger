@@ -1,6 +1,6 @@
-<mat-nav-list>
-	<mat-list-item *ngFor="let contact of contacts" (click)="select(contact)">
-		<img matListAvatar  [src]="contact.base64Avatar">
-		<span class="contact-name" [class.con-selected]="selectedContact && contact.localId === selectedContact.localId" >{{contact.name}}</span>
-	</mat-list-item>
-</mat-nav-list>
+<div>
+	<div class="myrow" *ngFor="let contact of contacts" (click)="select(contact)">
+		<img [src]="contact.base64Avatar" height="48px" width="64px">
+		<div class="contact-name" [class.con-selected]="selectedContact && contact.localId === selectedContact.localId" >{{contact.name}}</div>
+	</div>
+</div>
