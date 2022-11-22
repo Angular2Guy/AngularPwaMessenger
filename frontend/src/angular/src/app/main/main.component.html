@@ -21,7 +21,7 @@
   	<app-contacts [selectedContact]="selectedContact" [contacts]="contacts" (selContact)="selectContact($event)"></app-contacts>
   </mat-sidenav>
   <mat-sidenav-content class="mat-drawer-container">
-    <div class="login-message-container mat-headline" *ngIf="myUser === null" i18n="@@mainLoginMessage"><div class="login-message">Please Login</div></div>
+    <div class="login-message-container mat-headline-5" *ngIf="myUser === null" i18n="@@mainLoginMessage"><div class="login-message">Please Login</div></div>
   	<app-messages *ngIf="myUser !== null && selFeature === myFeature.chat" [messages]="messages" [receiver]="selectedContact" (sendMsg)="sendMessage($event)"></app-messages>
   	<app-voice *ngIf="myUser !== null && selFeature === myFeature.phone" [sender]="ownContact" [receiver]="selectedContact"></app-voice>
   </mat-sidenav-content>
