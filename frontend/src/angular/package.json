@@ -16,7 +16,7 @@
     "prebuild": "rimraf ./dist && mkdirp ./dist",
     "postbuild": "npm run deploy",
     "predeploy": "rimraf ../../../backend/src/main/resources/static/*",
-    "deploy": "cpx 'base/*' dist/messenger/ && cpx 'dist/messenger/**' ../../../backend/src/main/resources/static/",
+    "deploy": "cpy 'base/*' dist/messenger/ && cpy 'dist/messenger/**' ../../../backend/src/main/resources/static/",
     "xi18n": "ng extract-i18n --format json"
   },
   "private": true,
@@ -49,7 +49,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/luxon": "^2.0.0",
     "@types/node": "^14.0.0",
-    "cpx": "^1.5.0",
+    "cpy-cli": "^4.2.0",
     "http-server": "^14.1.0",
     "jasmine-core": "~4.0.0",
     "jasmine-spec-reporter": "~7.0.0",
