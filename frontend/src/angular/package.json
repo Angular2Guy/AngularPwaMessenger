@@ -17,7 +17,8 @@
     "postbuild": "npm run deploy",
     "predeploy": "rimraf ../../../backend/src/main/resources/static/*",
     "deploy": "cpy 'base/*' dist/messenger/ && cpy 'dist/messenger/**' ../../../backend/src/main/resources/static/",
-    "xi18n": "ng extract-i18n --format json"
+    "extract-i18n": "ng extract-i18n --format json",
+    "prettier": "npx prettier --write 'src/**/*.{ts,html,scss,json}'"
   },
   "private": true,
   "dependencies": {
