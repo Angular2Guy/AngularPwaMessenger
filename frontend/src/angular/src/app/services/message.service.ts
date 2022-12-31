@@ -10,30 +10,33 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Contact } from '../model/contact';
-import { Message } from '../model/message';
-import { Observable } from 'rxjs';
-import { SyncMsgs } from '../model/sync-msgs';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Contact } from "../model/contact";
+import { Message } from "../model/message";
+import { Observable } from "rxjs";
+import { SyncMsgs } from "../model/sync-msgs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class MessageService {
-  private readonly contactUrl = '/rest/message';
+  private readonly contactUrl = "/rest/message";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   findMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
-      return this.http.post<Message[]>(this.contactUrl+'/findMsgs', syncMsgs);
+    return this.http.post<Message[]>(this.contactUrl + "/findMsgs", syncMsgs);
   }
 
   sendMessages(syncMsgs: SyncMsgs): Observable<Message[]> {
-      return this.http.post<Message[]>(this.contactUrl+'/storeMsgs', syncMsgs);
+    return this.http.post<Message[]>(this.contactUrl + "/storeMsgs", syncMsgs);
   }
 
   findReceivedMessages(contact: Contact): Observable<Message[]> {
-    return this.http.post<Message[]>(this.contactUrl+'/receivedMsgs', contact);
+    return this.http.post<Message[]>(
+      this.contactUrl + "/receivedMsgs",
+      contact
+    );
   }
 }

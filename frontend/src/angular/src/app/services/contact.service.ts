@@ -10,30 +10,33 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import { LocaldbService } from './localdb.service';
-import { HttpClient } from '@angular/common/http';
-import { Contact } from '../model/contact';
-import { from, Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { LocaldbService } from "./localdb.service";
+import { HttpClient } from "@angular/common/http";
+import { Contact } from "../model/contact";
+import { from, Observable } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ContactService {
-  private readonly contactUrl = '/rest/contact';
-  constructor(private localdbService: LocaldbService,
-          private http: HttpClient) { }
+  private readonly contactUrl = "/rest/contact";
+  constructor(
+    private localdbService: LocaldbService,
+    private http: HttpClient
+  ) {}
 
   loadContacts(contact: Contact): Observable<Contact[]> {
-     return from(this.localdbService.loadContacts(contact));
+    return from(this.localdbService.loadContacts(contact));
   }
 
   findContacts(conName: string): Observable<Contact[]> {
-      const con: Contact = {
-              name: conName,
-              base64Avatar: null,
-              publicKey: null,
-              userId: null};
-      return this.http.post<Contact[]>(this.contactUrl+'/findcontacts', con);
+    const con: Contact = {
+      name: conName,
+      base64Avatar: null,
+      publicKey: null,
+      userId: null,
+    };
+    return this.http.post<Contact[]>(this.contactUrl + "/findcontacts", con);
   }
 }

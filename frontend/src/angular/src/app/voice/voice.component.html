@@ -1,53 +1,107 @@
 <div>
-	<div class="video-container">
-		<div class="called">
-			<div class="called-content">
-			    <div class="portrait-orientation" i18n="@@voiceLandscapeNotSupported">Landscape orientation not supported on small devices.</div>
-				<div class="landscape-orientation" i18n="@@voiceRemote">Remote</div>
-				<video #remote_video [autoplay]="true" [muted]="remoteMuted" class="call-video landscape-orientation"></video>
-				<div class="landscape-orientation">
-					<button mat-button class="video-button"
-						*ngIf="!inCall"
-						[disabled]="!receiver && !onLocalhost"
-						(click)="call()"
-						i18n="@@voiceCall">Call</button>					
-					<button mat-button class="video-button"
-						*ngIf="inCall"
-						[disabled]="!receiver && !onLocalhost"
-						(click)="hangUp()"
-						i18n="@@voiceHangup">Hangup</button>
-					<button mat-button class="video-button"
-						*ngIf="!remoteMuted"
-						[disabled]="!receiver && !onLocalhost"
-						(click)="remoteMuted = true"
-						i18n="@@voiceMute">Mute</button>
-					<button mat-button class="video-button"
-						*ngIf="remoteMuted"
-						[disabled]="!receiver && !onLocalhost"
-						(click)="remoteMuted = false"
-						i18n="@@voiceUnmute">Unmute</button>
-				</div>
-			</div>
-		</div>
-		<div class="local">
-			<div class="landscape-orientation" i18n="@@voiceLocal">Local</div>
-			<video #local_video [autoplay]="true" [muted]="localMuted" class="local-video landscape-orientation"></video>
-			<div class="landscape-orientation">
-				<button mat-button class="video-button"
-					*ngIf="!localVideoActivated" (click)="startLocalVideo()"
-					i18n="@@voiceActivateCallerVideo">Activate</button>
-				<button mat-button class="video-button" *ngIf="localVideoActivated"
-					(click)="stopLocalVideo()"
-					i18n="@@voiceDeactivateCallerVideo">Deactivate</button>
-				<button mat-button class="video-button"
-						*ngIf="!localMuted"
-						(click)="localMuted = true"
-						i18n="@@voiceMute">Mute</button>
-				<button mat-button class="video-button"
-						*ngIf="localMuted"
-						(click)="localMuted = false"
-						i18n="@@voiceUnmute">Unmute</button>
-			</div>
-		</div>
-	</div>
+  <div class="video-container">
+    <div class="called">
+      <div class="called-content">
+        <div class="portrait-orientation" i18n="@@voiceLandscapeNotSupported">
+          Landscape orientation not supported on small devices.
+        </div>
+        <div class="landscape-orientation" i18n="@@voiceRemote">Remote</div>
+        <video
+          #remote_video
+          [autoplay]="true"
+          [muted]="remoteMuted"
+          class="call-video landscape-orientation"
+        ></video>
+        <div class="landscape-orientation">
+          <button
+            mat-button
+            class="video-button"
+            *ngIf="!inCall"
+            [disabled]="!receiver && !onLocalhost"
+            (click)="call()"
+            i18n="@@voiceCall"
+          >
+            Call
+          </button>
+          <button
+            mat-button
+            class="video-button"
+            *ngIf="inCall"
+            [disabled]="!receiver && !onLocalhost"
+            (click)="hangUp()"
+            i18n="@@voiceHangup"
+          >
+            Hangup
+          </button>
+          <button
+            mat-button
+            class="video-button"
+            *ngIf="!remoteMuted"
+            [disabled]="!receiver && !onLocalhost"
+            (click)="remoteMuted = true"
+            i18n="@@voiceMute"
+          >
+            Mute
+          </button>
+          <button
+            mat-button
+            class="video-button"
+            *ngIf="remoteMuted"
+            [disabled]="!receiver && !onLocalhost"
+            (click)="remoteMuted = false"
+            i18n="@@voiceUnmute"
+          >
+            Unmute
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="local">
+      <div class="landscape-orientation" i18n="@@voiceLocal">Local</div>
+      <video
+        #local_video
+        [autoplay]="true"
+        [muted]="localMuted"
+        class="local-video landscape-orientation"
+      ></video>
+      <div class="landscape-orientation">
+        <button
+          mat-button
+          class="video-button"
+          *ngIf="!localVideoActivated"
+          (click)="startLocalVideo()"
+          i18n="@@voiceActivateCallerVideo"
+        >
+          Activate
+        </button>
+        <button
+          mat-button
+          class="video-button"
+          *ngIf="localVideoActivated"
+          (click)="stopLocalVideo()"
+          i18n="@@voiceDeactivateCallerVideo"
+        >
+          Deactivate
+        </button>
+        <button
+          mat-button
+          class="video-button"
+          *ngIf="!localMuted"
+          (click)="localMuted = true"
+          i18n="@@voiceMute"
+        >
+          Mute
+        </button>
+        <button
+          mat-button
+          class="video-button"
+          *ngIf="localMuted"
+          (click)="localMuted = false"
+          i18n="@@voiceUnmute"
+        >
+          Unmute
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

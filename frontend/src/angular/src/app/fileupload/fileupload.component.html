@@ -1,16 +1,37 @@
 <div class="container">
-	<div>
-		<span i18n=@@fileuploadSendFileTo>Send File to: </span>{{data.receiver.name}}
-	</div>
-	<br/>
-	<div>
-	   <button mat-button (click)="fileInput.click()" i18n="@@fileuploadSelectFile">Select File</button>
-	   <input hidden #fileInput type="file" (change)="filechange($event)">
-	</div>
-	<div *ngIf="showFileSizeMsg" class="filesizemsg" i18n="@@fileuploadFileSizeTooBig">File size too big. Limit 2 MB.</div>
-	<br/>
-	<div class="buttons">
-		<div><button mat-button (click)="upload()" i18n="@@fileuploadUpload">Upload</button></div>
-		<div><button mat-button (click)="cancel()" i18n="@@fileuploadCancel">Cancel</button></div>
-	</div>
+  <div>
+    <span i18n="@@fileuploadSendFileTo">Send File to: </span
+    >{{ data.receiver.name }}
+  </div>
+  <br />
+  <div>
+    <button
+      mat-button
+      (click)="fileInput.click()"
+      i18n="@@fileuploadSelectFile"
+    >
+      Select File
+    </button>
+    <input hidden #fileInput type="file" (change)="filechange($event)" />
+  </div>
+  <div
+    *ngIf="showFileSizeMsg"
+    class="filesizemsg"
+    i18n="@@fileuploadFileSizeTooBig"
+  >
+    File size too big. Limit 2 MB.
+  </div>
+  <br />
+  <div class="buttons">
+    <div>
+      <button mat-button (click)="upload()" i18n="@@fileuploadUpload">
+        Upload
+      </button>
+    </div>
+    <div>
+      <button mat-button (click)="cancel()" i18n="@@fileuploadCancel">
+        Cancel
+      </button>
+    </div>
+  </div>
 </div>

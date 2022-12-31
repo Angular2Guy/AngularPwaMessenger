@@ -10,61 +10,63 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MainComponent } from '../main/main.component';
-import { Contact } from '../model/contact';
-import { Message } from '../model/message';
+import { Component, OnInit, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MainComponent } from "../main/main.component";
+import { Contact } from "../model/contact";
+import { Message } from "../model/message";
 
 @Component({
-	selector: 'app-fileupload',
-	templateUrl: './fileupload.component.html',
-	styleUrls: ['./fileupload.component.scss']
+  selector: "app-fileupload",
+  templateUrl: "./fileupload.component.html",
+  styleUrls: ["./fileupload.component.scss"],
 })
 export class FileuploadComponent implements OnInit {
-	protected currentFile: File;
-	protected fileContent: string;
-	protected showFileSizeMsg: boolean;
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	private readonly MB: number = 1024 * 1024;
+  protected currentFile: File;
+  protected fileContent: string;
+  protected showFileSizeMsg: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private readonly MB: number = 1024 * 1024;
 
-	constructor(public dialogRef: MatDialogRef<MainComponent>,
-		@Inject(MAT_DIALOG_DATA) public data: any) { }
+  constructor(
+    public dialogRef: MatDialogRef<MainComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 
-	ngOnInit() {
-		this.showFileSizeMsg = false;
-	}
+  ngOnInit() {
+    this.showFileSizeMsg = false;
+  }
 
-	filechange(fileInput: any) {
-		this.currentFile = fileInput.target.files[0];
-		const reader = new FileReader();
-		reader.onload = () => {
-			const textstr: string = reader.result as string;
-			const textstrs = textstr.split(';');
-			this.fileContent = textstrs[1];
-			//console.log(textstrs[1]);
-		};
-		reader.readAsDataURL(this.currentFile);
-	}
+  filechange(fileInput: any) {
+    this.currentFile = fileInput.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const textstr: string = reader.result as string;
+      const textstrs = textstr.split(";");
+      this.fileContent = textstrs[1];
+      //console.log(textstrs[1]);
+    };
+    reader.readAsDataURL(this.currentFile);
+  }
 
-	upload() {
-		if (this.fileContent && this.fileContent.length < 2 * this.MB) {
-			const receiver = this.data.receiver as Contact;
-			const msg: Message = {
-				fromId: null,
-				toId: receiver.userId,
-				text: this.fileContent,
-				filename: this.currentFile.name,
-				send: false,
-				received: false
-			};
-			this.dialogRef.close(msg);
-		} else {
-			this.showFileSizeMsg = true;
-		}
-	}
+  upload() {
+    if (this.fileContent && this.fileContent.length < 2 * this.MB) {
+      const receiver = this.data.receiver as Contact;
+      const msg: Message = {
+        fromId: null,
+        toId: receiver.userId,
+        text: this.fileContent,
+        filename: this.currentFile.name,
+        send: false,
+        received: false,
+      };
+      this.dialogRef.close(msg);
+    } else {
+      this.showFileSizeMsg = true;
+    }
+  }
 
-	cancel() {
-		this.dialogRef.close(null);
-	}
+  cancel() {
+    this.dialogRef.close(null);
+  }
 }

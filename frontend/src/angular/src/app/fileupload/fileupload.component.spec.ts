@@ -10,9 +10,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { FileuploadComponent } from './fileupload.component';
+import { FileuploadComponent } from "./fileupload.component";
 
 /*describe('FileuploadComponent', () => {
   let component: FileuploadComponent;

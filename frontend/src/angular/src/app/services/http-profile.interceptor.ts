@@ -10,28 +10,32 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
   HttpHandler,
   HttpEvent,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { finalize, tap } from 'rxjs/operators';
+  HttpErrorResponse,
+} from "@angular/common/http";
+import { Observable } from "rxjs";
+import { finalize, tap } from "rxjs/operators";
 
 @Injectable()
 export class HttpProfileInterceptor implements HttpInterceptor {
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    request: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     const started = Date.now();
     let ok: string;
 
     return next.handle(request).pipe(
       tap(
-        (event: HttpEvent<any>) => ok = event instanceof HttpResponse ? 'succeeded' : '',
-        (error: HttpErrorResponse) => ok = 'failed'
+        (event: HttpEvent<any>) =>
+          (ok = event instanceof HttpResponse ? "succeeded" : ""),
+        (error: HttpErrorResponse) => (ok = "failed")
       ),
       finalize(() => {
         const elapsed = Date.now() - started;

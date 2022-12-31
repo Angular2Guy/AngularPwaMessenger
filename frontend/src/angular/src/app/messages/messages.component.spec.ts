@@ -10,9 +10,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { MessagesComponent } from './messages.component';
+import { MessagesComponent } from "./messages.component";
 
 //describe('MessagesComponent', () => {
 //  let component: MessagesComponent;

@@ -10,22 +10,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import { JwtToken } from '../model/jwt-token';
+import { Injectable } from "@angular/core";
+import { JwtToken } from "../model/jwt-token";
 
-@Injectable( {
-  providedIn: 'root'
-} )
+@Injectable({
+  providedIn: "root",
+})
 export class JwtTokenService {
   private localJwtToken: string = null;
 
-  constructor() { }
+  constructor() {}
 
   get jwtToken(): string {
-    return this.localJwtToken === null ? '' : this.localJwtToken;
+    return this.localJwtToken === null ? "" : this.localJwtToken;
   }
 
-  set jwtToken( token: string ) {
+  set jwtToken(token: string) {
     this.localJwtToken = !token ? null : token;
   }
 
@@ -35,23 +35,23 @@ export class JwtTokenService {
   }
 
   getExpiryDate(): Date {
-    if(!this.localLogin) {
+    if (!this.localLogin) {
       const jwtToken = this.urlBase64Decode(this.localJwtToken);
-      return new Date(jwtToken.exp*1000);
+      return new Date(jwtToken.exp * 1000);
     } else {
-      return new Date( '2000-01-01' );
+      return new Date("2000-01-01");
     }
   }
 
-  private urlBase64Decode( str: string ): JwtToken {
-    let output = str.replace( /-/g, '+' ).replace( /_/g, '/' );
-    if(output) {
-      if((output.length % 4) === 1) {
-        throw new Error('Invalid Token');
+  private urlBase64Decode(str: string): JwtToken {
+    let output = str.replace(/-/g, "+").replace(/_/g, "/");
+    if (output) {
+      if (output.length % 4 === 1) {
+        throw new Error("Invalid Token");
       }
-      output += new Array(5-output.length % 4).join('=');
+      output += new Array(5 - (output.length % 4)).join("=");
     }
-    const outputArr = output.split('.');
-    return JSON.parse(atob( outputArr[1] )) as JwtToken;
+    const outputArr = output.split(".");
+    return JSON.parse(atob(outputArr[1])) as JwtToken;
   }
 }

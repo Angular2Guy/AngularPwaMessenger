@@ -10,28 +10,28 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
 
-@Injectable( {
-  providedIn: 'root'
-} )
+@Injectable({
+  providedIn: "root",
+})
 export class NetConnectionService {
   private localConnectionMonitor: Observable<boolean>;
   private localCconnectionStatus: boolean;
 
   constructor() {
     this.localCconnectionStatus = navigator.onLine;
-    this.localConnectionMonitor = new Observable( ( observer ) => {
-      window.addEventListener( 'offline', ( e ) => {
+    this.localConnectionMonitor = new Observable((observer) => {
+      window.addEventListener("offline", (e) => {
         this.localCconnectionStatus = false;
-        observer.next( false );
-      } );
-      window.addEventListener( 'online', ( e ) => {
+        observer.next(false);
+      });
+      window.addEventListener("online", (e) => {
         this.localCconnectionStatus = true;
-        observer.next( true );
-      } );
-    } );
+        observer.next(true);
+      });
+    });
   }
 
   get connectionMonitor(): Observable<boolean> {

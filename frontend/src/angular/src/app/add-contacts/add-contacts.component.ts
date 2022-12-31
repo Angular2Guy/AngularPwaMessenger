@@ -10,74 +10,90 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { map, debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
-import { ContactService } from '../services/contact.service';
-import { Contact } from '../model/contact';
-import { LocaldbService } from '../services/localdb.service';
-import { LocalContact } from '../model/local-contact';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  Input,
+  OnDestroy,
+} from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { Subscription } from "rxjs";
+import {
+  map,
+  debounceTime,
+  distinctUntilChanged,
+  tap,
+  switchMap,
+} from "rxjs/operators";
+import { ContactService } from "../services/contact.service";
+import { Contact } from "../model/contact";
+import { LocaldbService } from "../services/localdb.service";
+import { LocalContact } from "../model/local-contact";
 
-@Component( {
-    selector: 'app-add-contacts',
-    templateUrl: './add-contacts.component.html',
-    styleUrls: ['./add-contacts.component.scss']
-} )
+@Component({
+  selector: "app-add-contacts",
+  templateUrl: "./add-contacts.component.html",
+  styleUrls: ["./add-contacts.component.scss"],
+})
 export class AddContactsComponent implements OnInit, OnDestroy {
-    @Output() addNewContact = new EventEmitter<Contact>();
-    @Input() userId: string;
-    @Input() myContacts: Contact[];
-    protected myControl = new FormControl();
-    protected filteredOptions: Contact[] = [];
-    protected contactsLoading = false;
-    protected myControlSub: Subscription = null;
+  @Output() addNewContact = new EventEmitter<Contact>();
+  @Input() userId: string;
+  @Input() myContacts: Contact[];
+  protected myControl = new FormControl();
+  protected filteredOptions: Contact[] = [];
+  protected contactsLoading = false;
+  protected myControlSub: Subscription = null;
 
-    constructor(
-            private contactService: ContactService,
-            private localdbService: LocaldbService) { }
+  constructor(
+    private contactService: ContactService,
+    private localdbService: LocaldbService
+  ) {}
 
-    ngOnInit() {
-        this.myControlSub = this.myControl.valueChanges
-            .pipe(
-                debounceTime( 400 ),
-                distinctUntilChanged(),
-                tap( () => this.contactsLoading = true ),
-                switchMap( name => this.contactService.findContacts( name ) ),
-                map(contacts => contacts.filter(con => con.userId !== this.userId)),
-                map(contacts => this.filterContacts(contacts)),
-                tap( () => this.contactsLoading = false )
-            ).subscribe(contacts => this.filteredOptions = contacts);
+  ngOnInit() {
+    this.myControlSub = this.myControl.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        tap(() => (this.contactsLoading = true)),
+        switchMap((name) => this.contactService.findContacts(name)),
+        map((contacts) => contacts.filter((con) => con.userId !== this.userId)),
+        map((contacts) => this.filterContacts(contacts)),
+        tap(() => (this.contactsLoading = false))
+      )
+      .subscribe((contacts) => (this.filteredOptions = contacts));
+  }
+
+  ngOnDestroy(): void {
+    this.myControlSub.unsubscribe();
+  }
+
+  addContact() {
+    if (this.filteredOptions.length === 1) {
+      if (!this.filteredOptions[0].base64Avatar) {
+        this.filteredOptions[0].base64Avatar = "assets/icons/smiley-640.jpg";
+      }
+      const localContact: LocalContact = {
+        base64Avatar: this.filteredOptions[0].base64Avatar,
+        name: this.filteredOptions[0].name,
+        ownerId: this.userId,
+        publicKey: this.filteredOptions[0].publicKey,
+        userId: this.filteredOptions[0].userId,
+      };
+      this.localdbService.storeContact(localContact).then(() => {
+        this.addNewContact.emit(this.filteredOptions[0]);
+        this.myControl.reset();
+        this.filteredOptions = [];
+      });
     }
+  }
 
-    ngOnDestroy(): void {
-      this.myControlSub.unsubscribe();
-    }
-
-    addContact() {
-        if(this.filteredOptions.length === 1) {
-            if(!this.filteredOptions[0].base64Avatar) {
-                this.filteredOptions[0].base64Avatar = 'assets/icons/smiley-640.jpg';
-            }
-            const localContact: LocalContact = {
-                base64Avatar: this.filteredOptions[0].base64Avatar,
-                name: this.filteredOptions[0].name,
-                ownerId: this.userId,
-                publicKey: this.filteredOptions[0].publicKey,
-                userId: this.filteredOptions[0].userId
-            };
-            this.localdbService.storeContact(localContact)
-                .then(() => {
-                    this.addNewContact.emit(this.filteredOptions[0]);
-                    this.myControl.reset();
-                    this.filteredOptions = [];
-                });
-        }
-    }
-
-    private filterContacts(contacts: Contact[]): Contact[] {
-        return contacts.filter(con =>
-          this.myContacts.filter(myCon =>
-            myCon.userId === con.userId).length === 0);
-    }
+  private filterContacts(contacts: Contact[]): Contact[] {
+    return contacts.filter(
+      (con) =>
+        this.myContacts.filter((myCon) => myCon.userId === con.userId)
+          .length === 0
+    );
+  }
 }

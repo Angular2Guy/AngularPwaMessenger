@@ -1,6 +1,13 @@
 <div>
-	<div class="myrow" *ngFor="let contact of contacts" (click)="select(contact)">
-		<img [src]="contact.base64Avatar" height="48px" width="64px">
-		<div class="contact-name" [class.con-selected]="selectedContact && contact.localId === selectedContact.localId" >{{contact.name}}</div>
-	</div>
+  <div class="myrow" *ngFor="let contact of contacts" (click)="select(contact)">
+    <img [src]="contact.base64Avatar" height="48px" width="64px" />
+    <div
+      class="contact-name"
+      [class.con-selected]="
+        selectedContact && contact.localId === selectedContact.localId
+      "
+    >
+      {{ contact.name }}
+    </div>
+  </div>
 </div>

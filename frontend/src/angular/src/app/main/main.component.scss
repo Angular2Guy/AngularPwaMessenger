@@ -1,116 +1,114 @@
 .icon {
-	display: flex;
-	align-items: center;
-    justify-content: center;
-    width: 100px;
-    height: 100%;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100%;
+  cursor: pointer;
 }
-.icon-container{
-    width: 24px !important;
+.icon-container {
+  width: 24px !important;
 }
 
 .container {
-			
 }
 
 .contact-list {
-	width: 300px;
-	overflow-x: hidden;
-	overflow-y: auto;	
+  width: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .popup {
-	display: none;
+  display: none;
 }
 
 .cell:hover {
-	.popup {		
-		display: block;		    
-    	width: 160px;
-    	margin-top: 0px;
-    	margin-left: 100px;
-    	background: #FFFFFF;    				  	
-    	border-radius: 6px;
-    	padding: 8px 0;
-    	position: absolute;
-    	z-index: 1;       
-		color: blue;
-		border: solid 1px black;		
-	}
-	color: blue;
-	cursor: pointer;
+  .popup {
+    display: block;
+    width: 160px;
+    margin-top: 0px;
+    margin-left: 100px;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    color: blue;
+    border: solid 1px black;
+  }
+  color: blue;
+  cursor: pointer;
 }
 
 .example-container {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .mat-mdc-table {
-  overflow: auto;  
+  overflow: auto;
 }
 
 .example-fill-remaining-space {
-  // This fills the remaining space, by using flexbox. 
+  // This fills the remaining space, by using flexbox.
   // Every toolbar row uses a flexbox row layout.
   flex: 1 1 auto;
 }
 
 .icon-bar {
-	display: flex;
+  display: flex;
 }
 
 .toolbar-content {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-wrap: wrap;
-	width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .icon-bar {
-	display: flex;
-	padding-top: 5px;
+  display: flex;
+  padding-top: 5px;
 }
 
 .login-message-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100%;
-	width: 100%;
-	margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 .login-message {
-	height: fit-content;
-	width: fit-content;
+  height: fit-content;
+  width: fit-content;
 }
 
 .login-logout {
-	display: flex;
-	margin-left: 20px;
-	align-content: center;
-	justify-content: center;
+  display: flex;
+  margin-left: 20px;
+  align-content: center;
+  justify-content: center;
 }
 
 .people-button {
-	display: flex;
-	align-content: center;
-	justify-content: center;
-	height: 100%;
-	max-height: 64px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: 100%;
+  max-height: 64px;
 }
 
 @media (max-width: 900px), (max-height: 480px) {
-   .custom-toolbar {
-	   height: fit-content;
-	   overflow: hidden;
-   }
-   .icon-bar {
-	justify-content: space-between;
-	width: 60%;
-   }
+  .custom-toolbar {
+    height: fit-content;
+    overflow: hidden;
+  }
+  .icon-bar {
+    justify-content: space-between;
+    width: 60%;
+  }
 }
-

@@ -1,24 +1,23 @@
 .receiver {
-	text-align: right;
+  text-align: right;
 }
 .sender {
-	text-align: left;
+  text-align: left;
 }
 .message-input {
-	width: 100%;	
-	overflow-x: hidden;		
-	
+  width: 100%;
+  overflow-x: hidden;
 }
 .myInput {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
-.send-icon{
-	padding: 10px;
-	margin: 10px;
-	border-radius: 50%;
-	background-color: red;
-	cursor: pointer;
-	width: 20px;
-	height: 20px;
+.send-icon {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 50%;
+  background-color: red;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
 }

@@ -10,36 +10,35 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
-import { MainComponent } from './main/main.component';
-import { ContactsComponent } from './contacts/contacts.component';
-import { MessagesComponent } from './messages/messages.component';
-import { LoginComponent } from './login/login.component';
-import { AddContactsComponent } from './add-contacts/add-contacts.component';
-import { HttpProfileInterceptor } from './services/http-profile.interceptor';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { CameraComponent } from './camera/camera.component';
-import { FileuploadComponent } from './fileupload/fileupload.component';
-import { TokenInterceptor } from './services/token.interceptor';
-import { VoiceComponent } from './voice/voice.component';
-
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
+import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatListModule } from "@angular/material/list";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { ServiceWorkerModule } from "@angular/service-worker";
+import { environment } from "../environments/environment";
+import { MainComponent } from "./main/main.component";
+import { ContactsComponent } from "./contacts/contacts.component";
+import { MessagesComponent } from "./messages/messages.component";
+import { LoginComponent } from "./login/login.component";
+import { AddContactsComponent } from "./add-contacts/add-contacts.component";
+import { HttpProfileInterceptor } from "./services/http-profile.interceptor";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { CameraComponent } from "./camera/camera.component";
+import { FileuploadComponent } from "./fileupload/fileupload.component";
+import { TokenInterceptor } from "./services/token.interceptor";
+import { VoiceComponent } from "./voice/voice.component";
 
 @NgModule({
   declarations: [
@@ -51,7 +50,7 @@ import { VoiceComponent } from './voice/voice.component';
     AddContactsComponent,
     CameraComponent,
     FileuploadComponent,
-    VoiceComponent
+    VoiceComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,12 +69,18 @@ import { VoiceComponent } from './voice/voice.component';
     MatListModule,
     MatAutocompleteModule,
     MatProgressSpinnerModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register("ngsw-worker.js", {
+      enabled: environment.production,
+    }),
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: HttpProfileInterceptor, multi: true },
-	{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpProfileInterceptor,
+      multi: true,
+    },
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

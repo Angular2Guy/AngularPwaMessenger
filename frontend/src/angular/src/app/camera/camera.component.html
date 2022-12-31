@@ -1,12 +1,29 @@
 <div class="container">
-	<div>
-		<span i18n="@@cameraSendImageTo">Send Image to: </span>{{data.receiver.name}}
-	</div>
-	<div *ngIf="showCameraMsg" i18n="@@cameraEnableCamera">Please enable your camera in the browser.</div>
-	<video class="video" [class.hide]="!showVideo" #videoElement autoplay></video>
-	<canvas class="video" [class.hide]="showVideo" #canvasElement></canvas>
-	<button mat-button (click)="preview()" i18n="@@cameraPreview">Preview</button>
-	<button mat-button (click)="capture()" [disabled]="!showVideo" i18n="@@cameraCapture">Capture</button>
-	<button mat-button (click)="send()" [disabled]="!base64Img" i18n="@@cameraSend">Send</button>
-	<button mat-button (click)="cancel()" i18n="@@cameraCancel">Cancel</button>
+  <div>
+    <span i18n="@@cameraSendImageTo">Send Image to: </span
+    >{{ data.receiver.name }}
+  </div>
+  <div *ngIf="showCameraMsg" i18n="@@cameraEnableCamera">
+    Please enable your camera in the browser.
+  </div>
+  <video class="video" [class.hide]="!showVideo" #videoElement autoplay></video>
+  <canvas class="video" [class.hide]="showVideo" #canvasElement></canvas>
+  <button mat-button (click)="preview()" i18n="@@cameraPreview">Preview</button>
+  <button
+    mat-button
+    (click)="capture()"
+    [disabled]="!showVideo"
+    i18n="@@cameraCapture"
+  >
+    Capture
+  </button>
+  <button
+    mat-button
+    (click)="send()"
+    [disabled]="!base64Img"
+    i18n="@@cameraSend"
+  >
+    Send
+  </button>
+  <button mat-button (click)="cancel()" i18n="@@cameraCancel">Cancel</button>
 </div>

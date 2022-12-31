@@ -10,9 +10,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import {Contact} from './contact';
+import { Contact } from "./contact";
 
 export interface LocalContact extends Contact {
-    ownerId: string;
-	id?: number;
+  ownerId: string;
+  id?: number;
 }

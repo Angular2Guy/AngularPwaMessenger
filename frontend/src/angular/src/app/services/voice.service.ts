@@ -10,21 +10,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import {environment} from '../../environments/environment';
-import {ReplaySubject, Subject, takeUntil} from 'rxjs';
-import {VoiceMsg} from '../model/voice-msg';
+import { Injectable } from "@angular/core";
+import { webSocket, WebSocketSubject } from "rxjs/webSocket";
+import { environment } from "../../environments/environment";
+import { ReplaySubject, Subject, takeUntil } from "rxjs";
+import { VoiceMsg } from "../model/voice-msg";
 
-export class RTCPeerConnectionContainer{
-	constructor(public senderId: string, public receiverId: string, public rtcPeerConnection: RTCPeerConnection){}
+export class RTCPeerConnectionContainer {
+  constructor(
+    public senderId: string,
+    public receiverId: string,
+    public rtcPeerConnection: RTCPeerConnection
+  ) {}
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class VoiceService {
-  public readonly localHostToken = '$%&';
+  public readonly localHostToken = "$%&";
   public peerConnections = new Map<string, RTCPeerConnectionContainer>();
   public pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private socket: WebSocketSubject<any>;
@@ -36,40 +40,51 @@ export class VoiceService {
   private readonly wsEndpoint = null;
 
   public constructor() {
-	const signalingHost = window.location.host;
-	this.wsEndpoint = this.localhostCheck() ? environment.wsPath : environment.wssPath.replace('REPLACEME', signalingHost);
+    const signalingHost = window.location.host;
+    this.wsEndpoint = this.localhostCheck()
+      ? environment.wsPath
+      : environment.wssPath.replace("REPLACEME", signalingHost);
   }
 
   public localhostCheck(): boolean {
-	return window.location.host.toLowerCase().search('localhost') >= 0;
+    return window.location.host.toLowerCase().search("localhost") >= 0;
   }
 
   public async connect(jwtToken: string): Promise<boolean> {
-	this.webSocketConnectionRequested = true;
+    this.webSocketConnectionRequested = true;
     if (!this.socket || this.socket.closed) {
-      return Promise.resolve<WebSocketSubject<any>>(this.getNewWebSocket(jwtToken))
-         .then<boolean>(mySocket => {
-	         this.socket = mySocket;
-	         this.socket.pipe(takeUntil(this.ngUnsubscribeMsg)).subscribe(
-                // Called whenever there is a message from the server
-                msg => {
-                   console.log('Received message of type: ' + msg.type);
-                   this.messagesSubject.next(msg);
-                });
-            return true;
-	     });
+      return Promise.resolve<WebSocketSubject<any>>(
+        this.getNewWebSocket(jwtToken)
+      ).then<boolean>((mySocket) => {
+        this.socket = mySocket;
+        this.socket.pipe(takeUntil(this.ngUnsubscribeMsg)).subscribe(
+          // Called whenever there is a message from the server
+          (msg) => {
+            console.log("Received message of type: " + msg.type);
+            this.messagesSubject.next(msg);
+          }
+        );
+        return true;
+      });
     }
     return Promise.resolve(false);
   }
 
   public disconnect(): void {
-	this.webSocketConnectionRequested = false;
-	this.ngUnsubscribeMsg.next();
-	this.ngUnsubscribeMsg.unsubscribe();
+    this.webSocketConnectionRequested = false;
+    this.ngUnsubscribeMsg.next();
+    this.ngUnsubscribeMsg.unsubscribe();
   }
 
   public sendMessage(msg: VoiceMsg): void {
-    console.log('sending message: ' + msg.type + ' sid: '+msg.senderId +' remoteId: '+msg.receiverId);
+    console.log(
+      "sending message: " +
+        msg.type +
+        " sid: " +
+        msg.senderId +
+        " remoteId: " +
+        msg.receiverId
+    );
     this.socket.next(msg);
   }
 
@@ -78,18 +93,18 @@ export class VoiceService {
       url: `${this.wsEndpoint}?token=${encodeURI(jwtToken)}`,
       openObserver: {
         next: () => {
-          console.log('[DataService]: connection ok');
-        }
+          console.log("[DataService]: connection ok");
+        },
       },
       closeObserver: {
         next: () => {
-          console.log('[DataService]: connection closed');
+          console.log("[DataService]: connection closed");
           this.socket = undefined;
-          if(!!this.webSocketConnectionRequested) {
+          if (!!this.webSocketConnectionRequested) {
             this.connect(jwtToken);
           }
-        }
-      }
+        },
+      },
     });
   }
 }

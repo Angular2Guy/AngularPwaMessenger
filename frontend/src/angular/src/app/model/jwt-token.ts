@@ -18,6 +18,6 @@ export interface JwtToken {
   auth: MyAuth[];
 }
 
-export interface MyAuth{
+export interface MyAuth {
   autority: string;
 }

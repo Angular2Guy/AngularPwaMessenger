@@ -10,13 +10,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Contact } from '../model/contact';
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { Contact } from "../model/contact";
 
 @Component({
-  selector: 'app-contacts',
-  templateUrl: './contacts.component.html',
-  styleUrls: ['./contacts.component.scss']
+  selector: "app-contacts",
+  templateUrl: "./contacts.component.html",
+  styleUrls: ["./contacts.component.scss"],
 })
 export class ContactsComponent implements OnInit {
   @Input()
@@ -26,13 +26,11 @@ export class ContactsComponent implements OnInit {
   @Output()
   selContact = new EventEmitter<Contact>();
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   select(contact: Contact) {
     this.selContact.emit(contact);
   }
-
 }

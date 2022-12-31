@@ -11,23 +11,28 @@
    limitations under the License.
  */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TranslationsService {
-  public static readonly ONLINE_AGAIN_MSG = 'onlineAgainMsg';
-  public static readonly MAIN_COMPONENT = 'main';
-  private translatonsMap = new Map<string,string>();
+  public static readonly ONLINE_AGAIN_MSG = "onlineAgainMsg";
+  public static readonly MAIN_COMPONENT = "main";
+  private translatonsMap = new Map<string, string>();
 
   constructor() {
-	const str = $localize`:@@onlineAgainMsg:You are online again and your token is expired. To reconnect please logout and login again.`;
-	this.translatonsMap.set(TranslationsService.MAIN_COMPONENT+'_'+TranslationsService.ONLINE_AGAIN_MSG, str);
+    const str = $localize`:@@onlineAgainMsg:You are online again and your token is expired. To reconnect please logout and login again.`;
+    this.translatonsMap.set(
+      TranslationsService.MAIN_COMPONENT +
+        "_" +
+        TranslationsService.ONLINE_AGAIN_MSG,
+      str
+    );
   }
 
   public getTranslation(componentKey: string, key: string): string {
-	const result = this.translatonsMap.get(componentKey + '_' + key);
-	return !!result ? result : this.translatonsMap.get(key);
+    const result = this.translatonsMap.get(componentKey + "_" + key);
+    return !!result ? result : this.translatonsMap.get(key);
   }
 }

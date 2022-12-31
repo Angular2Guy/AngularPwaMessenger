@@ -10,29 +10,42 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { UtilsService } from './utils.service';
+import { Injectable } from "@angular/core";
+import {
+  HttpInterceptor,
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpErrorResponse,
+} from "@angular/common/http";
+import { Observable, of } from "rxjs";
+import { tap } from "rxjs/operators";
+import { UtilsService } from "./utils.service";
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
+  constructor(private utilsService: UtilsService) {}
 
-  constructor(private utilsService: UtilsService) { }
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-	req = req.clone({
-		headers: this.utilsService.createHeader()
-	});
-  	return next.handle(req).pipe(tap(event => event, event => this.handleError(event)));
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
+    req = req.clone({
+      headers: this.utilsService.createHeader(),
+    });
+    return next.handle(req).pipe(
+      tap(
+        (event) => event,
+        (event) => this.handleError(event)
+      )
+    );
   }
 
   private handleError(event: HttpEvent<any>): HttpEvent<any> {
-	if(event instanceof HttpErrorResponse) {
-		const error = event as HttpErrorResponse;
-		console.log(`failed: ${error.message}`);
-	}
-	return event;
+    if (event instanceof HttpErrorResponse) {
+      const error = event as HttpErrorResponse;
+      console.log(`failed: ${error.message}`);
+    }
+    return event;
   }
 }

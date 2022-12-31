@@ -1,88 +1,90 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 $called-palette: mat.$blue-palette;
 
 $caller-palette: mat.$lime-palette;
 
 .landscape-orientation {
-	visibility: visible;
+  visibility: visible;
 }
 
 .portrait-orientation {
-	visibility: collapse;
+  visibility: collapse;
 }
 
 .video-container {
-	display: flex;
-	align-items: flex-start;	
+  display: flex;
+  align-items: flex-start;
 }
 
 .called {
-	flex: 1 0 auto;
-	position: relative;	
-	width: calc(100% - 200px);
-	&:after {
-	   content: "";
-       display: block;
-       padding-bottom: 100%;
-	}
+  flex: 1 0 auto;
+  position: relative;
+  width: calc(100% - 200px);
+  &:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+  }
 }
 
-.called-content {	
-	display:flex;
-	flex-direction: column;
-	align-items: stretch;
-	height: 100%;
-	//@debug mat.get-color-from-palette($called-palette, 50);	
-	background-color: mat.get-color-from-palette($called-palette, 50);
+.called-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+  //@debug mat.get-color-from-palette($called-palette, 50);
+  background-color: mat.get-color-from-palette($called-palette, 50);
 }
 
 .local {
-	flex: 0 0 auto;
-	height: fit-content;
-	width:  200px;
-	background-color: mat.get-color-from-palette($caller-palette, 100);
+  flex: 0 0 auto;
+  height: fit-content;
+  width: 200px;
+  background-color: mat.get-color-from-palette($caller-palette, 100);
 }
 
 .video-button {
-	//margin: 5px 0 5px 5px;
-	margin-left: 5px;
-	flex: 1 1 auto;
+  //margin: 5px 0 5px 5px;
+  margin-left: 5px;
+  flex: 1 1 auto;
 }
 
 .call-video {
-	width: calc(100% - 10px);
-	margin: auto;
-	padding: 5px;
+  width: calc(100% - 10px);
+  margin: auto;
+  padding: 5px;
 }
 
 .local-video {
- 	height: 150px;
- 	width: 200px;
+  height: 150px;
+  width: 200px;
 }
 
-@media (max-width: 900px) and (orientation: portrait), (max-height: 480px) and (orientation: portrait) {
-   .video-container {
-      flex-direction: column;
-   }
-   .called {
-	  margin-top: 5px;
-	  width: 100%;
-	  &:after {
-		 padding-bottom: 0;
-	  }
-   }
-   .local {
-	  margin-top: 5px;
-	  width: 100%;
-   }
+@media (max-width: 900px) and (orientation: portrait),
+  (max-height: 480px) and (orientation: portrait) {
+  .video-container {
+    flex-direction: column;
+  }
+  .called {
+    margin-top: 5px;
+    width: 100%;
+    &:after {
+      padding-bottom: 0;
+    }
+  }
+  .local {
+    margin-top: 5px;
+    width: 100%;
+  }
 }
 
-@media (max-width: 900px) and (orientation: landscape), (max-height: 480px) and (orientation: landscape) {
-   .landscape-orientation {
-	  visibility: hidden;
-   }
-   .portrait-orientation {
-	  visibility: visible;
-   }
+@media (max-width: 900px) and (orientation: landscape),
+  (max-height: 480px) and (orientation: landscape) {
+  .landscape-orientation {
+    visibility: hidden;
+  }
+  .portrait-orientation {
+    visibility: visible;
+  }
 }

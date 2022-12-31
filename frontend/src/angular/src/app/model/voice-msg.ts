@@ -18,8 +18,8 @@ export interface VoiceMsg {
 }
 
 export enum VoiceMsgType {
-	offer = 'offer',
-	answer = 'answer',
-	hangup = 'hangup',
-	iceCandidate = 'ice-candidate'
+  offer = "offer",
+  answer = "answer",
+  hangup = "hangup",
+  iceCandidate = "ice-candidate",
 }

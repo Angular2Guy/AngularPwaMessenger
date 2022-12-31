@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-export class Tuple<A,B> {
+export class Tuple<A, B> {
   private localA: A;
   private localB: B;
 

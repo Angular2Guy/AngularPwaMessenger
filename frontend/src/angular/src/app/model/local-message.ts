@@ -10,8 +10,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Message } from './message';
+import { Message } from "./message";
 
 export interface LocalMessage extends Message {
-	id?: number;
+  id?: number;
 }

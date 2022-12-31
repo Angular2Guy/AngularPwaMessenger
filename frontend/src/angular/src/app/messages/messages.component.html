@@ -1,23 +1,47 @@
 <div *ngFor="let message of messages">
-	<div *ngIf="receiver !== null"
-		[class.receiver]="message.fromId === receiver.userId"
-		[class.sender]="message.toId === receiver.userId">
-		<span>
-			<span *ngIf="!isImageMsg(message) && !message.filename">{{message.text}}</span>
-			<img *ngIf="isImageMsg(message)" [src]="message.text">
-			<span *ngIf="message.filename"><a [href]="message.url" download target="_blank">{{message.filename}}</a></span>
-			<i *ngIf="message.toId === receiver.userId && message.send && !message.received" class="material-icons">done_alt</i>			
-			<i *ngIf="message.toId === receiver.userId && message.send && message.received" class="material-icons">done_all_alt</i>
-		</span>		
-	</div>
+  <div
+    *ngIf="receiver !== null"
+    [class.receiver]="message.fromId === receiver.userId"
+    [class.sender]="message.toId === receiver.userId"
+  >
+    <span>
+      <span *ngIf="!isImageMsg(message) && !message.filename">{{
+        message.text
+      }}</span>
+      <img *ngIf="isImageMsg(message)" [src]="message.text" />
+      <span *ngIf="message.filename"
+        ><a [href]="message.url" download target="_blank">{{
+          message.filename
+        }}</a></span
+      >
+      <i
+        *ngIf="
+          message.toId === receiver.userId && message.send && !message.received
+        "
+        class="material-icons"
+        >done_alt</i
+      >
+      <i
+        *ngIf="
+          message.toId === receiver.userId && message.send && message.received
+        "
+        class="material-icons"
+        >done_all_alt</i
+      >
+    </span>
+  </div>
 </div>
 <form [formGroup]="messageForm" novalidate>
-	<mat-form-field class="message-input">
-		<div class="myInput">
-			<textarea matInput placeholder="Your Message" formControlName="{{formKeyMessage}}"></textarea>
-			<div class="send-icon" (click)="sendMessage()">
-				<i class="material-icons">send_alt</i>
-			</div>
-		</div>
-	</mat-form-field>
+  <mat-form-field class="message-input">
+    <div class="myInput">
+      <textarea
+        matInput
+        placeholder="Your Message"
+        formControlName="{{ formKeyMessage }}"
+      ></textarea>
+      <div class="send-icon" (click)="sendMessage()">
+        <i class="material-icons">send_alt</i>
+      </div>
+    </div>
+  </mat-form-field>
 </form>
