@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -32,7 +33,7 @@ import ch.xxx.messenger.adapter.config.FlapDoodleConfig;
 import ch.xxx.messenger.domain.model.Contact;
 import ch.xxx.messenger.usecase.service.MyMongoRepository;
 
-@SpringBootTest	
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ComponentScan(basePackages = "ch.xxx.messenger", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = FlapDoodleConfig.class))
 @TestMethodOrder(OrderAnnotation.class)
 public class ClientMongoRepositoryTest {
