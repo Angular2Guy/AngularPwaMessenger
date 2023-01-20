@@ -53,7 +53,6 @@ public class ClientMongoRepositoryTest {
 	@Test
 	@Order(2)
 	public void loadContactFound() throws Exception {
-//		Contact result = this.myMongoRepository.find(new Query(), Contact.class).blockFirst();
 		Contact result = this.myMongoRepository.find(new Query().addCriteria(
 				Criteria.where("name").regex(String.format(".*%s.*", USERNAME))), Contact.class).blockFirst();
 		Assertions.assertNotNull(result);

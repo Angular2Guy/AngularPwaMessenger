@@ -46,23 +46,24 @@ import com.tngtech.archunit.library.GeneralCodingRules;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 
 import ch.xxx.messenger.architecture.MyArchitectureTests.DoNotIncludeAotGenerated;
+import ch.xxx.messenger.architecture.MyArchitectureTests.DoNotIncludeNamedTests;
 import jakarta.annotation.PostConstruct;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
-@AnalyzeClasses(packages = "ch.xxx.messenger", importOptions = { DoNotIncludeTests.class, DoNotIncludeAotGenerated.class })
+@AnalyzeClasses(packages = "ch.xxx.messenger", importOptions = { DoNotIncludeTests.class,
+		DoNotIncludeAotGenerated.class, DoNotIncludeNamedTests.class })
 public class MyArchitectureTests {
 	private static final ArchRule NO_CLASSES_SHOULD_USE_FIELD_INJECTION = createNoFieldInjectionRule();
 
 	private JavaClasses importedClasses = new ClassFileImporter()
-			.withImportOptions(List.of(new DoNotIncludeTests(), new DoNotIncludeAotGenerated()))
+			.withImportOptions(List.of(new DoNotIncludeTests(), new DoNotIncludeAotGenerated(), new DoNotIncludeNamedTests()))
 			.importPackages("ch.xxx.messenger");
 
 	@ArchTest
 	static final ArchRule clean_architecture_respected = Architectures.onionArchitecture().domainModels("..domain..")
 			.applicationServices("..usecase..").adapter("rest", "..adapter.controller..")
 			.adapter("cron", "..adapter.cron..").adapter("repo", "..adapter.repository..")
-			.adapter("handler", "..adapter.handler..")
-			.adapter("config", "..adapter.config..").withOptionalLayers(true);
+			.adapter("handler", "..adapter.handler..").adapter("config", "..adapter.config..").withOptionalLayers(true);
 
 	@ArchTest
 	static final ArchRule cyclesDomain = SlicesRuleDefinition.slices().matching("..domain.(*)..").should()
@@ -94,8 +95,8 @@ public class MyArchitectureTests {
 	@Test
 	public void ruleCronJobMethodsAnnotations() {
 		ArchRule exceptionType = ArchRuleDefinition.methods().that().arePublic().and().areDeclaredInClassesThat()
-				.resideInAPackage("..adapter.cron..").should().beAnnotatedWith(SchedulerLock.class)
-				.andShould().beAnnotatedWith(Scheduled.class).orShould().beAnnotatedWith(PostConstruct.class);
+				.resideInAPackage("..adapter.cron..").should().beAnnotatedWith(SchedulerLock.class).andShould()
+				.beAnnotatedWith(Scheduled.class).orShould().beAnnotatedWith(PostConstruct.class);
 		exceptionType.check(this.importedClasses);
 	}
 
@@ -124,12 +125,21 @@ public class MyArchitectureTests {
 						.as("be annotated with an injection annotation"));
 		return beAnnotatedWithAnInjectionAnnotation;
 	}
-	
+
+	static final class DoNotIncludeNamedTests implements ImportOption {
+		private static final Pattern CUSTOM_TEST_PATTERN = Pattern.compile(".*(Test|Tests)\\.class$");
+
+		@Override
+		public boolean includes(Location location) {
+			return !location.matches(CUSTOM_TEST_PATTERN);
+		}
+
+	}
+
 	static final class DoNotIncludeAotGenerated implements ImportOption {
 		private static final Pattern AOT_GENERATED_PATTERN = Pattern
-				.compile(".*(__BeanDefinitions|SpringCGLIB\\$\\$0)\\.class$");
-		private static final Pattern AOT_TEST_GENERATED_PATTERN = Pattern
-				.compile(".*__TestContext.*\\.class$");
+				.compile(".*(__BeanDefinitions|SpringCGLIB\\$\\$\\d)\\.class$");
+		private static final Pattern AOT_TEST_GENERATED_PATTERN = Pattern.compile(".*(__TestContext|__Autowiring).*\\.class$");
 
 		@Override
 		public boolean includes(Location location) {
