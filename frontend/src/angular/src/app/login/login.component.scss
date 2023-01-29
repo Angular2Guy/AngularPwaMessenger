@@ -13,3 +13,9 @@ ul {
 .spacer-left {
   margin-left: 20px;
 }
+
+::ng-deep {
+.cdk-overlay-backdrop-showing {
+	backdrop-filter: blur(3px);
+}
+}
