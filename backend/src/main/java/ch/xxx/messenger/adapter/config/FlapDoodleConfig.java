@@ -15,34 +15,21 @@
  */
 package ch.xxx.messenger.adapter.config;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodProcess;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
-import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-
-@Configuration
+//@Configuration
 public class FlapDoodleConfig {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlapDoodleConfig.class);
 	private static final int MONGO_DB_PORT = 27017;
-	private MongodExecutable mongodExecutable = null;
-	private MongodProcess mongod = null;
+//	private MongodExecutable mongodExecutable = null;
+//	private MongodProcess mongod = null;
 	@Value("${server.port:}")
 	private String serverPort;
 	@Value("${spring.profiles.active:}")
 	private String activeProfiles;
-	
+	/*
 	@PostConstruct
 	public void initMongoDb() {
 		if (this.serverPort.isBlank() || this.serverPort.contains("8080")
@@ -74,4 +61,5 @@ public class FlapDoodleConfig {
 			}
 		}
 	}
+	*/
 }

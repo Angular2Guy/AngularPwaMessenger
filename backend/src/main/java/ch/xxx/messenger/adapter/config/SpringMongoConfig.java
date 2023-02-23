@@ -12,11 +12,10 @@
  */
 package ch.xxx.messenger.adapter.config;
 
-import jakarta.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -24,26 +23,45 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoClients;
+
+import jakarta.annotation.PostConstruct;
+
 @Configuration
 @EnableScheduling
 public class SpringMongoConfig {
-	private static final Logger log = LoggerFactory.getLogger(SpringMongoConfig.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SpringMongoConfig.class);
 	
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
     
     private final MongoMappingContext mongoMappingContext;
+    private final MongoProperties mongoProperties;
     
-    public SpringMongoConfig(MongoMappingContext mongoMappingContext) {
+    public SpringMongoConfig(MongoMappingContext mongoMappingContext, MongoProperties mongoProperties) {
     	this.mongoMappingContext = mongoMappingContext;
+    	this.mongoProperties = mongoProperties;
     }
 
     @PostConstruct
     public void init() {
-		log.info("MongoUri={}", this.mongoUri);
+		LOGGER.info("MongoUri={}", this.mongoUri);
     	this.mongoMappingContext.setAutoIndexCreation(true);
-    	log.info("Mongo AutoIndexCreation: {}", this.mongoMappingContext.isAutoIndexCreation());
+    	LOGGER.info("Mongo AutoIndexCreation: {}", this.mongoMappingContext.isAutoIndexCreation());
     }
+    
+
+	@Bean
+	public MongoClient mongoClient() {
+		LOGGER.info("MongoPort: {}", this.mongoProperties.getPort());
+		LOGGER.info("MongoUri: {}", this.mongoUri.replace("27027",
+				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
+		return MongoClients.create(this.mongoUri.replace("27027",
+				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
+//		return MongoClients.create(MongoClientSettings.builder()
+//				.applyToSocketSettings(builder -> builder.readTimeout(125, TimeUnit.SECONDS)).build());
+	}
     
     @Bean
 	public ServerCodecConfigurer serverCodecConfigurer() {
