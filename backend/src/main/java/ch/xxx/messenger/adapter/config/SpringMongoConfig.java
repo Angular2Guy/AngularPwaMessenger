@@ -54,13 +54,11 @@ public class SpringMongoConfig {
 
 	@Bean
 	public MongoClient mongoClient() {
-		LOGGER.info("MongoPort: {}", this.mongoProperties.getPort());
-		LOGGER.info("MongoUri: {}", this.mongoUri.replace("27027",
-				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
+//		LOGGER.info("MongoPort: {}", this.mongoProperties.getPort());
+//		LOGGER.info("MongoUri: {}", this.mongoUri.replace("27027",
+//				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
 		return MongoClients.create(this.mongoUri.replace("27027",
 				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
-//		return MongoClients.create(MongoClientSettings.builder()
-//				.applyToSocketSettings(builder -> builder.readTimeout(125, TimeUnit.SECONDS)).build());
 	}
     
     @Bean
