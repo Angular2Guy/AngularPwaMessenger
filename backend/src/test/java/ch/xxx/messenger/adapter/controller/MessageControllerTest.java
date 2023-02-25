@@ -75,8 +75,9 @@ public class MessageControllerTest {
 		this.mockMvc
 				.perform(post("/rest/message/findMsgs").accept(MediaType.APPLICATION_JSON)
 						.header(WebUtils.AUTHORIZATION, String.format("Bearer %s", myToken))
-						.servletPath("/rest/message").content(this.objectMapper.writeValueAsString(message)))
-				.andExpect(status().isNotFound());
+						.contentType(MediaType.APPLICATION_JSON)
+						.servletPath("/rest/message/findMsgs").content(this.objectMapper.writeValueAsString(message)))
+				.andExpect(status().isOk());
 	}
 
 	private Message createMessage() {

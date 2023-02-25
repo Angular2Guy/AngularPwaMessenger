@@ -32,25 +32,24 @@ import jakarta.annotation.PostConstruct;
 @EnableScheduling
 public class SpringMongoConfig {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpringMongoConfig.class);
-	
-    @Value("${spring.data.mongodb.uri}")
-    private String mongoUri;
-    
-    private final MongoMappingContext mongoMappingContext;
-    private final MongoProperties mongoProperties;
-    
-    public SpringMongoConfig(MongoMappingContext mongoMappingContext, MongoProperties mongoProperties) {
-    	this.mongoMappingContext = mongoMappingContext;
-    	this.mongoProperties = mongoProperties;
-    }
 
-    @PostConstruct
-    public void init() {
+	@Value("${spring.data.mongodb.uri}")
+	private String mongoUri;
+
+	private final MongoMappingContext mongoMappingContext;
+	private final MongoProperties mongoProperties;
+
+	public SpringMongoConfig(MongoMappingContext mongoMappingContext, MongoProperties mongoProperties) {
+		this.mongoMappingContext = mongoMappingContext;
+		this.mongoProperties = mongoProperties;
+	}
+
+	@PostConstruct
+	public void init() {
 		LOGGER.info("MongoUri={}", this.mongoUri);
-    	this.mongoMappingContext.setAutoIndexCreation(true);
-    	LOGGER.info("Mongo AutoIndexCreation: {}", this.mongoMappingContext.isAutoIndexCreation());
-    }
-    
+		this.mongoMappingContext.setAutoIndexCreation(true);
+		LOGGER.info("Mongo AutoIndexCreation: {}", this.mongoMappingContext.isAutoIndexCreation());
+	}
 
 	@Bean
 	public MongoClient mongoClient() {
@@ -58,10 +57,11 @@ public class SpringMongoConfig {
 //		LOGGER.info("MongoUri: {}", this.mongoUri.replace("27027",
 //				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
 		return MongoClients.create(this.mongoUri.replace("27027",
-				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
+				this.mongoProperties.getPort() == null || this.mongoProperties.getPort() < 1 ? "27027"
+						: this.mongoProperties.getPort().toString()));
 	}
-    
-    @Bean
+
+	@Bean
 	public ServerCodecConfigurer serverCodecConfigurer() {
 		return new DefaultServerCodecConfigurer();
 	}
