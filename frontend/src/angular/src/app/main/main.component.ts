@@ -149,7 +149,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       this.myUser =
-        typeof result === "undefined" || result === null ? null : result;
+        typeof result === 'undefined' || result === null ? null : result;
       if (this.myUser !== null) {
         this.ownContact = {
           name: this.myUser.username,
@@ -168,6 +168,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
           .then(() => this.addMessages())
           .then(() => this.updateMessageInterval());
         this.updateContactListLayout();
+        Notification.requestPermission();
       }
     });
   }
@@ -359,7 +360,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private storeReceivedMessages(): void {
-    this.messageService.findReceivedMessages(this.ownContact).subscribe(
+    this.messageService.findReceivedMessages(this.ownContact).subscribe({next:
       (msgs) => {
         if (msgs.length > 0) {
           this.localdbService
@@ -386,8 +387,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
             .then(() => this.addMessages());
         }
       },
-      (error) => console.log("storeReceivedMessages failed." + error)
-    );
+      error: (error) => console.log("storeReceivedMessages failed." + error)
+    });
   }
 
   private async syncMsgs(): Promise<void> {
@@ -465,6 +466,9 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.messages.pop();
     }
     this.messages = values.map((msg) => {
+	  if(Notification.permission === "granted") {
+		  new Notification(`Msg from: ${msg.fromId}`, {vibrate: 400});
+	  }
       if (msg.filename) {
         msg.text = atob(msg.text.split("base64,")[1]);
         msg.url = this.sanitizer.bypassSecurityTrustUrl(
