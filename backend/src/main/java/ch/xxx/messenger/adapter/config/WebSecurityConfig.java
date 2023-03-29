@@ -27,28 +27,32 @@ import ch.xxx.messenger.domain.common.Role;
 
 @Configuration
 @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
-public class WebSecurityConfig {	
+public class WebSecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
-	
+
 	public WebSecurityConfig(JwtTokenProvider jwtTokenProvider) {
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
-	
+
 	@Bean
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		HttpSecurity result = http
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		.authorizeHttpRequests(authorize ->  authorize.requestMatchers("/rest/auth/**").permitAll())
-		.authorizeHttpRequests(authorize ->  authorize.requestMatchers("/rest/**").hasAuthority(Role.USERS.toString()))
-		.authorizeHttpRequests(authorize ->  authorize.requestMatchers("/**").permitAll())
-		.csrf().disable()
-		.apply(new JwtTokenFilterConfigurer(jwtTokenProvider)).and();
+		HttpSecurity result = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/rest/auth/**").permitAll())
+				.authorizeHttpRequests(
+						authorize -> authorize.requestMatchers("/rest/**").hasAuthority(Role.USERS.toString()))
+				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/**").permitAll()).csrf().disable()
+				//content security policy needs a real test
+//				.headers()
+//				.contentSecurityPolicy(
+//						"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';")
+//				.and().xssProtection().and().and()
+				.apply(new JwtTokenFilterConfigurer(jwtTokenProvider)).and();
 		return result.build();
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
 }
