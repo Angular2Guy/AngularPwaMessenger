@@ -42,7 +42,7 @@ public class WebSecurityConfig {
 				.authorizeHttpRequests(
 						authorize -> authorize.requestMatchers("/rest/**").hasAuthority(Role.USERS.toString()))
 				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/**").permitAll()).csrf().disable()
-				//content security policy needs a real test
+				//TODO: content security policy needs a real test
 //				.headers()
 //				.contentSecurityPolicy(
 //						"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';")
