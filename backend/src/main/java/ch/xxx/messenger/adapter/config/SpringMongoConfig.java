@@ -56,8 +56,8 @@ public class SpringMongoConfig {
 //		LOGGER.info("MongoPort: {}", this.mongoProperties.getPort());
 //		LOGGER.info("MongoUri: {}", this.mongoUri.replace("27027",
 //				this.mongoProperties.getPort() == null ? "27027" : this.mongoProperties.getPort().toString()));
-		return MongoClients.create(this.mongoUri.replace("27027",
-				this.mongoProperties.getPort() == null || this.mongoProperties.getPort() < 1 ? "27027"
+		return MongoClients.create(this.mongoUri.replace("27017",
+				this.mongoProperties.getPort() == null || this.mongoProperties.getPort() < 1 ? "27017"
 						: this.mongoProperties.getPort().toString()));
 	}
 
