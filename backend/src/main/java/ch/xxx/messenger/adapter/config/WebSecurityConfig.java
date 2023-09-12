@@ -41,8 +41,10 @@ public class WebSecurityConfig {
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		JwtTokenFilter customFilter = new JwtTokenFilter(jwtTokenProvider);
 		HttpSecurity httpSecurity = http
-				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/rest/**")
-						.hasAuthority(Role.USERS.toString()).requestMatchers("/rest/auth/**").permitAll().requestMatchers("/**").permitAll())
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers("/rest/auth/**").permitAll()
+						.requestMatchers("/rest/**").hasAuthority(Role.USERS.toString())
+						.requestMatchers("/**").permitAll())
 				.csrf(myCsrf -> myCsrf.disable())
 				.sessionManagement(mySm -> mySm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				//TODO: content security policy needs a real test
