@@ -38,6 +38,7 @@ import { FileuploadComponent } from "../fileupload/fileupload.component";
 import { VoiceService } from "../services/voice.service";
 import { MatDrawerMode, MatSidenav } from "@angular/material/sidenav";
 import { WebrtcService } from "../services/webrtc.service";
+import { Router } from "@angular/router";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -78,7 +79,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private voiceService: VoiceService,
     private webrtcService: WebrtcService,
     private mediaMatcher: MediaMatcher,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {}
 
   @HostListener("window:resize", ["$event"])
@@ -101,11 +103,13 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    if (this.interval) {
+    if (!!this.interval) {
       clearInterval(this.interval);
     }
     this.conMonSub.unsubscribe();
-    this.offerMsgSub.unsubscribe();
+    if(!!this.offerMsgSub) {
+      this.offerMsgSub.unsubscribe();
+    }
   }
 
   switchContent(): void {
@@ -114,6 +118,10 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         ? this.myFeature.phone
         : this.myFeature.chat;
     console.log("New feature " + this.selFeature);
+  }
+
+  showGames(): void {
+	  this.router.navigate(['games']);
   }
 
   openFileuploadDialog(): void {
