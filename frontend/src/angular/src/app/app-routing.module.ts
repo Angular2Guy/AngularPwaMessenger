@@ -14,7 +14,7 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { MainComponent } from "./main/main.component";
 
-const routes: Routes = [{ path: "games", loadComponent: () => import('./games/games.component').then(mod => mod.GamesComponent)},
+const routes: Routes = [{ path: "games", loadChildren: () => import("./games").then(mod => mod.GAMES)},
   { path: "**", component: MainComponent }];
 
 @NgModule({
