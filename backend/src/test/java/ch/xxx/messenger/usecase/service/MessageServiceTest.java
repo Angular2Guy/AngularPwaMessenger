@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ch.xxx.messenger.domain.model.Message;
+import ch.xxx.messenger.domain.model.MyMongoRepository;
 import ch.xxx.messenger.domain.model.SyncMsgs;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

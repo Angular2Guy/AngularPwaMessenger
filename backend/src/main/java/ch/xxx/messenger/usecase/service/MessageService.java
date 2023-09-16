@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import ch.xxx.messenger.domain.exception.TooManyMsgException;
 import ch.xxx.messenger.domain.model.Contact;
 import ch.xxx.messenger.domain.model.Message;
+import ch.xxx.messenger.domain.model.MyMongoRepository;
 import ch.xxx.messenger.domain.model.SyncMsgs;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

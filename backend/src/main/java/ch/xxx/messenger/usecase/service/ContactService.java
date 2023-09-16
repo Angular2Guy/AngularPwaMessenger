@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import ch.xxx.messenger.domain.model.Contact;
 import ch.xxx.messenger.domain.model.MsgUser;
+import ch.xxx.messenger.domain.model.MyMongoRepository;
 import reactor.core.publisher.Flux;
 
 @Service

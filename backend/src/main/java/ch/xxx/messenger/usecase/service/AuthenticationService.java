@@ -32,6 +32,7 @@ import ch.xxx.messenger.domain.common.Role;
 import ch.xxx.messenger.domain.common.WebUtils;
 import ch.xxx.messenger.domain.model.AuthCheck;
 import ch.xxx.messenger.domain.model.MsgUser;
+import ch.xxx.messenger.domain.model.MyMongoRepository;
 import reactor.core.publisher.Mono;
 
 @Service

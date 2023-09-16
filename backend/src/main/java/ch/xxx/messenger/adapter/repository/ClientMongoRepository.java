@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.reactivestreams.client.MongoCollection;
 
-import ch.xxx.messenger.usecase.service.MyMongoRepository;
+import ch.xxx.messenger.domain.model.MyMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
