@@ -64,6 +64,51 @@ public class BingoService {
 						: Mono.just(myRecord.bingoGame()));
 	}
 
+	public Mono<Boolean> checkWin(String uuid, Integer boardIndex) {
+		return this.repository.findOne(new Query().addCriteria(Criteria.where("uuid").is(uuid)), BingoGame.class)
+				.flatMap(myBingoGame -> this.checkBoard(myBingoGame, boardIndex));
+	}
+
+	private Mono<Boolean> checkBoard(BingoGame bingoGame, Integer boardIndex) {
+		boolean result = false;		
+		for (int x = 0; x < 5; x++) {
+			int columnHits = 0;
+			for (int y = 0; y < 5; y++) {
+				if(bingoGame.getBingoBoards().get(boardIndex).hits()[x][y]) {
+					columnHits += 1;
+				}
+			}
+			if(columnHits > 4) {
+				result = true;
+			}			
+		}
+		for (int y = 0; y < 5; y++) {
+			int rowHits = 0;
+			for (int x = 0; x < 5; x++) {
+				if(bingoGame.getBingoBoards().get(boardIndex).hits()[x][y]) {
+					rowHits += 1;
+				}
+			}
+			if(rowHits > 4) {
+				result = true;
+			}			
+		}
+		int diaHits1 = 0;
+		int diaHits2 = 0;
+		for(int i = 0;i < 5; i++) {
+			if(bingoGame.getBingoBoards().get(boardIndex).hits()[i][i]) {
+				diaHits1 += 1;
+			}
+			if(bingoGame.getBingoBoards().get(boardIndex).hits()[4-i][i]) {
+				diaHits2 += 1;
+			}
+		}
+		if(diaHits1 > 4 || diaHits2 > 4) {
+			result = true;
+		}
+		return Mono.just(result);
+	}
+
 	private BingoGame.BingoBoard initBingoBoard(BingoGame.BingoBoard bingoBoard) {
 		AtomicReference<List<Integer>> atomicList = new AtomicReference<List<Integer>>(new ArrayList<Integer>());
 		for (int x = 0; x < 5; x++) {
@@ -86,9 +131,21 @@ public class BingoService {
 					.anyMatch(myRandValue -> myRandValue.equals(newRand.get()))) {
 				newRand.set((int) (Math.round((Math.random() * 74)) + 1));
 			}
-			bingoGameChanged.bingoGame().getRandomValues().add(newRand.get());
+			bingoGameChanged.bingoGame().getRandomValues().add(newRand.get());			
+			bingoGameChanged.bingoGame().getBingoBoards().forEach(myBingoBoard -> this.updateBingoBoardHits(myBingoBoard, newRand.get()));
 			bingoGameChanged.changed().set(true);
 		}
 		return bingoGameChanged;
+	}
+	
+	private BingoGame.BingoBoard updateBingoBoardHits(BingoGame.BingoBoard bingoBoard, int newRand) {
+		for(int x = 0;x < 5; x++) {
+			for(int y = 0;y < 5; y++) {				
+				if(bingoBoard.board()[x][y] == newRand) {
+					bingoBoard.hits()[x][y] = true;
+				}
+			}
+		}
+		return bingoBoard;
 	}
 }

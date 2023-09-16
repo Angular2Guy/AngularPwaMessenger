@@ -41,4 +41,9 @@ public class BingoController {
 	public Mono<BingoGame> getUpdateGame(@RequestParam("uuid") String uuid) {
 		return this.bingoService.updateBingoGame(uuid);
 	}
+	
+	@GetMapping("/checkwin/{uuid}/board/{index}")
+	public Mono<Boolean> getCheckWin(@RequestParam("uuid") String uuid, @RequestParam("index") Integer index) {
+		return this.bingoService.checkWin(uuid, index);
+	}
 }
