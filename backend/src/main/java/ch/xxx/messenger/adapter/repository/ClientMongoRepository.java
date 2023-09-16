@@ -43,6 +43,10 @@ public class ClientMongoRepository implements MyMongoRepository {
 		return this.operations.save(objectToSave);
 	}
 	
+	public <T> Mono<T> save(Mono<T> monoObjectToSave) {
+		return this.operations.save(monoObjectToSave);
+	}
+	
 	public <T> Mono<T> findOne(Query query, Class<T> entityClass) {
 		return this.operations.findOne(query, entityClass);
 	}
