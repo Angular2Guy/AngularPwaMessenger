@@ -11,12 +11,16 @@
    limitations under the License.
  */
 import { Component } from '@angular/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { BingoService } from 'src/app/services/games/bingo.service';
 
 @Component({
   standalone: true,
   selector: 'app-bingo',
   templateUrl: './bingo.component.html',
-  styleUrls: ['./bingo.component.scss']
+  styleUrls: ['./bingo.component.scss'],
+  providers: [BingoService],
+  imports: [MatToolbarModule]
 })
 export class BingoComponent {
 
