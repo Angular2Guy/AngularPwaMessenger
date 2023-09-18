@@ -121,7 +121,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showGames(): void {
-	  this.router.navigate(['games']);
+	  this.router.navigate(['games/bingo']);
   }
 
   openFileuploadDialog(): void {
