@@ -21,10 +21,20 @@ import { from, Observable } from "rxjs";
 })
 export class ContactService {
   private readonly contactUrl = "/rest/contact";
+  private myOwnContact: Contact = null;
+  
   constructor(
     private localdbService: LocaldbService,
     private http: HttpClient
   ) {}
+
+  get ownContact() {
+	  return this.myOwnContact;
+  }
+
+  set ownContact(ownContact1: Contact) {
+	  this.myOwnContact = ownContact1;
+  }
 
   loadContacts(contact: Contact): Observable<Contact[]> {
     return from(this.localdbService.loadContacts(contact));

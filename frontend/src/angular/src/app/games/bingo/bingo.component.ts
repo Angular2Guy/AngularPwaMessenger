@@ -11,7 +11,9 @@
    limitations under the License.
  */
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 import { BingoService } from 'src/app/services/games/bingo.service';
 
 @Component({
@@ -20,8 +22,12 @@ import { BingoService } from 'src/app/services/games/bingo.service';
   templateUrl: './bingo.component.html',
   styleUrls: ['./bingo.component.scss'],
   providers: [BingoService],
-  imports: [MatToolbarModule]
+  imports: [MatToolbarModule, MatButtonModule]
 })
 export class BingoComponent {
-
+	constructor(private router: Router) {}
+	
+	back(): void {
+		this.router.navigate(['/']);
+	}
 }

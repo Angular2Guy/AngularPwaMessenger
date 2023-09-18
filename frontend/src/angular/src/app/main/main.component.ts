@@ -39,6 +39,8 @@ import { VoiceService } from "../services/voice.service";
 import { MatDrawerMode, MatSidenav } from "@angular/material/sidenav";
 import { WebrtcService } from "../services/webrtc.service";
 import { Router } from "@angular/router";
+import { ContactService } from "../services/contact.service";
+import { LocalUser } from "../model/local-user";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -54,7 +56,6 @@ enum MyFeature {
 export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("contact_list") contactList: MatSidenav;
   protected windowHeight: number;
-  protected ownContact: Contact;
   protected contacts: Contact[] = [];
   protected selectedContact: Contact;
   protected messages: Message[] = [];
@@ -78,10 +79,15 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private cryptoService: CryptoService,
     private voiceService: VoiceService,
     private webrtcService: WebrtcService,
+    private contactService: ContactService,
     private mediaMatcher: MediaMatcher,
     private sanitizer: DomSanitizer,
     private router: Router
   ) {}
+
+  get ownContact() {
+	  return this.contactService.ownContact;
+  }
 
   @HostListener("window:resize", ["$event"])
   onResize(event: any): void {
@@ -93,6 +99,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe(
       (online) => this.onlineAgain(online)
     );
+    this.initLocalUser();
   }
 
   ngAfterViewInit(): void {
@@ -121,7 +128,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showGames(): void {
-	  this.router.navigate(['games/bingo']);
+	  this.router.navigate(['games']);
   }
 
   openFileuploadDialog(): void {
@@ -158,14 +165,43 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       this.myUser =
         typeof result === 'undefined' || result === null ? null : result;
-      if (this.myUser !== null) {
-        this.ownContact = {
+      if (this.myUser !== null) {		  
+        this.contactService.ownContact = {
           name: this.myUser.username,
           base64Avatar: this.myUser.base64Avatar,
           publicKey: this.myUser.publicKey,
           userId: this.myUser.userId,
         };
-        this.contacts = [];
+        this.initMyUser();
+      }
+    });
+  }
+
+  initLocalUser(): void {
+	  let myLocalUser: LocalUser = {
+                base64Avatar: null,
+                createdAt: null,
+                email: null,
+                hash: null,
+                publicKey: null,
+                privateKey: null,
+                salt: null,
+                username: this.contactService?.ownContact?.name,
+                userId: null,
+              };
+      if(!!myLocalUser.username) {              
+	  	this.localdbService.loadUser(myLocalUser).then(result => !!result && result.first()).then(result => {
+		if(!!result && !!result?.username) {
+		  this.myUser = {...result, token: this.jwttokenService.jwtToken, password: null} as MyUser;
+	  	  this.initMyUser();
+	  	}
+	  	});
+	  	}	  
+  }
+
+  private initMyUser(): void {
+	  if(!!this.myUser) {
+		  this.contacts = [];
         this.selectedContact = null;
         this.localdbService
           .loadContacts(this.ownContact)
@@ -177,13 +213,12 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
           .then(() => this.updateMessageInterval());
         this.updateContactListLayout();
         Notification.requestPermission();
-      }
-    });
+	  }
   }
 
   logout(): void {
     this.myUser = null;
-    this.ownContact = null;
+    this.contactService.ownContact = null;
     this.jwttokenService.jwtToken = null;
     this.contacts = [];
     this.messages = [];
