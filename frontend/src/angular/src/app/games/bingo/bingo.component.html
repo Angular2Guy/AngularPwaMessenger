@@ -12,3 +12,17 @@
   </div>
   </div>
 </mat-toolbar>
+<mat-sidenav-container
+  class="container"
+  [ngStyle]="{ 'height.px': windowHeight }">
+ <mat-sidenav #contact_list [mode]="contactListMode" class="contact-list">
+   <app-contacts
+      [selectedContact]="selectedContact"
+      [contacts]="contacts"
+      (selContact)="selectContact($event)"
+    ></app-contacts>
+ </mat-sidenav>
+ <mat-sidenav-content class="mat-drawer-container">
+	 content
+ </mat-sidenav-content>
+</mat-sidenav-container>

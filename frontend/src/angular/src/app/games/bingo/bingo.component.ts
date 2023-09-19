@@ -10,24 +10,48 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDrawerMode, MatSidenavModule } from "@angular/material/sidenav";
 import { Router } from '@angular/router';
 import { BingoService } from 'src/app/services/games/bingo.service';
+import { CommonModule } from '@angular/common';
+import { Contact } from 'src/app/model/contact';
+import { ContactsComponent } from "../../contacts/contacts.component";
 
 @Component({
-  standalone: true,
-  selector: 'app-bingo',
-  templateUrl: './bingo.component.html',
-  styleUrls: ['./bingo.component.scss'],
-  providers: [BingoService],
-  imports: [MatToolbarModule, MatButtonModule]
+    standalone: true,
+    selector: 'app-bingo',
+    templateUrl: './bingo.component.html',
+    styleUrls: ['./bingo.component.scss'],
+    providers: [BingoService],
+    imports: [CommonModule, MatToolbarModule, MatButtonModule, MatSidenavModule, ContactsComponent]
 })
-export class BingoComponent {
+export class BingoComponent implements OnInit {
+	private headerBarHeight = 84;
+	protected windowHeight: number;
+	protected contactListMode: MatDrawerMode = "side";
+	protected contacts: Contact[] = [];
+    protected selectedContact: Contact;
+	
 	constructor(private router: Router) {}
+	
+    ngOnInit(): void {
+      this.windowHeight = window.innerHeight - this.headerBarHeight;
+    }
+	
+    @HostListener("window:resize", ["$event"])
+    onResize(event: any): void {
+      this.windowHeight = event.target.innerHeight - this.headerBarHeight;
+      console.log(this.windowHeight);
+    }
 	
 	back(): void {
 		this.router.navigate(['/']);
+	}
+	
+	selectContact(contact: Contact): void {
+		this.selectedContact = contact;	  
 	}
 }
