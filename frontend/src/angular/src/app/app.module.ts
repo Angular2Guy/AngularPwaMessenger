@@ -11,7 +11,7 @@
    limitations under the License.
  */
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { NgModule, forwardRef } from "@angular/core";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -43,8 +43,7 @@ import { VoiceComponent } from "./voice/voice.component";
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent,
-    ContactsComponent,
+    MainComponent,    
     MessagesComponent,
     LoginComponent,
     AddContactsComponent,
@@ -69,6 +68,7 @@ import { VoiceComponent } from "./voice/voice.component";
     MatListModule,
     MatAutocompleteModule,
     MatProgressSpinnerModule,
+    forwardRef(() => ContactsComponent),
     ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: environment.production,
     }),

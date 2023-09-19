@@ -12,11 +12,14 @@
  */
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { Contact } from "../model/contact";
+import { CommonModule } from "@angular/common";
 
 @Component({
+  standalone: true,
   selector: "app-contacts",
   templateUrl: "./contacts.component.html",
   styleUrls: ["./contacts.component.scss"],
+  imports: [CommonModule]
 })
 export class ContactsComponent implements OnInit {
   @Input()
