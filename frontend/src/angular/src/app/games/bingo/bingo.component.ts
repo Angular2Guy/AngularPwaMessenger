@@ -10,15 +10,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatDrawerMode, MatSidenavModule } from "@angular/material/sidenav";
+import { MatSidenav, MatSidenavModule } from "@angular/material/sidenav";
 import { Router } from '@angular/router';
 import { BingoService } from 'src/app/services/games/bingo.service';
 import { CommonModule } from '@angular/common';
-import { Contact } from 'src/app/model/contact';
 import { ContactsComponent } from "../../contacts/contacts.component";
+import { MediaMatcher } from '@angular/cdk/layout';
+import { BaseComponent, MyEvent } from 'src/app/common/base.component';
 
 @Component({
     standalone: true,
@@ -28,30 +29,35 @@ import { ContactsComponent } from "../../contacts/contacts.component";
     providers: [BingoService],
     imports: [CommonModule, MatToolbarModule, MatButtonModule, MatSidenavModule, ContactsComponent]
 })
-export class BingoComponent implements OnInit {
-	private headerBarHeight = 84;
-	protected windowHeight: number;
-	protected contactListMode: MatDrawerMode = "side";
-	protected contacts: Contact[] = [];
-    protected selectedContact: Contact;
+export class BingoComponent extends BaseComponent implements OnInit, AfterViewInit {			
 	
-	constructor(private router: Router) {}
+	constructor(private router: Router, mediaMatcher: MediaMatcher) {
+		super(mediaMatcher);
+	}
 	
     ngOnInit(): void {
-      this.windowHeight = window.innerHeight - this.headerBarHeight;
+	  super.ngOnInit();      
     }
 	
+	ngAfterViewInit(): void {		
+	  super.ngAfterViewInit();	  
+	}
+	
     @HostListener("window:resize", ["$event"])
-    onResize(event: any): void {
-      this.windowHeight = event.target.innerHeight - this.headerBarHeight;
-      console.log(this.windowHeight);
+    myResize(event: MyEvent): void {
+      super.onResize(event);
     }
+	
+	get contactList() {
+		return this.myContactList;
+	}
+
+    @ViewChild("contact_list1") 
+    set contactList(myContactList: MatSidenav) {
+		this.myContactList = myContactList;
+	}
 	
 	back(): void {
 		this.router.navigate(['/']);
-	}
-	
-	selectContact(contact: Contact): void {
-		this.selectedContact = contact;	  
 	}
 }

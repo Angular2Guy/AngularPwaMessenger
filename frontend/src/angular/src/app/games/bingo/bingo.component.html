@@ -15,12 +15,13 @@
 <mat-sidenav-container
   class="container"
   [ngStyle]="{ 'height.px': windowHeight }">
- <mat-sidenav #contact_list [mode]="contactListMode" class="contact-list">
+ <mat-sidenav #contact_list1 [mode]="contactListMode" class="contact-list">
    <app-contacts
       [selectedContact]="selectedContact"
       [contacts]="contacts"
       (selContact)="selectContact($event)"
     ></app-contacts>
+    hallo
  </mat-sidenav>
  <mat-sidenav-content class="mat-drawer-container">
 	 content
