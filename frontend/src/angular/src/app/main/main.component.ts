@@ -41,6 +41,7 @@ import { WebrtcService } from "../services/webrtc.service";
 import { Router } from "@angular/router";
 import { ContactService } from "../services/contact.service";
 import { LocalUser } from "../model/local-user";
+import { BaseComponent } from "../common/base.component";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -53,7 +54,7 @@ enum MyFeature {
   templateUrl: "./main.component.html",
   styleUrls: ["./main.component.scss"],
 })
-export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
+export class MainComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("contact_list") contactList: MatSidenav;
   protected windowHeight: number;
   protected contacts: Contact[] = [];
@@ -66,12 +67,11 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
-  private offerMsgSub: Subscription;
-  private headerBarHeight = 84;
+  private offerMsgSub: Subscription;  
 
   constructor(
-    private localdbService: LocaldbService,
-    private jwttokenService: JwtTokenService,
+    localdbService: LocaldbService,
+    jwttokenService: JwtTokenService,
     private netConnectionService: NetConnectionService,
     private messageService: MessageService,
     private translationsService: TranslationsService,
@@ -79,11 +79,13 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private cryptoService: CryptoService,
     private voiceService: VoiceService,
     private webrtcService: WebrtcService,
-    private contactService: ContactService,
-    private mediaMatcher: MediaMatcher,
+    contactService: ContactService,
+    mediaMatcher: MediaMatcher,
     private sanitizer: DomSanitizer,
     private router: Router
-  ) {}
+  ) {
+	  super(mediaMatcher, localdbService, jwttokenService, contactService);
+  }
 
   get ownContact() {
 	  return this.contactService.ownContact;
@@ -95,18 +97,14 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.windowHeight = window.innerHeight - this.headerBarHeight;
+    super.ngOnInit();
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe(
       (online) => this.onlineAgain(online)
-    );
-    this.initLocalUser();
+    );    
   }
 
   ngAfterViewInit(): void {
-    const mediaQueryList = this.mediaMatcher.matchMedia(
-      "(max-width: 900px) or (max-height: 480px)"
-    );
-    mediaQueryList.onchange = (event) => this.updateContactListLayout(event);
+	super.ngAfterViewInit();    
   }
 
   ngOnDestroy(): void {
@@ -177,45 +175,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  initLocalUser(): void {
-	  let myLocalUser: LocalUser = {
-                base64Avatar: null,
-                createdAt: null,
-                email: null,
-                hash: null,
-                publicKey: null,
-                privateKey: null,
-                salt: null,
-                username: this.contactService?.ownContact?.name,
-                userId: null,
-              };
-      if(!!myLocalUser.username) {              
-	  	this.localdbService.loadUser(myLocalUser).then(result => !!result && result.first()).then(result => {
-		if(!!result && !!result?.username) {
-		  this.myUser = {...result, token: this.jwttokenService.jwtToken, password: null} as MyUser;
-	  	  this.initMyUser();
-	  	}
-	  	});
-	  	}	  
-  }
-
-  private initMyUser(): void {
-	  if(!!this.myUser) {
-		  this.contacts = [];
-        this.selectedContact = null;
-        this.localdbService
-          .loadContacts(this.ownContact)
-          .then((values) => {
-            this.contacts = values;
-            this.selectContact(values && values.length > 0 ? values[0] : null);
-          })
-          .then(() => this.addMessages())
-          .then(() => this.updateMessageInterval());
-        this.updateContactListLayout();
-        Notification.requestPermission();
-	  }
-  }
-
   logout(): void {
     this.myUser = null;
     this.contactService.ownContact = null;
@@ -264,23 +223,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       clearInterval(this.interval);
     }
     this.interval = setInterval(() => this.syncMsgs(), 15000);
-  }
-
-  private updateContactListLayout(event: MediaQueryListEvent = null) {
-    const mediaQueryList = this.mediaMatcher.matchMedia(
-      "(max-width: 900px) or (max-height: 480px)"
-    );
-    if ((!!event && !!event?.matches) || !!mediaQueryList?.matches) {
-      this.contactList.close();
-      this.contactListMode = "over";
-      this.headerBarHeight = 178;
-      this.windowHeight = window.innerHeight - this.headerBarHeight;
-    } else {
-      this.contactList.open();
-      this.contactListMode = "side";
-      this.headerBarHeight = 84;
-      this.windowHeight = window.innerHeight - this.headerBarHeight;
-    }
   }
 
   private receiveRemoteMsgs(syncMsgs1: SyncMsgs) {

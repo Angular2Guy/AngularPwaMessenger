@@ -90,7 +90,7 @@ export class BaseComponent implements OnInit, AfterViewInit {
 
   protected afterContactsAdded(): void {} 
 
-  private initMyUser(): void {
+  protected initMyUser(): void {
 	  if(!!this.myUser) {
 		  this.contacts = [];
         this.selectedContact = null;
