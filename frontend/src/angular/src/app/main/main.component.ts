@@ -502,6 +502,14 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       : new Date(sortedMsg[sortedMsg.length - 1].timestamp);
   }
 
+  protected afterContactsLoaded(): Promise<Message[]> {
+	  return this.addMessages();
+  } 
+
+  protected afterContactsAdded(): void {
+	  this.updateMessageInterval();
+  } 
+
   private async addMessages(): Promise<Message[]> {
     const msgs = await this.localdbService.loadMessages(this.selectedContact);
     const values = await this.decryptLocalMsgs(msgs);

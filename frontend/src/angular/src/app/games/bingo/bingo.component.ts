@@ -20,6 +20,10 @@ import { CommonModule } from '@angular/common';
 import { ContactsComponent } from "../../contacts/contacts.component";
 import { MediaMatcher } from '@angular/cdk/layout';
 import { BaseComponent, MyEvent } from 'src/app/common/base.component';
+import { LocaldbService } from 'src/app/services/localdb.service';
+import { JwtTokenService } from 'src/app/services/jwt-token.service';
+import { ContactService } from 'src/app/services/contact.service';
+import { Message } from 'src/app/model/message';
 
 @Component({
     standalone: true,
@@ -31,8 +35,8 @@ import { BaseComponent, MyEvent } from 'src/app/common/base.component';
 })
 export class BingoComponent extends BaseComponent implements OnInit, AfterViewInit {			
 	
-	constructor(private router: Router, mediaMatcher: MediaMatcher) {
-		super(mediaMatcher);
+	constructor(private router: Router, mediaMatcher: MediaMatcher, localdbService: LocaldbService, jwttokenService: JwtTokenService, contactService: ContactService) {
+		super(mediaMatcher, localdbService, jwttokenService, contactService);
 	}
 	
     ngOnInit(): void {
@@ -51,6 +55,13 @@ export class BingoComponent extends BaseComponent implements OnInit, AfterViewIn
 	get contactList() {
 		return this.myContactList;
 	}
+
+  protected afterContactsLoaded(): Promise<Message[]> {
+	  return Promise.resolve([]);
+  } 
+
+  protected afterContactsAdded(): void {} 
+
 
     @ViewChild("contact_list1") 
     set contactList(myContactList: MatSidenav) {
