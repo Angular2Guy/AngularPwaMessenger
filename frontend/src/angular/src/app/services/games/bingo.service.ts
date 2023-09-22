@@ -10,34 +10,36 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BingoGame } from 'src/app/model/games/bingo-game';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { BingoGame } from "src/app/model/games/bingo-game";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class BingoService {
   private readonly baseUrl = "/rest/games/bingo";
-  constructor(private http: HttpClient) { }
-  
+  constructor(private http: HttpClient) {}
+
   newGame(userIds: string[]): Observable<BingoGame> {
-	  const bingoGame = {
-		  bingoBoards: [],
-		  lastUpdate: null,
-		  randomValues: [],
-		  uuid: null,
-		  playerUserIds: userIds
-	  } as BingoGame;
-	  return this.http.post<BingoGame>(this.baseUrl + "/newgame", bingoGame)
+    const bingoGame = {
+      bingoBoards: [],
+      lastUpdate: null,
+      randomValues: [],
+      uuid: null,
+      playerUserIds: userIds,
+    } as BingoGame;
+    return this.http.post<BingoGame>(this.baseUrl + "/newgame", bingoGame);
   }
-  
+
   updateGame(gameUuid: string): Observable<BingoGame> {
-	  return this.http.get<BingoGame>(`${this.baseUrl}/updategame/${gameUuid}`);
+    return this.http.get<BingoGame>(`${this.baseUrl}/updategame/${gameUuid}`);
   }
-  
+
   checkWin(gameUuid: string, index: number): Observable<boolean> {
-	  return this.http.get<boolean>(`${this.baseUrl}/checkwin/${gameUuid}/board/${index}`);
+    return this.http.get<boolean>(
+      `${this.baseUrl}/checkwin/${gameUuid}/board/${index}`
+    );
   }
 }

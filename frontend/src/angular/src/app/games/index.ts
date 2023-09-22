@@ -1,1 +1,1 @@
-export * from './games.routes';
+export * from "./games.routes";

@@ -3,16 +3,17 @@
     <div i18n="@@mainMessenger">Messenger</div>
     <div class="example-fill-remaining-space"></div>
     <div>
-		<div *ngIf="myUser !== null" class="login-logout">
+      <div *ngIf="myUser !== null" class="login-logout">
         <button
           mat-flat-button
           color="primary"
           (click)="showGames()"
-          i18n="@@mainGames">
+          i18n="@@mainGames"
+        >
           Games
         </button>
       </div>
-	</div>
+    </div>
     <div class="icon-bar" *ngIf="myUser !== null">
       <div
         *ngIf="contactListMode === 'over'"

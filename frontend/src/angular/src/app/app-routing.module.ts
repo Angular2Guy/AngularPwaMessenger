@@ -14,8 +14,13 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { MainComponent } from "./main/main.component";
 
-const routes: Routes = [{ path: "games", loadChildren: () => import("./games").then(mod => mod.GAMES)},
-  { path: "**", component: MainComponent }];
+const routes: Routes = [
+  {
+    path: "games",
+    loadChildren: () => import("./games").then((mod) => mod.GAMES),
+  },
+  { path: "**", component: MainComponent },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {})],

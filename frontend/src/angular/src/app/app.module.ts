@@ -43,7 +43,7 @@ import { VoiceComponent } from "./voice/voice.component";
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent,    
+    MainComponent,
     MessagesComponent,
     LoginComponent,
     AddContactsComponent,

@@ -12,14 +12,14 @@
  */
 
 export interface BingoGame {
-	uuid: string;
-	lastUpdate: string;
-	bingoBoards: BingoBoard[];
-	playerUserIds: string[];
-	randomValues: number[];
+  uuid: string;
+  lastUpdate: string;
+  bingoBoards: BingoBoard[];
+  playerUserIds: string[];
+  randomValues: number[];
 }
 
 export interface BingoBoard {
-	board: number[][];
-	hits: boolean[][];
+  board: number[][];
+  hits: boolean[][];
 }

@@ -19,7 +19,7 @@ import { CommonModule } from "@angular/common";
   selector: "app-contacts",
   templateUrl: "./contacts.component.html",
   styleUrls: ["./contacts.component.scss"],
-  imports: [CommonModule]
+  imports: [CommonModule],
 })
 export class ContactsComponent implements OnInit {
   @Input()

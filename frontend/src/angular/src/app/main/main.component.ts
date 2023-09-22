@@ -53,7 +53,10 @@ enum MyFeature {
   templateUrl: "./main.component.html",
   styleUrls: ["./main.component.scss"],
 })
-export class MainComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {  
+export class MainComponent
+  extends BaseComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   protected windowHeight: number;
   protected contacts: Contact[] = [];
   protected selectedContact: Contact;
@@ -65,7 +68,7 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;
   private conMonSub: Subscription;
-  private offerMsgSub: Subscription;  
+  private offerMsgSub: Subscription;
 
   constructor(
     localdbService: LocaldbService,
@@ -82,11 +85,11 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
     private sanitizer: DomSanitizer,
     private router: Router
   ) {
-	  super(mediaMatcher, localdbService, jwttokenService, contactService);
+    super(mediaMatcher, localdbService, jwttokenService, contactService);
   }
 
   get ownContact() {
-	  return this.contactService.ownContact;
+    return this.contactService.ownContact;
   }
 
   @HostListener("window:resize", ["$event"])
@@ -98,11 +101,11 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
     super.ngOnInit();
     this.conMonSub = this.netConnectionService.connectionMonitor.subscribe(
       (online) => this.onlineAgain(online)
-    );    
+    );
   }
 
   ngAfterViewInit(): void {
-	super.ngAfterViewInit();    
+    super.ngAfterViewInit();
   }
 
   ngOnDestroy(): void {
@@ -110,7 +113,7 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
       clearInterval(this.interval);
     }
     this.conMonSub.unsubscribe();
-    if(!!this.offerMsgSub) {
+    if (!!this.offerMsgSub) {
       this.offerMsgSub.unsubscribe();
     }
   }
@@ -118,12 +121,12 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
   get contactList() {
     return this.myContactList;
   }
-  
-  @ViewChild("contact_list") 
+
+  @ViewChild("contact_list")
   set contactList(myContactList: MatSidenav) {
-	this.myContactList = myContactList;
+    this.myContactList = myContactList;
   }
-  
+
   switchContent(): void {
     this.selFeature =
       this.selFeature === this.myFeature.chat
@@ -133,7 +136,7 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
   }
 
   showGames(): void {
-	  this.router.navigate(['games']);
+    this.router.navigate(["games"]);
   }
 
   openFileuploadDialog(): void {
@@ -169,8 +172,8 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
 
     dialogRef.afterClosed().subscribe((result) => {
       this.myUser =
-        typeof result === 'undefined' || result === null ? null : result;
-      if (this.myUser !== null) {		  
+        typeof result === "undefined" || result === null ? null : result;
+      if (this.myUser !== null) {
         this.contactService.ownContact = {
           name: this.myUser.username,
           base64Avatar: this.myUser.base64Avatar,
@@ -352,8 +355,8 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
   }
 
   private storeReceivedMessages(): void {
-    this.messageService.findReceivedMessages(this.ownContact).subscribe({next:
-      (msgs) => {
+    this.messageService.findReceivedMessages(this.ownContact).subscribe({
+      next: (msgs) => {
         if (msgs.length > 0) {
           this.localdbService
             .loadMessages(this.ownContact)
@@ -379,7 +382,7 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
             .then(() => this.addMessages());
         }
       },
-      error: (error) => console.log("storeReceivedMessages failed." + error)
+      error: (error) => console.log("storeReceivedMessages failed." + error),
     });
   }
 
@@ -452,12 +455,12 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
   }
 
   protected afterContactsLoaded(): Promise<Message[]> {
-	  return this.addMessages();
-  } 
+    return this.addMessages();
+  }
 
   protected afterContactsAdded(): void {
-	  this.updateMessageInterval();
-  } 
+    this.updateMessageInterval();
+  }
 
   private async addMessages(): Promise<Message[]> {
     const msgs = await this.localdbService.loadMessages(this.selectedContact);
@@ -466,9 +469,9 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
       this.messages.pop();
     }
     this.messages = values.map((msg) => {
-	  if(Notification.permission === "granted") {
-		  new Notification(`Msg from: ${msg.fromId}`, {vibrate: 400});
-	  }
+      if (Notification.permission === "granted") {
+        new Notification(`Msg from: ${msg.fromId}`, { vibrate: 400 });
+      }
       if (msg.filename) {
         msg.text = atob(msg.text.split("base64,")[1]);
         msg.url = this.sanitizer.bypassSecurityTrustUrl(
