@@ -51,7 +51,7 @@ export class BaseComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {		
       const mediaQueryList = this.mediaMatcher.matchMedia("(max-width: 900px) or (max-height: 480px)");      
 	  mediaQueryList.onchange = (event) => this.updateContactListLayout(event);
-	  setTimeout(() => this.updateContactListLayout());
+	  //setTimeout(() => this.updateContactListLayout());
     }
 
 	protected selectContact(contact: Contact): void {

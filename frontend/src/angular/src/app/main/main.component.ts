@@ -40,7 +40,6 @@ import { MatDrawerMode, MatSidenav } from "@angular/material/sidenav";
 import { WebrtcService } from "../services/webrtc.service";
 import { Router } from "@angular/router";
 import { ContactService } from "../services/contact.service";
-import { LocalUser } from "../model/local-user";
 import { BaseComponent } from "../common/base.component";
 
 // eslint-disable-next-line no-shadow
@@ -54,8 +53,7 @@ enum MyFeature {
   templateUrl: "./main.component.html",
   styleUrls: ["./main.component.scss"],
 })
-export class MainComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild("contact_list") contactList: MatSidenav;
+export class MainComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {  
   protected windowHeight: number;
   protected contacts: Contact[] = [];
   protected selectedContact: Contact;
@@ -117,6 +115,15 @@ export class MainComponent extends BaseComponent implements OnInit, OnDestroy, A
     }
   }
 
+  get contactList() {
+    return this.myContactList;
+  }
+  
+  @ViewChild("contact_list") 
+  set contactList(myContactList: MatSidenav) {
+	this.myContactList = myContactList;
+  }
+  
   switchContent(): void {
     this.selFeature =
       this.selFeature === this.myFeature.chat
