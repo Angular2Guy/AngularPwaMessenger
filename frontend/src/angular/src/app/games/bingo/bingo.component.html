@@ -1,1 +1,6 @@
-Bingo
+<div class="container" [ngStyle]="{ 'height.px': gamesService.windowHeight}">
+<div i18n="@@bingoHeading">Lets play Bingo</div><div></div><div></div><div></div><div></div>	
+<div *ngFor="let bingoCell of bingoCells" class="bingo-cell" [class.bingo-cell-selected]="bingoCell.hit">	
+		{{bingoCell.value}}	
+</div>
+</div>

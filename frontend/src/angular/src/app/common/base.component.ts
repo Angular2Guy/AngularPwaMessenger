@@ -56,8 +56,7 @@ export class BaseComponent implements OnInit, AfterViewInit {
     const mediaQueryList = this.mediaMatcher.matchMedia(
       "(max-width: 900px) or (max-height: 480px)"
     );
-    mediaQueryList.onchange = (event) => this.updateContactListLayout(event);
-    //setTimeout(() => this.updateContactListLayout());
+    mediaQueryList.onchange = (event) => this.updateContactListLayout(event);    
   }
 
   protected selectContact(contact: Contact): void {
@@ -120,7 +119,7 @@ export class BaseComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private updateContactListLayout(event: MediaQueryListEvent = null) {
+  protected updateContactListLayout(event: MediaQueryListEvent = null): void {
     const mediaQueryList = this.mediaMatcher.matchMedia(
       "(max-width: 900px) or (max-height: 480px)"
     );

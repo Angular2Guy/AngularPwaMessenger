@@ -85,11 +85,17 @@ export class GamesComponent
 	  this.gamesService.contacts = this.contacts;
 	  this.gamesService.myUser = this.myUser;
 	  this.gamesService.selectedContact = this.selectedContact;
+	  this.gamesService.windowHeight = this.windowHeight;
   }
 
   @ViewChild("contact_list1")
   set contactList(myContactList: MatSidenav) {
     this.myContactList = myContactList;
+  }
+
+  protected updateContactListLayout(event: MediaQueryListEvent = null): void {
+	super.updateContactListLayout(event);
+	this.gamesService.windowHeight = this.windowHeight;  
   }
 
   back(): void {

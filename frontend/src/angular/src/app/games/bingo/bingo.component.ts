@@ -17,6 +17,12 @@ import {
 } from "@angular/core";
 import { BingoService } from "src/app/services/games/bingo.service";
 import { CommonModule } from "@angular/common";
+import { GamesService } from "src/app/services/games/games.service";
+
+export interface BingoCell{
+	value: number;
+	hit: boolean;
+}
 
 @Component({
   standalone: true,
@@ -29,9 +35,19 @@ import { CommonModule } from "@angular/common";
   ],
 })
 export class BingoComponent implements OnInit, AfterViewInit {
-
+  protected bingoCells: BingoCell[] = [];
+  
+  constructor(protected gamesService: GamesService, private bingoService: BingoService) {}
+  
   ngOnInit(): void {
-    //super.ngOnInit();
+	this.bingoCells = [];
+    for(let y = 0;y < 5;y++) {			
+	  for(let x = 0;x < 5;x++) {
+		this.bingoCells.push({value: null,hit: false} as BingoCell);
+		this.bingoCells[y * 5 + x].hit = Math.random() > 0.5;
+		this.bingoCells[y * 5 + x].value = y * 5 + x + 1;  
+	  }
+	}    
   }
 
   ngAfterViewInit(): void {

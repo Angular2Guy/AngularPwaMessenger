@@ -11,20 +11,6 @@
    limitations under the License.
  */
 
-.toolbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.example-fill-remaining-space {
-  // This fills the remaining space, by using flexbox.
-  // Every toolbar row uses a flexbox row layout.
-  flex: 1 1 auto;
-}
-
 @media (max-width: 900px), (max-height: 480px) {
   .custom-toolbar {
     height: fit-content;
@@ -37,4 +23,18 @@
 }
 
 .container {
+	display: grid;
+	grid-template-columns: 20% 20% 20% 20% 20%;
+	grid-template-rows: 40px auto;
+}
+
+.bingo-cell {
+	
+	display: flex;
+	justify-content: center;
+    align-items: center;
+}
+
+.bingo-cell-selected {
+	background-color: #CCCCCC;
 }

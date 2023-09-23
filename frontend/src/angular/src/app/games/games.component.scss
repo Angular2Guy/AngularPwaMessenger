@@ -25,6 +25,12 @@
   flex: 1 1 auto;
 }
 
+.contact-list {
+  width: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 @media (max-width: 900px), (max-height: 480px) {
   .custom-toolbar {
     height: fit-content;

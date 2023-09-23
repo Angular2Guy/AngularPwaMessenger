@@ -21,5 +21,6 @@ export class GamesService {
   public myUser: MyUser = null;
   public contacts: Contact[] = [];
   public selectedContact: Contact = null;
+  public windowHeight: number = 0;
   constructor() { }
 }
