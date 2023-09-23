@@ -10,31 +10,31 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import {
-  AfterViewInit,
-  Component,
-  OnInit,
-} from "@angular/core";
-import { BingoService } from "src/app/services/games/bingo.service";
-import { CommonModule } from "@angular/common";
 
-@Component({
-  standalone: true,
-  selector: "app-bingo",
-  templateUrl: "./bingo.component.html",
-  styleUrls: ["./bingo.component.scss"],
-  providers: [BingoService],
-  imports: [
-    CommonModule    
-  ],
-})
-export class BingoComponent implements OnInit, AfterViewInit {
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
 
-  ngOnInit(): void {
-    //super.ngOnInit();
+.example-fill-remaining-space {
+  // This fills the remaining space, by using flexbox.
+  // Every toolbar row uses a flexbox row layout.
+  flex: 1 1 auto;
+}
+
+@media (max-width: 900px), (max-height: 480px) {
+  .custom-toolbar {
+    height: fit-content;
+    overflow: hidden;
   }
+  .icon-bar {
+    justify-content: space-between;
+    width: 60%;
+  }
+}
 
-  ngAfterViewInit(): void {
-    //super.ngAfterViewInit();
-  }  
+.container {
 }

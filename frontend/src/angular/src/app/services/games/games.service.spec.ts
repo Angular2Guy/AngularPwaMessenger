@@ -10,31 +10,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import {
-  AfterViewInit,
-  Component,
-  OnInit,
-} from "@angular/core";
-import { BingoService } from "src/app/services/games/bingo.service";
-import { CommonModule } from "@angular/common";
+import { TestBed } from '@angular/core/testing';
 
-@Component({
-  standalone: true,
-  selector: "app-bingo",
-  templateUrl: "./bingo.component.html",
-  styleUrls: ["./bingo.component.scss"],
-  providers: [BingoService],
-  imports: [
-    CommonModule    
-  ],
-})
-export class BingoComponent implements OnInit, AfterViewInit {
+import { GamesService } from './games.service';
+/*
+describe('GamesService', () => {
+  let service: GamesService;
 
-  ngOnInit(): void {
-    //super.ngOnInit();
-  }
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(GamesService);
+  });
 
-  ngAfterViewInit(): void {
-    //super.ngAfterViewInit();
-  }  
-}
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
+*/

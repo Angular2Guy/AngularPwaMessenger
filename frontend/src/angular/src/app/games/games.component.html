@@ -1,0 +1,27 @@
+<mat-toolbar color="primary" class="custom-toolbar">
+  <div class="toolbar-content">
+    <div i18n="@@bingoGames">Games</div>
+    <div class="example-fill-remaining-space"></div>
+    <div>
+      <button mat-flat-button color="primary" (click)="back()" i18n="@@back">
+        Back
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+<mat-sidenav-container
+  class="container"
+  [ngStyle]="{ 'height.px': windowHeight }"
+>
+  <mat-sidenav #contact_list1 [mode]="contactListMode" class="contact-list">
+    <app-contacts
+      [selectedContact]="selectedContact"
+      [contacts]="contacts"
+      (selContact)="selectContact($event)"
+    ></app-contacts>
+    hallo
+  </mat-sidenav>
+  <mat-sidenav-content class="mat-drawer-container">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
