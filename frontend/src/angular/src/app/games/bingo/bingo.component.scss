@@ -23,19 +23,19 @@
 }
 
 .container {
-	display: grid;
-	grid-template-columns: 20% 20% 20% 20% 20%;
-	grid-template-rows: 40px auto;
+  display: grid;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  grid-template-rows: 40px auto;
 }
 
-.bingo-cell {	
-	display: flex;
-	justify-content: center;
-    align-items: center;
-    font-size: 32px;    
+.bingo-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
 }
 
 .bingo-cell-selected {
-	background-color: #fcf638;
-	border-radius: 50%;
+  background-color: #fcf638;
+  border-radius: 50%;
 }

@@ -50,16 +50,16 @@ export class BaseComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.windowHeight = window.innerHeight - this.headerBarHeight;    
-    this.myUser = !this.gamesService?.myUser ? null : this.gamesService.myUser;        
+    this.windowHeight = window.innerHeight - this.headerBarHeight;
+    this.myUser = !this.gamesService?.myUser ? null : this.gamesService.myUser;
     this.initLocalUser();
   }
 
-  ngAfterViewInit(): void {	  
+  ngAfterViewInit(): void {
     const mediaQueryList = this.mediaMatcher.matchMedia(
       "(max-width: 900px) or (max-height: 480px)"
     );
-    mediaQueryList.onchange = (event) => this.updateContactListLayout(event);    
+    mediaQueryList.onchange = (event) => this.updateContactListLayout(event);
   }
 
   protected selectContact(contact: Contact): void {

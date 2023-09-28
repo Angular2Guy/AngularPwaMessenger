@@ -86,7 +86,13 @@ export class MainComponent
     private sanitizer: DomSanitizer,
     private router: Router
   ) {
-    super(mediaMatcher, localdbService, jwttokenService, contactService, gamesService);
+    super(
+      mediaMatcher,
+      localdbService,
+      jwttokenService,
+      contactService,
+      gamesService
+    );
   }
 
   get ownContact() {
@@ -179,7 +185,7 @@ export class MainComponent
           base64Avatar: this.myUser.base64Avatar,
           publicKey: this.myUser.publicKey,
           userId: this.myUser.userId,
-        };   
+        };
         this.gamesService.myUser = this.myUser;
         this.initMyUser();
       }

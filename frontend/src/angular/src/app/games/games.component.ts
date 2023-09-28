@@ -20,7 +20,7 @@ import {
 import { MatButtonModule } from "@angular/material/button";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatSidenav, MatSidenavModule } from "@angular/material/sidenav";
-import { Router,RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { ContactsComponent } from "../contacts/contacts.component";
 import { MediaMatcher } from "@angular/cdk/layout";
@@ -32,11 +32,11 @@ import { Message } from "src/app/model/message";
 import { GamesService } from "../services/games/games.service";
 
 @Component({
-    standalone: true,
-    selector: 'app-games',
-    templateUrl: './games.component.html',
-    styleUrls: ['./games.component.scss'],
-    imports: [
+  standalone: true,
+  selector: "app-games",
+  templateUrl: "./games.component.html",
+  styleUrls: ["./games.component.scss"],
+  imports: [
     CommonModule,
     RouterModule,
     MatToolbarModule,
@@ -45,7 +45,7 @@ import { GamesService } from "../services/games/games.service";
     ContactsComponent,
   ],
 })
-export class GamesComponent 
+export class GamesComponent
   extends BaseComponent
   implements OnInit, AfterViewInit
 {
@@ -57,7 +57,13 @@ export class GamesComponent
     contactService: ContactService,
     gamesService: GamesService
   ) {
-    super(mediaMatcher, localdbService, jwttokenService, contactService, gamesService);
+    super(
+      mediaMatcher,
+      localdbService,
+      jwttokenService,
+      contactService,
+      gamesService
+    );
   }
 
   ngOnInit(): void {
@@ -82,10 +88,10 @@ export class GamesComponent
   }
 
   protected afterContactsAdded(): void {
-	  this.gamesService.contacts = this.contacts;
-	  this.gamesService.myUser = this.myUser;
-	  this.gamesService.selectedContact = this.selectedContact;
-	  this.gamesService.windowHeight = this.windowHeight;
+    this.gamesService.contacts = this.contacts;
+    this.gamesService.myUser = this.myUser;
+    this.gamesService.selectedContact = this.selectedContact;
+    this.gamesService.windowHeight = this.windowHeight;
   }
 
   @ViewChild("contact_list1")
@@ -94,8 +100,8 @@ export class GamesComponent
   }
 
   protected updateContactListLayout(event: MediaQueryListEvent = null): void {
-	super.updateContactListLayout(event);
-	this.gamesService.windowHeight = this.windowHeight;  
+    super.updateContactListLayout(event);
+    this.gamesService.windowHeight = this.windowHeight;
   }
 
   back(): void {

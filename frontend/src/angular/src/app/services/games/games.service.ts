@@ -10,17 +10,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Injectable } from '@angular/core';
-import { Contact } from 'src/app/model/contact';
-import { MyUser } from 'src/app/model/my-user';
+import { Injectable } from "@angular/core";
+import { Contact } from "src/app/model/contact";
+import { MyUser } from "src/app/model/my-user";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class GamesService {
   public myUser: MyUser = null;
   public contacts: Contact[] = [];
   public selectedContact: Contact = null;
   public windowHeight: number = 0;
-  constructor() { }
+  constructor() {}
 }
