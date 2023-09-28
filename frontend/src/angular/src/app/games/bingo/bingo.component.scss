@@ -28,13 +28,14 @@
 	grid-template-rows: 40px auto;
 }
 
-.bingo-cell {
-	
+.bingo-cell {	
 	display: flex;
 	justify-content: center;
     align-items: center;
+    font-size: 32px;    
 }
 
 .bingo-cell-selected {
-	background-color: #CCCCCC;
+	background-color: #fcf638;
+	border-radius: 50%;
 }
