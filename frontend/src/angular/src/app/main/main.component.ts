@@ -41,6 +41,7 @@ import { WebrtcService } from "../services/webrtc.service";
 import { Router } from "@angular/router";
 import { ContactService } from "../services/contact.service";
 import { BaseComponent } from "../common/base.component";
+import { GamesService } from "../services/games/games.service";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -61,7 +62,6 @@ export class MainComponent
   protected contacts: Contact[] = [];
   protected selectedContact: Contact;
   protected messages: Message[] = [];
-  protected myUser: MyUser = null;
   protected myFeature = MyFeature;
   protected selFeature = MyFeature.chat;
   protected contactListMode: MatDrawerMode = "side";
@@ -81,11 +81,12 @@ export class MainComponent
     private voiceService: VoiceService,
     private webrtcService: WebrtcService,
     contactService: ContactService,
+    gamesService: GamesService,
     mediaMatcher: MediaMatcher,
     private sanitizer: DomSanitizer,
     private router: Router
   ) {
-    super(mediaMatcher, localdbService, jwttokenService, contactService);
+    super(mediaMatcher, localdbService, jwttokenService, contactService, gamesService);
   }
 
   get ownContact() {
@@ -171,15 +172,15 @@ export class MainComponent
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.myUser =
-        typeof result === "undefined" || result === null ? null : result;
-      if (this.myUser !== null) {
+      this.myUser = !result ? null : result;
+      if (!!this.myUser) {
         this.contactService.ownContact = {
           name: this.myUser.username,
           base64Avatar: this.myUser.base64Avatar,
           publicKey: this.myUser.publicKey,
           userId: this.myUser.userId,
-        };
+        };   
+        this.gamesService.myUser = this.myUser;
         this.initMyUser();
       }
     });

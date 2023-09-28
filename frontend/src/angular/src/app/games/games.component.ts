@@ -55,9 +55,9 @@ export class GamesComponent
     localdbService: LocaldbService,
     jwttokenService: JwtTokenService,
     contactService: ContactService,
-    private gamesService: GamesService
+    gamesService: GamesService
   ) {
-    super(mediaMatcher, localdbService, jwttokenService, contactService);
+    super(mediaMatcher, localdbService, jwttokenService, contactService, gamesService);
   }
 
   ngOnInit(): void {

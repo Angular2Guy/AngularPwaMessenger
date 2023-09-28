@@ -36,6 +36,7 @@ export interface BingoCell{
 })
 export class BingoComponent implements OnInit, AfterViewInit {
   protected bingoCells: BingoCell[] = [];
+  protected bingoNumber: number;
   
   constructor(protected gamesService: GamesService, private bingoService: BingoService) {}
   
@@ -47,10 +48,13 @@ export class BingoComponent implements OnInit, AfterViewInit {
 		this.bingoCells[y * 5 + x].hit = Math.random() > 0.5;
 		this.bingoCells[y * 5 + x].value = y * 5 + x + 1;  
 	  }
-	}    
+	}    		
+	//console.log(this.gamesService.myUser);
+	this.bingoService.newGame([this.gamesService.myUser.userId]).subscribe(result => console.log(result));
   }
 
   ngAfterViewInit(): void {
     //super.ngAfterViewInit();
-  }  
+  }
+      
 }

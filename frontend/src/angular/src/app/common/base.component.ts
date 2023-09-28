@@ -21,6 +21,7 @@ import { ContactService } from "../services/contact.service";
 import { LocalUser } from "../model/local-user";
 import { MyUser } from "../model/my-user";
 import { Message } from "../model/message";
+import { GamesService } from "../services/games/games.service";
 
 export interface MyEventTarget {
   readonly innerHeight: number | null;
@@ -44,15 +45,17 @@ export class BaseComponent implements OnInit, AfterViewInit {
     protected mediaMatcher: MediaMatcher,
     protected localdbService: LocaldbService,
     protected jwttokenService: JwtTokenService,
-    protected contactService: ContactService
+    protected contactService: ContactService,
+    protected gamesService: GamesService
   ) {}
 
   ngOnInit(): void {
-    this.windowHeight = window.innerHeight - this.headerBarHeight;
+    this.windowHeight = window.innerHeight - this.headerBarHeight;    
+    this.myUser = !this.gamesService?.myUser ? null : this.gamesService.myUser;        
     this.initLocalUser();
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit(): void {	  
     const mediaQueryList = this.mediaMatcher.matchMedia(
       "(max-width: 900px) or (max-height: 480px)"
     );
