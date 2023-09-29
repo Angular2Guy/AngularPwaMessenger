@@ -10,12 +10,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, DestroyRef, OnInit, inject } from "@angular/core";
 import { BingoService } from "src/app/services/games/bingo.service";
 import { CommonModule } from "@angular/common";
 import { GamesService } from "src/app/services/games/games.service";
-import { map } from "rxjs/operators";
+import { map, repeat } from "rxjs/operators";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BingoGame } from "src/app/model/games/bingo-game";
+import { MatButtonModule } from "@angular/material/button";
+import { Subscription } from "rxjs";
 
 export interface BingoCell {
   value: number;
@@ -33,12 +36,14 @@ interface NewGame {
   templateUrl: "./bingo.component.html",
   styleUrls: ["./bingo.component.scss"],
   providers: [BingoService],
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule],
 })
 export class BingoComponent implements OnInit, AfterViewInit {
   protected bingoCells: BingoCell[] = [];
-  protected bingoNumber: number;
-  private gameUuid: string;
+  protected bingoNumber: number;   
+  protected gameUuid: string;  
+  private randomNumberSub: Subscription = null;
+  private readonly destroy: DestroyRef = inject(DestroyRef);
 
   constructor(
     protected gamesService: GamesService,
@@ -56,18 +61,26 @@ export class BingoComponent implements OnInit, AfterViewInit {
 	  }
 	} 
 	*/
-    //console.log(this.gamesService.myUser);
-    this.bingoService
+    //console.log(this.gamesService.myUser);    
+  }
+
+  ngAfterViewInit(): void {    
+  }
+
+  protected startGame(): void {	  
+	this.bingoService
       .newGame([this.gamesService.myUser.userId])
-      .pipe(map((myValue) => this.mapNewGame(myValue)))
+      .pipe(map((myValue) => this.mapNewGame(myValue)), takeUntilDestroyed(this.destroy))
       .subscribe((result) => {
         this.bingoCells = result.bingoCells;
         this.gameUuid = result.gameUuid;
-      });
+        this.randomNumberSub = this.bingoService.updateGame(this.gameUuid).pipe(repeat({delay: 5000}), takeUntilDestroyed(this.destroy))
+          .subscribe(result => this.bingoNumber = result.randomValues.length > 0 ? result.randomValues[result.randomValues.length -1] : null);
+      });        
   }
-
-  ngAfterViewInit(): void {
-    //super.ngAfterViewInit();
+  
+  protected stopGame(): void {
+	  this.randomNumberSub.unsubscribe();
   }
 
   private mapNewGame(bingoGame: BingoGame): NewGame {

@@ -1,6 +1,7 @@
 <div class="container" [ngStyle]="{ 'height.px': gamesService.windowHeight }">
   <div i18n="@@bingoHeading">Lets play Bingo</div>
-  <div i18n="@@bingoNewNumber">New Number:</div>
+  <div *ngIf="gameUuid" i18n="@@bingoNewNumber">New Number:</div>
+  <div *ngIf="!gameUuid"><button mat-raised-button color="primary" (click)="startGame()">Start</button></div>
   <div>{{ bingoNumber }}</div>
   <div></div>
   <div></div>
