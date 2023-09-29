@@ -10,12 +10,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { AfterViewInit, Component, DestroyRef, OnInit, inject } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+} from "@angular/core";
 import { BingoService } from "src/app/services/games/bingo.service";
 import { CommonModule } from "@angular/common";
 import { GamesService } from "src/app/services/games/games.service";
 import { map, repeat } from "rxjs/operators";
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BingoGame } from "src/app/model/games/bingo-game";
 import { MatButtonModule } from "@angular/material/button";
 import { Subscription } from "rxjs";
@@ -31,6 +37,14 @@ interface NewGame {
   bingoHits: boolean[][];
 }
 
+interface CheckForWinResult {
+  win: boolean;
+  xrow: number;
+  yrow: number;
+  plusdiag: boolean;
+  minusdiag: boolean;
+}
+
 @Component({
   standalone: true,
   selector: "app-bingo",
@@ -41,8 +55,8 @@ interface NewGame {
 })
 export class BingoComponent implements OnInit, AfterViewInit {
   protected bingoCells: BingoCell[] = [];
-  protected bingoNumber: number;   
-  protected gameUuid: string;  
+  protected bingoNumber: number;
+  protected gameUuid: string;
   private randomNumberSub: Subscription = null;
   private readonly destroy: DestroyRef = inject(DestroyRef);
   private gameHits: boolean[][];
@@ -63,42 +77,89 @@ export class BingoComponent implements OnInit, AfterViewInit {
 	  }
 	} 
 	*/
-    //console.log(this.gamesService.myUser);    
+    //console.log(this.gamesService.myUser);
   }
 
-  ngAfterViewInit(): void {    
-  }
+  ngAfterViewInit(): void {}
 
-  protected startGame(): void {	  
-	this.bingoService
+  protected startGame(): void {
+    this.bingoService
       .newGame([this.gamesService.myUser.userId])
-      .pipe(map((myValue) => this.mapNewGame(myValue)), takeUntilDestroyed(this.destroy))
+      .pipe(
+        map((myValue) => this.mapNewGame(myValue)),
+        takeUntilDestroyed(this.destroy)
+      )
       .subscribe((result) => {
         this.bingoCells = result.bingoCells;
         this.gameUuid = result.gameUuid;
         this.gameHits = result.bingoHits;
-        this.randomNumberSub = this.bingoService.updateGame(this.gameUuid).pipe(repeat({delay: 5000}), takeUntilDestroyed(this.destroy))
-          .subscribe(result => this.updateValues(result));
-      });        
+        this.randomNumberSub = this.bingoService
+          .updateGame(this.gameUuid)
+          .pipe(repeat({ delay: 5000 }), takeUntilDestroyed(this.destroy))
+          .subscribe((result) => this.updateValues(result));
+      });
   }
-  
+
   protected stopGame(): void {
-	  this?.randomNumberSub?.unsubscribe();
+    this?.randomNumberSub?.unsubscribe();
   }
 
   protected switchBingoCell(bingoCell: BingoCell): void {
-	  bingoCell.hit = !bingoCell.hit;
+    bingoCell.hit = !bingoCell.hit;
+    console.log(this.checkForWin());
+  }
+
+  private checkForWin(): CheckForWinResult {
+    let xrow = -1;
+    let yrow = -1;
+    let plusdiag = 0;
+    let minusdiag = 0;
+    for (let y = 0; y < 5; y++) {
+      let xhits = 0;
+      for (let x = 0; x < 5; x++) {
+        xhits += this.bingoCells[y * 5 + x].hit && this.gameHits[y][x] ? 1 : 0;
+      }
+      if (xhits >= 5 || xrow >= 0) {
+        xrow = xrow >= 0 ? xrow : y;
+        continue;
+      }
+    }
+    for (let y = 0; y < 5; y++) {
+      let yhits = 0;
+      for (let x = 0; x < 5; x++) {
+        yhits += this.bingoCells[x * 5 + y].hit && this.gameHits[x][y] ? 1 : 0;
+      }
+      if (yhits >= 5 || yrow >= 0) {
+        yrow = yrow >= 0 ? yrow : y;
+        continue;
+      }
+    }
+    for (let i = 0; i < 5; i++) {
+      plusdiag += this.bingoCells[i * 5 + i].hit && this.gameHits[i][i] ? 1 : 0;
+      minusdiag +=
+        this.bingoCells[i * 5 + 4 - i].hit && this.gameHits[4 - i][i] ? 1 : 0;
+    }
+    return {
+      minusdiag: minusdiag >= 5,
+      plusdiag: plusdiag >= 5,
+      xrow: xrow,
+      yrow: yrow,
+      win: minusdiag >= 5 || plusdiag >= 5 || xrow >= 0 || yrow >= 0,
+    } as CheckForWinResult;
   }
 
   private updateValues(bingoGame: BingoGame): void {
-	  this.bingoNumber = bingoGame.randomValues.length > 0 ? bingoGame.randomValues[bingoGame.randomValues.length -1] : null;
-	  this.gameHits = bingoGame.bingoBoards[this.getBoardIndex(bingoGame)].hits;
+    this.bingoNumber =
+      bingoGame.randomValues.length > 0
+        ? bingoGame.randomValues[bingoGame.randomValues.length - 1]
+        : null;
+    this.gameHits = bingoGame.bingoBoards[this.getBoardIndex(bingoGame)].hits;
   }
 
   private getBoardIndex(bingoGame: BingoGame): number {
-	 return bingoGame.playerUserIds.findIndex(
+    return bingoGame.playerUserIds.findIndex(
       (myValue1) => myValue1 === this.gamesService.myUser.userId
-    ); 
+    );
   }
 
   private mapNewGame(bingoGame: BingoGame): NewGame {
@@ -112,6 +173,10 @@ export class BingoComponent implements OnInit, AfterViewInit {
           bingoGame.bingoBoards[myIndex].board[y][x];
       }
     }
-    return { gameUuid: bingoGame.uuid, bingoCells: myBingoCells, bingoHits: bingoGame.bingoBoards[myIndex].hits } as NewGame;
+    return {
+      gameUuid: bingoGame.uuid,
+      bingoCells: myBingoCells,
+      bingoHits: bingoGame.bingoBoards[myIndex].hits,
+    } as NewGame;
   }
 }
