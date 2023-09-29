@@ -12,15 +12,15 @@
  */
 package ch.xxx.messenger.adapter.cron;
 
-import jakarta.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import ch.xxx.messenger.usecase.service.BingoService;
 import ch.xxx.messenger.usecase.service.MessageService;
+import jakarta.annotation.PostConstruct;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
 @Component
@@ -29,9 +29,11 @@ public class MessageCronJob {
 	@Value("${cronjob.message.ttl.days}")
 	private Long messageTtl;
 	private final MessageService messageService;
+	private final BingoService bingoService;
 	
-	public MessageCronJob(MessageService messageService) {
+	public MessageCronJob(MessageService messageService, BingoService bingoService) {
 		this.messageService = messageService;
+		this.bingoService = bingoService;
 	}
 	
 	@PostConstruct
@@ -46,5 +48,14 @@ public class MessageCronJob {
 	@SchedulerLock(name = "MessageCleanUp_scheduledTask", lockAtLeastFor = "PT2H", lockAtMostFor = "PT3H")
 	public void cleanUpOldMessages() {
 		this.messageService.cleanUpMessages(this.messageTtl);
+	}
+	
+	/**
+	 * remove last updated more than a day ago. 
+	 */
+	@Scheduled(cron = "5 0 2 * * ?")
+	@SchedulerLock(name = "BingoCleanUp_scheduledTask", lockAtLeastFor = "PT2H", lockAtMostFor = "PT3H")
+	public void cleanUpOldBingoGames() {
+		this.bingoService.cleanUpGames();
 	}
 }

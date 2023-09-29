@@ -16,8 +16,10 @@
 package ch.xxx.messenger.usecase.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,6 +71,13 @@ public class BingoService {
 				.flatMap(myBingoGame -> this.checkBoard(myBingoGame, boardIndex));
 	}
 
+	public void cleanUpGames() {
+		LOG.info("Cleanup bingo games started.");
+		Date cutoffTimeStamp = Date.from(LocalDateTime.now().minusDays(1L).atZone(ZoneId.systemDefault()).toInstant());		
+		this.repository.findAllAndRemove(new Query().addCriteria(Criteria.where("lastUpdate").lt(cutoffTimeStamp)), BingoGame.class).collectList().block();		
+		LOG.info("Cleanup bingo games finished.");
+	}
+	
 	private Mono<Boolean> checkBoard(BingoGame bingoGame, Integer boardIndex) {
 		boolean result = false;		
 		for (int x = 0; x < 5; x++) {
