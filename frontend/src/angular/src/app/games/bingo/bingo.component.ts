@@ -80,7 +80,11 @@ export class BingoComponent implements OnInit, AfterViewInit {
   }
   
   protected stopGame(): void {
-	  this.randomNumberSub.unsubscribe();
+	  this?.randomNumberSub?.unsubscribe();
+  }
+
+  protected switchBingoCell(bingoCell: BingoCell): void {
+	  bingoCell.hit = !bingoCell.hit;
   }
 
   private mapNewGame(bingoGame: BingoGame): NewGame {

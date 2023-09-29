@@ -9,6 +9,7 @@
     *ngFor="let bingoCell of bingoCells"
     class="bingo-cell"
     [class.bingo-cell-selected]="bingoCell.hit"
+    (click)="switchBingoCell(bingoCell)"
   >
     {{ bingoCell.value }}
   </div>
