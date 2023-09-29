@@ -28,6 +28,7 @@ export interface BingoCell {
 interface NewGame {
   bingoCells: BingoCell[];
   gameUuid: string;
+  bingoHits: boolean[][];
 }
 
 @Component({
@@ -44,6 +45,7 @@ export class BingoComponent implements OnInit, AfterViewInit {
   protected gameUuid: string;  
   private randomNumberSub: Subscription = null;
   private readonly destroy: DestroyRef = inject(DestroyRef);
+  private gameHits: boolean[][];
 
   constructor(
     protected gamesService: GamesService,
@@ -74,8 +76,9 @@ export class BingoComponent implements OnInit, AfterViewInit {
       .subscribe((result) => {
         this.bingoCells = result.bingoCells;
         this.gameUuid = result.gameUuid;
+        this.gameHits = result.bingoHits;
         this.randomNumberSub = this.bingoService.updateGame(this.gameUuid).pipe(repeat({delay: 5000}), takeUntilDestroyed(this.destroy))
-          .subscribe(result => this.bingoNumber = result.randomValues.length > 0 ? result.randomValues[result.randomValues.length -1] : null);
+          .subscribe(result => this.updateValues(result));
       });        
   }
   
@@ -87,10 +90,19 @@ export class BingoComponent implements OnInit, AfterViewInit {
 	  bingoCell.hit = !bingoCell.hit;
   }
 
-  private mapNewGame(bingoGame: BingoGame): NewGame {
-    const myIndex = bingoGame.playerUserIds.findIndex(
+  private updateValues(bingoGame: BingoGame): void {
+	  this.bingoNumber = bingoGame.randomValues.length > 0 ? bingoGame.randomValues[bingoGame.randomValues.length -1] : null;
+	  this.gameHits = bingoGame.bingoBoards[this.getBoardIndex(bingoGame)].hits;
+  }
+
+  private getBoardIndex(bingoGame: BingoGame): number {
+	 return bingoGame.playerUserIds.findIndex(
       (myValue1) => myValue1 === this.gamesService.myUser.userId
-    );
+    ); 
+  }
+
+  private mapNewGame(bingoGame: BingoGame): NewGame {
+    const myIndex = this.getBoardIndex(bingoGame);
     const myBingoCells: BingoCell[] = [];
     for (let y = 0; y < 5; y++) {
       for (let x = 0; x < 5; x++) {
@@ -100,6 +112,6 @@ export class BingoComponent implements OnInit, AfterViewInit {
           bingoGame.bingoBoards[myIndex].board[y][x];
       }
     }
-    return { gameUuid: bingoGame.uuid, bingoCells: myBingoCells } as NewGame;
+    return { gameUuid: bingoGame.uuid, bingoCells: myBingoCells, bingoHits: bingoGame.bingoBoards[myIndex].hits } as NewGame;
   }
 }
