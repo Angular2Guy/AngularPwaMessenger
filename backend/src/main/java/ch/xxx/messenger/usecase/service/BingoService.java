@@ -140,7 +140,7 @@ public class BingoService {
 	private BingoGameChanged updateBingoGame(BingoGameChanged bingoGameChanged) {
 		if (bingoGameChanged.bingoGame().getLastUpdate().isBefore(LocalDateTime.now().minus(9L, ChronoUnit.SECONDS))) {
 			AtomicInteger newRand = new AtomicInteger((int) (Math.round((Math.random() * 74)) + 1));
-			while (bingoGameChanged.bingoGame().getRandomValues().stream()
+			while (bingoGameChanged.bingoGame.getRandomValues().size() < 73 && bingoGameChanged.bingoGame().getRandomValues().stream()
 					.anyMatch(myRandValue -> myRandValue.equals(newRand.get()))) {
 				newRand.set((int) (Math.round((Math.random() * 74)) + 1));
 			}

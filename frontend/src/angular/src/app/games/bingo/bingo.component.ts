@@ -109,7 +109,7 @@ export class BingoComponent implements OnInit, AfterViewInit {
     bingoCell.hit = !bingoCell.hit;
     //console.log(this.checkForWin());
     if(this.checkForWin()) {
-		this.bingoService.checkWin(this.gameUuid).pipe(takeUntilDestroyed(this.destroy)).subscribe(result => this.bingoResult = result);	
+		this.bingoService.checkWin(this.gamesService.myUser.userId).pipe(takeUntilDestroyed(this.destroy)).subscribe(result => this.bingoResult = result);	
 	} 
   }
 
