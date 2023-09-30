@@ -66,9 +66,9 @@ public class BingoService {
 						: Mono.just(myRecord.bingoGame()));
 	}
 
-	public Mono<Boolean> checkWin(String uuid, Integer boardIndex) {
+	public Mono<Boolean> checkWin(String uuid) {
 		return this.repository.findOne(new Query().addCriteria(Criteria.where("uuid").is(uuid)), BingoGame.class)
-				.flatMap(myBingoGame -> this.checkBoard(myBingoGame, boardIndex));
+				.flatMap(myBingoGame -> this.checkBoard(myBingoGame, uuid));
 	}
 
 	public void cleanUpGames() {
@@ -78,8 +78,12 @@ public class BingoService {
 		LOG.info("Cleanup bingo games finished.");
 	}
 	
-	private Mono<Boolean> checkBoard(BingoGame bingoGame, Integer boardIndex) {
+	private Mono<Boolean> checkBoard(BingoGame bingoGame, String uuid) {
 		boolean result = false;		
+		int boardIndex = bingoGame.getPlayerUserIds().indexOf(uuid);
+		if(boardIndex < 0) {
+			return Mono.just(false);
+		}
 		for (int x = 0; x < 5; x++) {
 			int columnHits = 0;
 			for (int y = 0; y < 5; y++) {
