@@ -42,8 +42,8 @@ public class BingoController {
 		return this.bingoService.updateBingoGame(uuid);
 	}
 	
-	@GetMapping("/checkwin/{uuid}")
-	public Mono<Boolean> getCheckWin(@PathVariable("uuid") String uuid) {
-		return this.bingoService.checkWin(uuid);
+	@GetMapping("/checkwin/{gameUuid}/user/{userUuid}")
+	public Mono<Boolean> getCheckWin(@PathVariable("gameUuid") String gameUuid, @PathVariable("userUuid") String userUuid) {
+		return this.bingoService.checkWin(gameUuid, userUuid);
 	}
 }

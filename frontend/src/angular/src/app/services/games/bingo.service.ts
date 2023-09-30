@@ -37,9 +37,9 @@ export class BingoService {
     return this.http.get<BingoGame>(`${this.baseUrl}/updategame/${gameUuid}`);
   }
 
-  checkWin(gameUuid: string): Observable<boolean> {
+  checkWin(gameUuid: string, userUuid: string): Observable<boolean> {
     return this.http.get<boolean>(
-      `${this.baseUrl}/checkwin/${gameUuid}`
+      `${this.baseUrl}/checkwin/${gameUuid}/user/${userUuid}`
     );
   }
 }
