@@ -7,7 +7,8 @@
     </button>
   </div>
   <div>{{ bingoNumber }}</div>
-  <div></div>
+  <div *ngIf="bingoResult">Won</div>
+  <div *ngIf="!bingoResult"></div>
   <div></div>
   <div
     *ngFor="let bingoCell of bingoCells"

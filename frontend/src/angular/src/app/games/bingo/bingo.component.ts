@@ -57,6 +57,7 @@ export class BingoComponent implements OnInit, AfterViewInit {
   protected bingoCells: BingoCell[] = [];
   protected bingoNumber: number;
   protected gameUuid: string;
+  protected bingoResult = false;
   private randomNumberSub: Subscription = null;
   private readonly destroy: DestroyRef = inject(DestroyRef);
   private gameHits: boolean[][];
@@ -106,7 +107,10 @@ export class BingoComponent implements OnInit, AfterViewInit {
 
   protected switchBingoCell(bingoCell: BingoCell): void {
     bingoCell.hit = !bingoCell.hit;
-    console.log(this.checkForWin());
+    //console.log(this.checkForWin());
+    if(this.checkForWin()) {
+		this.bingoService.checkWin(this.gameUuid).pipe(takeUntilDestroyed(this.destroy)).subscribe(result => this.bingoResult = result);	
+	} 
   }
 
   private checkForWin(): CheckForWinResult {
