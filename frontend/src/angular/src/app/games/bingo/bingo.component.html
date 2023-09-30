@@ -2,13 +2,15 @@
   <div i18n="@@bingoHeading">Lets play Bingo</div>
   <div *ngIf="gameUuid" i18n="@@bingoNewNumber">New Number:</div>
   <div *ngIf="!gameUuid">
-    <button mat-raised-button color="primary" (click)="startGame()">
+    <button mat-raised-button color="primary" (click)="startGame()" i18n="@@bingoStart">
       Start
     </button>
   </div>
   <div>{{ bingoNumber }}</div>
-  <div *ngIf="bingoResult">Won</div>
-  <div *ngIf="!bingoResult"></div>
+  <div *ngIf="bingoResult" class="game-won">Won</div>
+  <div *ngIf="!bingoResult"><button mat-raised-button color="primary" (click)="stopGame()" i18n="@@bingoStop">
+      Stop
+    </button></div>
   <div></div>
   <div
     *ngFor="let bingoCell of bingoCells"

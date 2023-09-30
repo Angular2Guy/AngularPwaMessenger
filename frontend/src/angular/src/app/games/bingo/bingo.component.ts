@@ -53,7 +53,7 @@ interface CheckForWinResult {
   providers: [BingoService],
   imports: [CommonModule, MatButtonModule],
 })
-export class BingoComponent implements OnInit, AfterViewInit {
+export class BingoComponent implements OnInit {
   protected bingoCells: BingoCell[] = [];
   protected bingoNumber: number;
   protected gameUuid: string;
@@ -69,19 +69,9 @@ export class BingoComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.bingoCells = [];
-    /*
-    for(let y = 0;y < 5;y++) {			
-	  for(let x = 0;x < 5;x++) {
-		this.bingoCells.push({value: null,hit: false} as BingoCell);
-		this.bingoCells[y * 5 + x].hit = Math.random() > 0.5;
-		this.bingoCells[y * 5 + x].value = y * 5 + x + 1;  
-	  }
-	} 
-	*/
     //console.log(this.gamesService.myUser);
   }
 
-  ngAfterViewInit(): void {}
 
   protected startGame(): void {
     this.bingoService
