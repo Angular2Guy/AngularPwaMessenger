@@ -29,6 +29,7 @@ import { Subscription } from "rxjs";
 export interface BingoCell {
   value: number;
   hit: boolean;
+  bingo: boolean;
 }
 
 interface NewGame {
@@ -55,7 +56,7 @@ interface CheckForWinResult {
 })
 export class BingoComponent implements OnInit {
   protected bingoCells: BingoCell[] = [];
-  protected bingoNumber: number;
+  protected bingoNumber = 0;
   protected gameUuid: string;
   protected bingoResult = false;
   private randomNumberSub: Subscription = null;
@@ -98,13 +99,31 @@ export class BingoComponent implements OnInit {
   protected switchBingoCell(bingoCell: BingoCell): void {
     bingoCell.hit = !bingoCell.hit;
     //console.log(this.checkForWin());
-    if(this.checkForWin()) {
+    const checkForWin = this.checkForWin();
+    if(checkForWin.win) {
 		this.bingoService.checkWin(this.gameUuid, this.gamesService.myUser.userId)
 		  .pipe(takeUntilDestroyed(this.destroy)).subscribe(result => {
 			  this.bingoResult = result;
+			  this.markBingo(checkForWin);
 			  this.randomNumberSub.unsubscribe();
 		  });	
 	} 
+  }
+
+  private markBingo(checkForWin: CheckForWinResult): void {
+	  if(checkForWin.win) {
+		  for(let i = 0;i < 5;i++) {
+			  if(checkForWin.xrow >= 0) {
+			  	this.bingoCells[checkForWin.xrow * 5 + i].bingo = true;
+			  } else if(checkForWin.yrow >= 0) {
+				  this.bingoCells[i * 5 + checkForWin.yrow].bingo = true;
+			  } else if(checkForWin.minusdiag) {
+				  this.bingoCells[i * 5 + 4-i].bingo = true;
+			  } else if(checkForWin.plusdiag) {
+				  this.bingoCells[i * 5 + i].bingo = true;
+			  }
+		  }		  	  		  
+	  }
   }
 
   private checkForWin(): CheckForWinResult {
@@ -128,7 +147,7 @@ export class BingoComponent implements OnInit {
         yhits += this.bingoCells[x * 5 + y].hit && this.gameHits[x][y] ? 1 : 0;
       }
       if (yhits >= 5 || yrow >= 0) {
-        yrow = yrow >= 0 ? yrow : y;
+        yrow = yrow >= 0 ? yrow : y;        
         continue;
       }
     }
@@ -167,6 +186,7 @@ export class BingoComponent implements OnInit {
       for (let x = 0; x < 5; x++) {
         myBingoCells.push({ value: null, hit: false } as BingoCell);
         myBingoCells[y * 5 + x].hit = bingoGame.bingoBoards[myIndex].hits[y][x];
+        myBingoCells[y * 5 + x].bingo = false;
         myBingoCells[y * 5 + x].value =
           bingoGame.bingoBoards[myIndex].board[y][x];
       }
