@@ -73,7 +73,6 @@ export class BingoComponent implements OnInit {
     //console.log(this.gamesService.myUser);
   }
 
-
   protected startGame(): void {
     this.bingoService
       .newGame([this.gamesService.myUser.userId])
@@ -100,30 +99,32 @@ export class BingoComponent implements OnInit {
     bingoCell.hit = !bingoCell.hit;
     //console.log(this.checkForWin());
     const checkForWin = this.checkForWin();
-    if(checkForWin.win) {
-		this.bingoService.checkWin(this.gameUuid, this.gamesService.myUser.userId)
-		  .pipe(takeUntilDestroyed(this.destroy)).subscribe(result => {
-			  this.bingoResult = result;
-			  this.markBingo(checkForWin);
-			  this.randomNumberSub.unsubscribe();
-		  });	
-	} 
+    if (checkForWin.win) {
+      this.bingoService
+        .checkWin(this.gameUuid, this.gamesService.myUser.userId)
+        .pipe(takeUntilDestroyed(this.destroy))
+        .subscribe((result) => {
+          this.bingoResult = result;
+          this.markBingo(checkForWin);
+          this.randomNumberSub.unsubscribe();
+        });
+    }
   }
 
   private markBingo(checkForWin: CheckForWinResult): void {
-	  if(checkForWin.win) {
-		  for(let i = 0;i < 5;i++) {
-			  if(checkForWin.xrow >= 0) {
-			  	this.bingoCells[checkForWin.xrow * 5 + i].bingo = true;
-			  } else if(checkForWin.yrow >= 0) {
-				  this.bingoCells[i * 5 + checkForWin.yrow].bingo = true;
-			  } else if(checkForWin.minusdiag) {
-				  this.bingoCells[i * 5 + 4-i].bingo = true;
-			  } else if(checkForWin.plusdiag) {
-				  this.bingoCells[i * 5 + i].bingo = true;
-			  }
-		  }		  	  		  
-	  }
+    if (checkForWin.win) {
+      for (let i = 0; i < 5; i++) {
+        if (checkForWin.xrow >= 0) {
+          this.bingoCells[checkForWin.xrow * 5 + i].bingo = true;
+        } else if (checkForWin.yrow >= 0) {
+          this.bingoCells[i * 5 + checkForWin.yrow].bingo = true;
+        } else if (checkForWin.minusdiag) {
+          this.bingoCells[i * 5 + 4 - i].bingo = true;
+        } else if (checkForWin.plusdiag) {
+          this.bingoCells[i * 5 + i].bingo = true;
+        }
+      }
+    }
   }
 
   private checkForWin(): CheckForWinResult {
@@ -147,7 +148,7 @@ export class BingoComponent implements OnInit {
         yhits += this.bingoCells[x * 5 + y].hit && this.gameHits[x][y] ? 1 : 0;
       }
       if (yhits >= 5 || yrow >= 0) {
-        yrow = yrow >= 0 ? yrow : y;        
+        yrow = yrow >= 0 ? yrow : y;
         continue;
       }
     }
