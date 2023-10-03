@@ -53,7 +53,7 @@ public class MessageCronJob {
 	/**
 	 * remove last updated more than a day ago. 
 	 */
-	@Scheduled(cron = "5 0 2 * * ?")
+	@Scheduled(cron = "0 5 2 * * ?")
 	@SchedulerLock(name = "BingoCleanUp_scheduledTask", lockAtLeastFor = "PT2H", lockAtMostFor = "PT3H")
 	public void cleanUpOldBingoGames() {
 		this.bingoService.cleanUpGames();
