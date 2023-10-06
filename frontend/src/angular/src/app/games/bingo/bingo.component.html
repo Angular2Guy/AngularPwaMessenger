@@ -1,7 +1,7 @@
 <div class="container" [ngStyle]="{ 'height.px': gamesService.windowHeight }">
   <div i18n="@@bingoHeading">Lets play Bingo</div>
-  <div *ngIf="gameUuid" i18n="@@bingoNewNumber">New Number:</div>
-  <div *ngIf="!gameUuid">
+  <div *ngIf="gameUuid && !bingoResult" i18n="@@bingoNewNumber">New Number:</div>
+  <div *ngIf="!gameUuid || bingoResult">
     <button
       mat-raised-button
       color="primary"
@@ -11,7 +11,7 @@
       Start
     </button>
   </div>
-  <div>{{ bingoNumber > 0 ? bingoNumber : "-" }}</div>
+  <div>{{ bingoNumber > 0 && !bingoResult ? bingoNumber : "-" }}</div>
   <div *ngIf="bingoResult" class="game-won">Won</div>
   <div *ngIf="!bingoResult && bingoNumber <= 0"></div>
   <div *ngIf="!bingoResult && bingoNumber > 0">

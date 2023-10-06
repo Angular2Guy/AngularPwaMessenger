@@ -49,4 +49,6 @@ public interface MyMongoRepository {
 	<T> Mono<T> save(Mono<T> monoObjectToSave);
 	
 	Mono<DeleteResult> remove(Object object);
+	
+	Mono<DeleteResult> remove(Query query, Class<?> entityClass);
 }

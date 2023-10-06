@@ -74,6 +74,7 @@ export class BingoComponent implements OnInit {
   }
 
   protected startGame(): void {
+    this.stopGame();	
     this.bingoService
       .newGame([this.gamesService.myUser.userId])
       .pipe(
@@ -93,6 +94,13 @@ export class BingoComponent implements OnInit {
 
   protected stopGame(): void {
     this?.randomNumberSub?.unsubscribe();
+    this.bingoNumber = 0;
+	this.bingoResult = false;
+	const currentGameUuid = this.gameUuid; 
+	if(!!currentGameUuid) {
+		this.bingoService.endGame(this.gameUuid).pipe(takeUntilDestroyed(this.destroy))
+		  .subscribe(result => console.log(`Game ended: ${currentGameUuid}, result: ${result}`));	
+	}
   }
 
   protected switchBingoCell(bingoCell: BingoCell): void {

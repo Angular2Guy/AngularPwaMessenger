@@ -46,4 +46,9 @@ public class BingoController {
 	public Mono<Boolean> getCheckWin(@PathVariable("gameUuid") String gameUuid, @PathVariable("userUuid") String userUuid) {
 		return this.bingoService.checkWin(gameUuid, userUuid);
 	}
+	
+	@GetMapping("/endgame/{gameUuid}")
+	public Mono<Boolean> getEndGame(@PathVariable("gameUuid") String gameUuid) {
+		return this.bingoService.endGame(gameUuid);
+	}
 }

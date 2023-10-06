@@ -39,45 +39,62 @@ public class ClientMongoRepository implements MyMongoRepository {
 		this.operations = operations;
 	}
 	
+	@Override
 	public <T> Mono<T> save(@Valid T objectToSave) {
 		return this.operations.save(objectToSave);
 	}
 	
+	@Override
 	public <T> Mono<T> save(Mono<T> monoObjectToSave) {
 		return this.operations.save(monoObjectToSave);
 	}
 	
+	@Override
 	public <T> Mono<T> findOne(Query query, Class<T> entityClass) {
 		return this.operations.findOne(query, entityClass);
 	}
 	
+	@Override
 	public <T> Mono<T> findOne(Query query, Class<T> entityClass, String name) {
 		return this.operations.findOne(query, entityClass, name);
 	}
 	
+	@Override
 	public <T> Flux<T> find(Query query, Class<T> entityClass) {
 		return this.operations.find(query, entityClass);
 	}
 	
+	@Override
 	public <T> Flux<T> find(Query query, Class<T> entityClass, String collectionName) {
 		return this.operations.find(query, entityClass, collectionName);
 	}
 	
+	@Override
 	public <T> Flux<T> insertAll(@Valid Collection<? extends T> batchToSave) {
 		return this.operations.insertAll(batchToSave);
 	}
 	
+	@Override
 	public Mono<Boolean> collectionExists(String collectionName) {
 		return this.operations.collectionExists(collectionName);
 	}
 	
+	@Override
 	public Mono<MongoCollection<Document>> createCollection(String collectionName) {
 		return this.operations.createCollection(collectionName);
 	}
 	
+	@Override
 	public Mono<DeleteResult> remove(Object objectToRemove) {
 		return this.operations.remove(objectToRemove);
 	}
+	
+	@Override
+	public Mono<DeleteResult> remove(Query query, Class<?> entityClass) {
+		return this.operations.remove(query, entityClass);
+	}
+	
+	@Override
 	public <T> Flux<T> findAllAndRemove(Query query, Class<T> entityClass) {
 		return this.operations.findAllAndRemove(query, entityClass);
 	}

@@ -71,6 +71,10 @@ public class BingoService {
 				.flatMap(myBingoGame -> this.checkBoard(myBingoGame, userUuid));
 	}
 
+	public Mono<Boolean> endGame(String gameUuid) {
+		return this.repository.remove(new Query().addCriteria(Criteria.where("uuid").is(gameUuid)), BingoGame.class).map(result -> result.wasAcknowledged());
+	}
+	
 	public void cleanUpGames() {
 		LOG.info("Cleanup bingo games started.");
 		Date cutoffTimeStamp = Date.from(LocalDateTime.now().minusDays(1L).atZone(ZoneId.systemDefault()).toInstant());		
