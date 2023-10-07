@@ -62,6 +62,7 @@ export class BingoComponent implements OnInit {
   private randomNumberSub: Subscription = null;
   private readonly destroy: DestroyRef = inject(DestroyRef);
   private gameHits: boolean[][];
+  private randomValues: number[] = [];
 
   constructor(
     protected gamesService: GamesService,
@@ -85,6 +86,7 @@ export class BingoComponent implements OnInit {
         this.bingoCells = result.bingoCells;
         this.gameUuid = result.gameUuid;
         this.gameHits = result.bingoHits;
+        this.randomValues = [];
         this.randomNumberSub = this.bingoService
           .updateGame(this.gameUuid)
           .pipe(repeat({ delay: 5000 }), takeUntilDestroyed(this.destroy))
@@ -96,6 +98,7 @@ export class BingoComponent implements OnInit {
     this?.randomNumberSub?.unsubscribe();
     this.bingoNumber = 0;
 	this.bingoResult = false;
+	this.randomValues = [];
 	const currentGameUuid = this.gameUuid; 
 	if(!!currentGameUuid) {
 		this.bingoService.endGame(this.gameUuid).pipe(takeUntilDestroyed(this.destroy))
@@ -104,7 +107,7 @@ export class BingoComponent implements OnInit {
   }
 
   protected switchBingoCell(bingoCell: BingoCell): void {
-    bingoCell.hit = !bingoCell.hit;
+    bingoCell.hit = this.randomValues.includes(bingoCell.value) ? !bingoCell.hit : false;
     //console.log(this.checkForWin());
     const checkForWin = this.checkForWin();
     if (checkForWin.win) {
@@ -179,6 +182,7 @@ export class BingoComponent implements OnInit {
       bingoGame.randomValues.length > 0
         ? bingoGame.randomValues[bingoGame.randomValues.length - 1]
         : null;
+    this.randomValues = bingoGame.randomValues;
     this.gameHits = bingoGame.bingoBoards[this.getBoardIndex(bingoGame)].hits;
   }
 
