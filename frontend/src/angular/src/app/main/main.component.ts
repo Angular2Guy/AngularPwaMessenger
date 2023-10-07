@@ -17,6 +17,8 @@ import {
   OnDestroy,
   AfterViewInit,
   ViewChild,
+  DestroyRef,
+  inject,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MediaMatcher } from "@angular/cdk/layout";
@@ -25,7 +27,6 @@ import { Message } from "../model/message";
 import { LocaldbService } from "../services/localdb.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LoginComponent } from "../login/login.component";
-import { MyUser } from "../model/my-user";
 import { SyncMsgs } from "../model/sync-msgs";
 import { JwtTokenService } from "../services/jwt-token.service";
 import { NetConnectionService } from "../services/net-connection.service";
@@ -42,6 +43,7 @@ import { Router } from "@angular/router";
 import { ContactService } from "../services/contact.service";
 import { BaseComponent } from "../common/base.component";
 import { GamesService } from "../services/games/games.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -66,9 +68,8 @@ export class MainComponent
   protected selFeature = MyFeature.chat;
   protected contactListMode: MatDrawerMode = "side";
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
-  private interval: any;
-  private conMonSub: Subscription;
-  private offerMsgSub: Subscription;
+  private interval: any;  
+  private readonly destroy: DestroyRef = inject(DestroyRef);
 
   constructor(
     localdbService: LocaldbService,
@@ -106,7 +107,7 @@ export class MainComponent
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.conMonSub = this.netConnectionService.connectionMonitor.subscribe(
+    this.netConnectionService.connectionMonitor.pipe(takeUntilDestroyed(this.destroy)).subscribe(
       (online) => this.onlineAgain(online)
     );
   }
@@ -118,11 +119,7 @@ export class MainComponent
   ngOnDestroy(): void {
     if (!!this.interval) {
       clearInterval(this.interval);
-    }
-    this.conMonSub.unsubscribe();
-    if (!!this.offerMsgSub) {
-      this.offerMsgSub.unsubscribe();
-    }
+    }    
   }
 
   get contactList() {
@@ -420,9 +417,10 @@ export class MainComponent
       this.webrtcService.addIncomingMessageHandler();
       this.webrtcService.senderId = this.ownContact.name;
       this.webrtcService.receiverId = this?.selectedContact?.name;
-      this.offerMsgSub = this.webrtcService.offerMsgSubject
+      this.webrtcService.offerMsgSubject
         .pipe(
-          filter((offerMsg) => !!offerMsg.receiverId && !!offerMsg.senderId)
+          filter((offerMsg) => !!offerMsg.receiverId && !!offerMsg.senderId),
+          takeUntilDestroyed(this.destroy)
         )
         .subscribe((offerMsg) => {
           // console.log(offerMsg);

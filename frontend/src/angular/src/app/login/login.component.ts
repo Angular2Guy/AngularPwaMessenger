@@ -10,7 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, Inject, DestroyRef, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MyUser } from "../model/my-user";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
@@ -21,6 +21,7 @@ import { LocalUser } from "../model/local-user";
 import { JwtTokenService } from "../services/jwt-token.service";
 import { NetConnectionService } from "../services/net-connection.service";
 import { CryptoService } from "../services/crypto.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 enum FormFields {
   username = "username",
@@ -42,6 +43,7 @@ export class LoginComponent implements OnInit {
   protected pwMatching = true;
   protected formFields = FormFields;
   private connected = false;
+  private readonly destroy: DestroyRef = inject(DestroyRef);
 
   constructor(
     public dialogRef: MatDialogRef<MainComponent>,
@@ -87,7 +89,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.connected = this.netConnectionService.connetionStatus;
-    this.netConnectionService.connectionMonitor.subscribe(
+    this.netConnectionService.connectionMonitor.pipe(takeUntilDestroyed(this.destroy)).subscribe(
       (conn) => (this.connected = conn)
     );
   }
@@ -140,10 +142,10 @@ export class LoginComponent implements OnInit {
       )
       .then((myValue) => {
         myUser.salt = myValue.b;
-        this.authenticationService.postSignin(myUser).subscribe(
-          (us) => this.signin(us),
-          (err) => console.log(err)
-        );
+        this.authenticationService.postSignin(myUser).pipe(takeUntilDestroyed(this.destroy)).subscribe({
+		  next: (us) => this.signin(us),
+          error: (err) => console.log(err)
+        });
       });
   }
 
@@ -157,8 +159,8 @@ export class LoginComponent implements OnInit {
         .hashServerPW(this.loginForm.get(FormFields.password).value)
         .then((value) => {
           myUser.password = value;
-          this.authenticationService.postLogin(myUser).subscribe(
-            (us) => {
+          this.authenticationService.postLogin(myUser).pipe(takeUntilDestroyed(this.destroy)).subscribe({
+            next: (us) => {
               const myLocalUser: LocalUser = {
                 base64Avatar: null,
                 createdAt: null,
@@ -190,11 +192,11 @@ export class LoginComponent implements OnInit {
                   }
                 });
             },
-            () => {
+            error: () => {
               myUser.password = this.loginForm.get(FormFields.password).value;
               this.localLogin(myUser);
             }
-          );
+          });
         });
     } else {
       this.localLogin(myUser);

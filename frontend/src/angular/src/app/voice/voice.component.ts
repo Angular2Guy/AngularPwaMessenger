@@ -14,11 +14,13 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
   OnInit,
   ViewChild,
+  inject,
 } from "@angular/core";
 import { VoiceService } from "../services/voice.service";
 import { VoiceMsg, VoiceMsgType } from "../model/voice-msg";
@@ -26,6 +28,7 @@ import { Contact } from "../model/contact";
 import { WebrtcService } from "../services/webrtc.service";
 import { debounceTime, filter } from "rxjs";
 import { Subscription } from "dexie";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 const offerOptions = {
   offerToReceiveAudio: true,
@@ -37,7 +40,7 @@ const offerOptions = {
   templateUrl: "./voice.component.html",
   styleUrls: ["./voice.component.scss"],
 })
-export class VoiceComponent implements OnInit, OnDestroy, AfterViewInit {
+export class VoiceComponent implements OnInit, AfterViewInit {
   @ViewChild("local_video") localVideo: ElementRef;
   @ViewChild("remote_video") remoteVideo: ElementRef;
 
@@ -53,7 +56,7 @@ export class VoiceComponent implements OnInit, OnDestroy, AfterViewInit {
   protected inCall = false;
 
   private localhostReceiver = "";
-  private componentSubscribtions: Subscription[] = [];
+  private readonly destroy: DestroyRef = inject(DestroyRef);
 
   constructor(
     private voiceService: VoiceService,
@@ -63,28 +66,19 @@ export class VoiceComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    this.componentSubscribtions.push(
       this.webrtcService.offerMsgSubject
         .pipe(
           filter((offerMsg) => !!offerMsg.senderId && !!offerMsg.receiverId),
-          debounceTime(500)
+          debounceTime(500),
+          takeUntilDestroyed(this.destroy)
         )
         .subscribe((offerMsg) => this.handleOfferMessage(offerMsg))
-    );
-    this.componentSubscribtions.push(
       this.webrtcService.hangupMsgSubject
-        .pipe(debounceTime(500))
-        .subscribe((hangupMsg) => this.handleHangupMessage(hangupMsg))
-    );
-    this.componentSubscribtions.push(
-      this.webrtcService.remoteStreamSubject.subscribe((remoteStream) =>
+        .pipe(debounceTime(500), takeUntilDestroyed(this.destroy))
+        .subscribe((hangupMsg) => this.handleHangupMessage(hangupMsg))    
+      this.webrtcService.remoteStreamSubject.pipe(takeUntilDestroyed(this.destroy)).subscribe((remoteStream) =>
         this.handleRemoteStream(remoteStream)
       )
-    );
-  }
-
-  public ngOnDestroy(): void {
-    this.componentSubscribtions.forEach((mySub) => mySub.unsubscribe());
   }
 
   public async call(): Promise<void> {

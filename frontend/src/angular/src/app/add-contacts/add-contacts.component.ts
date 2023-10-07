@@ -16,10 +16,10 @@ import {
   EventEmitter,
   Output,
   Input,
-  OnDestroy,
+  DestroyRef,
+  inject,
 } from "@angular/core";
 import { FormControl } from "@angular/forms";
-import { Subscription } from "rxjs";
 import {
   map,
   debounceTime,
@@ -31,20 +31,21 @@ import { ContactService } from "../services/contact.service";
 import { Contact } from "../model/contact";
 import { LocaldbService } from "../services/localdb.service";
 import { LocalContact } from "../model/local-contact";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-add-contacts",
   templateUrl: "./add-contacts.component.html",
   styleUrls: ["./add-contacts.component.scss"],
 })
-export class AddContactsComponent implements OnInit, OnDestroy {
+export class AddContactsComponent implements OnInit {
   @Output() addNewContact = new EventEmitter<Contact>();
   @Input() userId: string;
   @Input() myContacts: Contact[];
   protected myControl = new FormControl();
   protected filteredOptions: Contact[] = [];
   protected contactsLoading = false;
-  protected myControlSub: Subscription = null;
+  private readonly destroy: DestroyRef = inject(DestroyRef);
 
   constructor(
     private contactService: ContactService,
@@ -52,10 +53,11 @@ export class AddContactsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.myControlSub = this.myControl.valueChanges
+    this.myControl.valueChanges
       .pipe(
         debounceTime(400),
         distinctUntilChanged(),
+        takeUntilDestroyed(this.destroy),    
         tap(() => (this.contactsLoading = true)),
         switchMap((name) => this.contactService.findContacts(name)),
         map((contacts) => contacts.filter((con) => con.userId !== this.userId)),
@@ -63,10 +65,6 @@ export class AddContactsComponent implements OnInit, OnDestroy {
         tap(() => (this.contactsLoading = false))
       )
       .subscribe((contacts) => (this.filteredOptions = contacts));
-  }
-
-  ngOnDestroy(): void {
-    this.myControlSub.unsubscribe();
   }
 
   addContact() {
