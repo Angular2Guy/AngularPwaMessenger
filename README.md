@@ -52,7 +52,7 @@ Eclipse IDE for Enterprise Java and Web Developers newest version.
 
 Maven 3.8.4 or newer.
 
-Java 17 or newer
+Java 21 or newer
 
 Nodejs 16.19.x or newer
 
