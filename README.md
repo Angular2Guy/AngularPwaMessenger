@@ -50,7 +50,7 @@ MongoDB 4.4.x or newer.
 
 Eclipse IDE for Enterprise Java and Web Developers newest version.
 
-Maven 3.8.4 or newer.
+Maven 3.9.5 or newer.
 
 Java 21 or newer
 
