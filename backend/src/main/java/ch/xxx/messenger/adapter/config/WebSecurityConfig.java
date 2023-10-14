@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import ch.xxx.messenger.domain.common.JwtTokenProvider;
 import ch.xxx.messenger.domain.common.Role;
@@ -42,9 +43,9 @@ public class WebSecurityConfig {
 		JwtTokenFilter customFilter = new JwtTokenFilter(jwtTokenProvider);
 		HttpSecurity httpSecurity = http
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers("/rest/auth/**").permitAll()
-						.requestMatchers("/rest/**").hasAuthority(Role.USERS.toString())
-						.requestMatchers("/**").permitAll())
+						.requestMatchers(AntPathRequestMatcher.antMatcher("/rest/auth/**")).permitAll()
+						.requestMatchers(AntPathRequestMatcher.antMatcher("/rest/**")).hasAuthority(Role.USERS.toString())
+						.requestMatchers(AntPathRequestMatcher.antMatcher("/**")).permitAll())
 				.csrf(myCsrf -> myCsrf.disable())
 				.sessionManagement(mySm -> mySm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.headers(myHeaders -> myHeaders.contentSecurityPolicy(myCsp -> myCsp.policyDirectives(
