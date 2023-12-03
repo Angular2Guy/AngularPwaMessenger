@@ -18,14 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.domain.model.Contact;
+import ch.xxx.messenger.domain.model.ContactUpdate;
 import ch.xxx.messenger.usecase.service.ContactService;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/rest/contact")
 public class ContactController {
-	private final ContactService contactService;	
-	
+	private final ContactService contactService;
+
 	public ContactController(ContactService contactService) {
 		this.contactService = contactService;
 	}
@@ -33,6 +35,11 @@ public class ContactController {
 	@PostMapping("/findcontacts")
 	public Flux<Contact> getFindContacts(@RequestBody Contact contact) {
 		return this.contactService.findContacts(contact);
+	}
+
+	@PostMapping("/addcontacts")
+	public Mono<Boolean> postAddContacts(@RequestBody ContactUpdate contactUpdate) {
+		return this.contactService.updateContacts(contactUpdate);
 	}
 
 }
