@@ -44,6 +44,7 @@ import { ContactService } from "../services/contact.service";
 import { BaseComponent } from "../common/base.component";
 import { GamesService } from "../services/games/games.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ContactUpdate } from "../model/contact-update";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -227,6 +228,8 @@ export class MainComponent
 
   addNewContact(contact: Contact): void {
     this.contacts.push(contact);
+    this.contactService.updateContacts({userId: this.myUser.userId, contacts: this.contacts} as ContactUpdate)
+    	.subscribe(result => console.log(result));
     if (!this.selectedContact) {
       this.selectContact(contact);
     }

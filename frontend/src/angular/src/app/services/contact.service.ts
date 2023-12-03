@@ -15,6 +15,7 @@ import { LocaldbService } from "./localdb.service";
 import { HttpClient } from "@angular/common/http";
 import { Contact } from "../model/contact";
 import { from, Observable } from "rxjs";
+import { ContactUpdate } from "../model/contact-update";
 
 @Injectable({
   providedIn: "root",
@@ -48,5 +49,9 @@ export class ContactService {
       userId: null,
     };
     return this.http.post<Contact[]>(this.contactUrl + "/findcontacts", con);
+  }
+  
+  updateContacts(contactUpdate: ContactUpdate): Observable<boolean> {
+	  return this.http.post<boolean>(this.contactUrl + '/updatecontacts', contactUpdate);
   }
 }

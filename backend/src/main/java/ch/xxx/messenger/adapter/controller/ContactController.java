@@ -37,8 +37,8 @@ public class ContactController {
 		return this.contactService.findContacts(contact);
 	}
 
-	@PostMapping("/addcontacts")
-	public Mono<Boolean> postAddContacts(@RequestBody ContactUpdate contactUpdate) {
+	@PostMapping("/updatecontacts")
+	public Mono<Boolean> postUpdateContacts(@RequestBody ContactUpdate contactUpdate) {
 		return this.contactService.updateContacts(contactUpdate);
 	}
 
