@@ -243,7 +243,7 @@ export class MainComponent
   }
 
   private receiveRemoteMsgs(syncMsgs1: SyncMsgs) {
-    this.messageService.findMessages(syncMsgs1).subscribe(
+    this.messageService.findMessages(syncMsgs1).pipe(takeUntilDestroyed(this.destroy)).subscribe(
       (msgs) => {
         const promises: PromiseLike<Message>[] = [];
         msgs = msgs.filter(
@@ -305,7 +305,7 @@ export class MainComponent
             ownId: this.ownContact.userId,
             msgs: myMsgs,
           };
-          this.messageService.sendMessages(syncMsgs2).subscribe(
+          this.messageService.sendMessages(syncMsgs2).pipe(takeUntilDestroyed(this.destroy)).subscribe(
             (myMsgs2) => {
               this.sendMessages(msgs, oriMsgs, myMsgs2).then(() =>
                 this.addMessages()
@@ -362,7 +362,7 @@ export class MainComponent
   }
 
   private storeReceivedMessages(): void {
-    this.messageService.findReceivedMessages(this.ownContact).subscribe({
+    this.messageService.findReceivedMessages(this.ownContact).pipe(takeUntilDestroyed(this.destroy)).subscribe({
       next: (msgs) => {
         if (msgs.length > 0) {
           this.localdbService

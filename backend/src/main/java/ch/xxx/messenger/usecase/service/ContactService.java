@@ -12,6 +12,8 @@
  */
 package ch.xxx.messenger.usecase.service;
 
+import java.time.Duration;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -42,12 +44,12 @@ public class ContactService {
 	}
 
 	public Mono<Boolean> updateContacts(@Valid ContactUpdate contactUpdate) {
-		return this.myMongoRepository
+		return Mono.just(this.myMongoRepository
 				.findOne(new Query().addCriteria(Criteria.where("userId").is(contactUpdate.getUserId())), MsgUser.class)
 				.map(myMsgUser -> {
 					myMsgUser.setContacts(contactUpdate.getContacts().stream()
 							.map(myContact -> new ObjectId(myContact.getUserId())).toList());
 					return myMsgUser;
-				}).flatMap(this.myMongoRepository::save).map(myMsgUser -> myMsgUser != null);
+				}).block(Duration.ofSeconds(5L))).flatMap(this.myMongoRepository::save).map(myMsgUser -> myMsgUser != null);
 	}
 }
