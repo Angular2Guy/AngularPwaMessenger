@@ -55,7 +55,7 @@ public class BingoService {
 		bingoGame.getBingoBoards()
 				.addAll(bingoGame.getPlayerUserIds().stream()
 						.map(myUserId -> new BingoGame.BingoBoard(new int[5][5], new boolean[5][5]))
-						.map(myBingoBoard -> this.initBingoBoard(myBingoBoard)).toList());
+						.map(this::initBingoBoard).toList());
 		return this.repository.save(bingoGame);
 	}
 

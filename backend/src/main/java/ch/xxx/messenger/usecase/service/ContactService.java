@@ -48,6 +48,6 @@ public class ContactService {
 					myMsgUser.setContacts(contactUpdate.getContacts().stream()
 							.map(myContact -> new ObjectId(myContact.getUserId())).toList());
 					return myMsgUser;
-				}).flatMap(myMsgUser -> this.myMongoRepository.save(myMsgUser)).map(myMsgUser -> myMsgUser != null);
+				}).flatMap(this.myMongoRepository::save).map(myMsgUser -> myMsgUser != null);
 	}
 }

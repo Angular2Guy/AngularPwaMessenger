@@ -60,7 +60,7 @@ public class MessageService {
 				.map(msg -> {
 					msg.setReceived(true);
 					return msg;
-				}).flatMap(msg -> this.myMongoRepository.save(msg));
+				}).flatMap(this.myMongoRepository::save);
 	}
 
 	public Flux<Message> receivedMessages(@Valid Contact contact) {
