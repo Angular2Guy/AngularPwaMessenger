@@ -10,18 +10,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
+package ch.xxx.messenger.domain.model;
 
-export class MyUser {
-  id?: number;
-  createdAt: Date;
-  username: string;
-  password: string;
-  email: string;
-  token: string;
-  base64Avatar: string;
-  publicKey: string;
-  privateKey: string;
-  userId: string;
-  salt: string;
-  contacts?: string[];
+public class ContactIdsRequest {
+	private String[] contactIds;
+
+	public String[] getContactIds() {
+		return contactIds;
+	}
+
+	public void setContactIds(String[] contactIds) {
+		this.contactIds = contactIds;
+	}
+	
 }

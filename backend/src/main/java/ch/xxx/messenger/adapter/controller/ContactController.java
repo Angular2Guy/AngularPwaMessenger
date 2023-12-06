@@ -12,12 +12,15 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.domain.model.Contact;
+import ch.xxx.messenger.domain.model.ContactIdsRequest;
 import ch.xxx.messenger.domain.model.ContactUpdate;
 import ch.xxx.messenger.usecase.service.ContactService;
 import reactor.core.publisher.Flux;
@@ -42,4 +45,8 @@ public class ContactController {
 		return this.contactService.updateContacts(contactUpdate);
 	}
 
+	@PostMapping("/findcontactsbyIds")
+	public Flux<Contact> findContactByIds(@RequestBody ContactIdsRequest contactIdsRequest) {
+		return this.contactService.findContactsByIds(List.of(contactIdsRequest.getContactIds()));
+	}
 }

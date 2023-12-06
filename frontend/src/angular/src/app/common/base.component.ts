@@ -105,18 +105,18 @@ export class BaseComponent implements OnInit, AfterViewInit {
 
   protected afterContactsAdded(): void {}
 
-  protected initMyUser(): void {
+  protected initMyUser(): void {	
     if (!!this.myUser) {
       this.contacts = [];
-      this.selectedContact = null;
+      this.selectedContact = null;          
       this.localdbService
         .loadContacts(this.contactService.ownContact)
-        .then((values) => {
-          this.contacts = values;
+        .then((values) => {			
+          this.contacts = values;                    
           this.selectContact(values && values.length > 0 ? values[0] : null);
-        })
-        .then(() => this.afterContactsLoaded())
-        .then(() => this.afterContactsAdded);
+          this.afterContactsLoaded();
+          this.afterContactsAdded();
+        });
       this.updateContactListLayout();
       Notification.requestPermission();
     }

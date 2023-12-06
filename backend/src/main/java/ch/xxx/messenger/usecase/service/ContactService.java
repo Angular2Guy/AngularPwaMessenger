@@ -13,8 +13,10 @@
 package ch.xxx.messenger.usecase.service;
 
 import java.time.Duration;
+import java.util.List;
 
-import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class ContactService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContactService.class);
 	private final MyMongoRepository myMongoRepository;
 
 	public ContactService(MyMongoRepository myMongoRepository) {
@@ -44,12 +47,21 @@ public class ContactService {
 	}
 
 	public Mono<Boolean> updateContacts(@Valid ContactUpdate contactUpdate) {
+		LOGGER.info("{}", contactUpdate.getUserId());
 		return Mono.just(this.myMongoRepository
-				.findOne(new Query().addCriteria(Criteria.where("userId").is(contactUpdate.getUserId())), MsgUser.class)
+				.findOne(new Query().addCriteria(Criteria.where("id").is(contactUpdate.getUserId())), MsgUser.class)
 				.map(myMsgUser -> {
-					myMsgUser.setContacts(contactUpdate.getContacts().stream()
-							.map(myContact -> new ObjectId(myContact.getUserId())).toList());
+					myMsgUser.setContacts(
+							contactUpdate.getContacts().stream().map(myContact -> myContact.getUserId()).toList());
+					LOGGER.info("{}", myMsgUser);
 					return myMsgUser;
-				}).block(Duration.ofSeconds(5L))).flatMap(this.myMongoRepository::save).map(myMsgUser -> myMsgUser != null);
+				}).block(Duration.ofSeconds(5L))).flatMap(this.myMongoRepository::save)
+				.map(myMsgUser -> myMsgUser != null);
+	}
+
+	public Flux<Contact> findContactsByIds(List<String> contactIds) {
+		return this.myMongoRepository.find(new Query().addCriteria(Criteria.where("id").in(contactIds)), MsgUser.class)
+				.map(myMsgUser -> new Contact(myMsgUser.getUsername(), myMsgUser.getBase64Avatar(),
+						myMsgUser.getPublicKey(), myMsgUser.getId().toString()));
 	}
 }

@@ -1,6 +1,6 @@
 <div>
   <div class="myrow" *ngFor="let contact of contacts" (click)="select(contact)">
-    <img [src]="contact.base64Avatar" height="48px" width="64px" />
+    <img [src]="!!contact?.base64Avatar ? contact.base64Avatar : '/assets/icons/smiley-640.jpg'" height="48px" width="64px" />
     <div
       class="contact-name"
       [class.con-selected]="

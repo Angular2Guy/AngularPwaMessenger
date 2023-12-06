@@ -70,7 +70,7 @@ public class MsgUser implements UserDetails {
 	@JsonProperty
 	private String uuid;
 	@JsonProperty
-	private List<ObjectId> contacts = new ArrayList<>();
+	private List<String> contacts = new ArrayList<>();
 	
 	
 	@Override
@@ -157,11 +157,11 @@ public class MsgUser implements UserDetails {
 		this.base64Avatar = base64Avatar;
 	}
 
-	public List<ObjectId> getContacts() {
+	public List<String> getContacts() {
 		return contacts;
 	}
 
-	public void setContacts(List<ObjectId> contacts) {
+	public void setContacts(List<String> contacts) {
 		this.contacts = contacts;
 	}
 
@@ -211,6 +211,14 @@ public class MsgUser implements UserDetails {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	@Override
+	public String toString() {
+		return "MsgUser [id=" + id + ", createdAt=" + createdAt + ", username=" + username + ", password=" + password
+				+ ", email=" + email + ", token=" + token + ", base64Avatar=" + base64Avatar + ", publicKey="
+				+ publicKey + ", privateKey=" + privateKey + ", userId=" + userId + ", salt=" + salt + ", confirmed="
+				+ confirmed + ", uuid=" + uuid + ", contacts=" + contacts + "]";
 	}
 
 }

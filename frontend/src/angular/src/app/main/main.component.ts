@@ -63,7 +63,6 @@ export class MainComponent
 {
   protected windowHeight: number;
   protected contacts: Contact[] = [];
-  protected selectedContact: Contact;
   protected messages: Message[] = [];
   protected myFeature = MyFeature;
   protected selFeature = MyFeature.chat;
@@ -205,8 +204,10 @@ export class MainComponent
 
   selectContact(contact: Contact): void {
     this.selectedContact = contact;
+    if(!!contact) {
     this.webrtcService.receiverId = this.selectedContact.name;
     this.addMessages().then(() => this.syncMsgs());
+    }
   }
 
   sendMessage(msg: Message): void {
@@ -463,7 +464,23 @@ export class MainComponent
   }
 
   protected afterContactsLoaded(): Promise<Message[]> {
-    return this.addMessages();
+	let myPromise: Promise<unknown> = null; 
+	console.log(this.myUser?.contacts);	  
+	if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {
+		let contactMap = new Map<string, Contact>();
+		myPromise = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))
+		  .toPromise().then(result => { 
+		  this.contacts.forEach(myContact => contactMap.set(myContact.userId, myContact));
+		  result.forEach(myContact => contactMap.set(myContact.userId, myContact));
+		  this.contacts = [];
+		  contactMap.forEach((value,_) => this.contacts.push(value));		  
+		  if(this.contacts.length > 0) {
+			  this.selectContact(this.contacts[0]);
+		  }
+		  return result;		  
+		});	
+	}	
+    return !!myPromise ? myPromise.then(() => this.addMessages()) : this.addMessages();
   }
 
   protected afterContactsAdded(): void {

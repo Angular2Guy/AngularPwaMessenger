@@ -17,6 +17,10 @@ import { Contact } from "../model/contact";
 import { from, Observable } from "rxjs";
 import { ContactUpdate } from "../model/contact-update";
 
+interface ContactsIdRequest {
+	contactIds: string[];
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -39,6 +43,10 @@ export class ContactService {
 
   loadContacts(contact: Contact): Observable<Contact[]> {
     return from(this.localdbService.loadContacts(contact));
+  }
+
+  loadContactsByIds(contactIds: string[]): Observable<Contact[]> {
+	  return this.http.post<Contact[]>(this.contactUrl + '/findcontactsbyIds', {contactIds: contactIds} as ContactsIdRequest);
   }
 
   findContacts(conName: string): Observable<Contact[]> {
