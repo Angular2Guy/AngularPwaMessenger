@@ -47,13 +47,13 @@ public class ContactService {
 	}
 
 	public Mono<Boolean> updateContacts(@Valid ContactUpdate contactUpdate) {
-		LOGGER.info("{}", contactUpdate.getUserId());
+		//LOGGER.info("{}", contactUpdate.getUserId());
 		return Mono.just(this.myMongoRepository
 				.findOne(new Query().addCriteria(Criteria.where("id").is(contactUpdate.getUserId())), MsgUser.class)
 				.map(myMsgUser -> {
 					myMsgUser.setContacts(
 							contactUpdate.getContacts().stream().map(myContact -> myContact.getUserId()).toList());
-					LOGGER.info("{}", myMsgUser);
+					//LOGGER.info("{}", myMsgUser);
 					return myMsgUser;
 				}).block(Duration.ofSeconds(5L))).flatMap(this.myMongoRepository::save)
 				.map(myMsgUser -> myMsgUser != null);

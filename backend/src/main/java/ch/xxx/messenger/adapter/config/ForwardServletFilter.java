@@ -55,7 +55,7 @@ public class ForwardServletFilter implements Filter {
 				(LANGUAGE_PATHS.stream()
 //						.peek(langPath -> LOG.info(langPath + " " + myRequest.getServletPath() + " " + myRequest.getServletPath().indexOf(langPath)))
 						.anyMatch(langPath -> 0 == myRequest.getServletPath().indexOf(langPath))  
-						&& (myRequest.getServletPath().contains(".") && !myRequest.getServletPath().contains("?")
+						&& (myRequest.getServletPath().contains(".") && !myRequest.getServletPath().contains("?") 								
 				))) {
 			chain.doFilter(myRequest, response);
 		} else {
@@ -64,6 +64,7 @@ public class ForwardServletFilter implements Filter {
 					.filter(myLocale -> SUPPORTED_LOCALES.contains(myLocale)).findFirst().orElse(Locale.ENGLISH);
 			String forwardPath = String.format("/%s/index.html", userLocale.getLanguage());
 //			LOG.info(String.format("Forward to: %s", forwardPath));
+//			LOG.info(myRequest.getServletPath());
 			RequestDispatcher dispatcher = myRequest.getServletContext().getRequestDispatcher(forwardPath);
 			dispatcher.forward(myRequest, response);
 			return;
