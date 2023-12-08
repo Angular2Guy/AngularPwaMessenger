@@ -465,7 +465,8 @@ export class MainComponent
 
   protected afterContactsLoaded(): Promise<Message[]> {
 	let myPromise: Promise<unknown> = null; 
-	console.log(this.myUser?.contacts);	  
+	//console.log(this.gamesService.myUser);	 
+	this.myUser = this.gamesService.myUser;
 	if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {
 		let contactMap = new Map<string, Contact>();
 		myPromise = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))

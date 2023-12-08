@@ -67,7 +67,7 @@ export class GamesComponent
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
+    super.ngOnInit();    
   }
 
   ngAfterViewInit(): void {
@@ -87,9 +87,9 @@ export class GamesComponent
     return Promise.resolve([]);
   }
 
-  protected afterContactsAdded(): void {
-    this.gamesService.contacts = this.contacts;
-    this.gamesService.myUser = this.myUser;
+  protected afterContactsAdded(): void {	  
+    //this.gamesService.contacts = this.contacts;
+    //this.gamesService.myUser = this.myUser;
     this.gamesService.selectedContact = this.selectedContact;
     this.gamesService.windowHeight = this.windowHeight;
   }
