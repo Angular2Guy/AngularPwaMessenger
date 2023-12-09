@@ -45,6 +45,7 @@ import { BaseComponent } from "../common/base.component";
 import { GamesService } from "../services/games/games.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ContactUpdate } from "../model/contact-update";
+import { LocalContact } from "../model/local-contact";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -472,6 +473,15 @@ export class MainComponent
 		myPromise = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))
 		  .toPromise().then(result => { 
 		  this.contacts.forEach(myContact => contactMap.set(myContact.userId, myContact));
+		  result.filter(myContact => this.contacts.filter(myContact1 => myContact.userId === myContact1.userId).length === 0)
+		  	.map(myContact =>  ({
+        		base64Avatar: myContact.base64Avatar,
+        		name: myContact.name,
+		        ownerId: myContact.userId,
+        		publicKey: myContact.publicKey,
+        		userId: myContact.userId,
+      		  } as LocalContact))
+      		  .forEach(myContact => this.localdbService.storeContact(myContact));		  
 		  result.forEach(myContact => contactMap.set(myContact.userId, myContact));
 		  this.contacts = [];
 		  contactMap.forEach((value,_) => this.contacts.push(value));		  
