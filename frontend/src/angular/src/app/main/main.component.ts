@@ -46,6 +46,7 @@ import { GamesService } from "../services/games/games.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ContactUpdate } from "../model/contact-update";
 import { LocalContact } from "../model/local-contact";
+import { AiName } from "../model/aiFriend/ai-config";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -468,6 +469,7 @@ export class MainComponent
 	let myPromise: Promise<unknown> = null; 
 	//console.log(this.gamesService.myUser);	 
 	this.myUser = this.gamesService.myUser;
+    this.contacts.push({base64Avatar: null, name: AiName.AiSam, publicKey: null, userId: '-1'} as Contact);
 	if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {
 		let contactMap = new Map<string, Contact>();
 		myPromise = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))

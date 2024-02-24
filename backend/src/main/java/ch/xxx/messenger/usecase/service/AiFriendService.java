@@ -13,9 +13,11 @@
 package ch.xxx.messenger.usecase.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import ch.xxx.messenger.domain.model.AiConfig;
 
+@Service
 public class AiFriendService {
 	@Value("${spring.profiles.active:}")
 	private String activeProfile;

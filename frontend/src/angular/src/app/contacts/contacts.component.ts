@@ -13,6 +13,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { Contact } from "../model/contact";
 import { CommonModule } from "@angular/common";
+import { AiName } from "../model/aiFriend/ai-config";
 
 @Component({
   standalone: true,
@@ -22,6 +23,7 @@ import { CommonModule } from "@angular/common";
   imports: [CommonModule],
 })
 export class ContactsComponent implements OnInit {
+  AiName = AiName;
   @Input()
   selectedContact: Contact;
   @Input()
@@ -36,4 +38,5 @@ export class ContactsComponent implements OnInit {
   select(contact: Contact) {
     this.selContact.emit(contact);
   }
+  
 }

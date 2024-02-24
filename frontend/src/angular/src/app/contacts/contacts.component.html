@@ -1,6 +1,10 @@
 <div>
   <div class="myrow" *ngFor="let contact of contacts" (click)="select(contact)">
-    <img [src]="!contact?.base64Avatar ? 'assets/icons/smiley-640.jpg' : contact.base64Avatar" height="48px" width="64px" />
+    @if(!contact?.base64Avatar && contact?.name !== AiName.AiSam) {
+      <img [src]="!contact?.base64Avatar ? 'assets/icons/smiley-640.jpg' : contact.base64Avatar" height="48px" width="64px" />
+    } @else {
+      <img src="assets/icons/smiling-face-with-sunglasses.svg" height="48px" width="64px" />
+    }
     <div
       class="contact-name"
       [class.con-selected]="
