@@ -47,6 +47,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ContactUpdate } from "../model/contact-update";
 import { LocalContact } from "../model/local-contact";
 import { AiName } from "../model/aiFriend/ai-config";
+import { AiFriendService } from "../services/aiFriend/ai-friend.service";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -85,6 +86,7 @@ export class MainComponent
     private webrtcService: WebrtcService,
     contactService: ContactService,
     gamesService: GamesService,
+    private aiService: AiFriendService,
     mediaMatcher: MediaMatcher,
     private sanitizer: DomSanitizer,
     private router: Router
@@ -466,13 +468,16 @@ export class MainComponent
   }
 
   protected afterContactsLoaded(): Promise<Message[]> {
-	let myPromise: Promise<unknown> = null; 
 	//console.log(this.gamesService.myUser);	 
 	this.myUser = this.gamesService.myUser;
-    this.contacts.push({base64Avatar: null, name: AiName.AiSam, publicKey: null, userId: '-1'} as Contact);
-	if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {
+	const myPromise = this.aiService.getAiConfig().toPromise().then(result => {
+		if(!!result.enabled) {
+		  this.contacts.push({base64Avatar: null, name: AiName.AiSam, publicKey: null, userId: '-1'} as Contact);	
+		} 
+	}).then(() => {
+		if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {
 		let contactMap = new Map<string, Contact>();
-		myPromise = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))
+		const myPromise2 = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))
 		  .toPromise().then(result => { 
 		  this.contacts.forEach(myContact => contactMap.set(myContact.userId, myContact));
 		  result.filter(myContact => this.contacts.filter(myContact1 => myContact.userId === myContact1.userId).length === 0)
@@ -492,8 +497,11 @@ export class MainComponent
 		  }
 		  return result;		  
 		});	
-	}	
-    return !!myPromise ? myPromise.then(() => this.addMessages()) : this.addMessages();
+		return myPromise2;
+	} else {
+		return Promise.resolve([]);	
+	}});		
+    return myPromise.then(() => this.addMessages());
   }
 
   protected afterContactsAdded(): void {
