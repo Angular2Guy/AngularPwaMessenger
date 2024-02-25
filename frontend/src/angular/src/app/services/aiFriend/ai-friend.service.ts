@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AiConfig } from 'src/app/model/aiFriend/ai-config';
+import { AiMessage } from 'src/app/model/aiFriend/ai-message';
 
 @Injectable({
   providedIn: 'root'
@@ -24,5 +25,9 @@ export class AiFriendService {
   
   public getAiConfig(): Observable<AiConfig> {
 	  return this.http.get<AiConfig>('/rest/aifriend/config');
+  }
+  
+  public postTalkToSam(aiMessage: AiMessage): Observable<string> {
+	  return this.http.post<string>('/rest/aifriend/talk', aiMessage);
   }
 }

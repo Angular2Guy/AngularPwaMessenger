@@ -33,7 +33,7 @@ import { NetConnectionService } from "../services/net-connection.service";
 import { MessageService } from "../services/message.service";
 import { CryptoService } from "../services/crypto.service";
 import { TranslationsService } from "../services/translations.service";
-import { filter, Subscription } from "rxjs";
+import { filter, Subscription, tap } from "rxjs";
 import { CameraComponent } from "../camera/camera.component";
 import { FileuploadComponent } from "../fileupload/fileupload.component";
 import { VoiceService } from "../services/voice.service";
@@ -46,8 +46,9 @@ import { GamesService } from "../services/games/games.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ContactUpdate } from "../model/contact-update";
 import { LocalContact } from "../model/local-contact";
-import { AiName } from "../model/aiFriend/ai-config";
+import { AiName, AiUserId } from "../model/aiFriend/ai-config";
 import { AiFriendService } from "../services/aiFriend/ai-friend.service";
+import { AiMessage, MessageType } from "../model/aiFriend/ai-message";
 
 // eslint-disable-next-line no-shadow
 enum MyFeature {
@@ -219,16 +220,39 @@ export class MainComponent
     this.cryptoService
       .encryptTextAes(this.myUser.password, this.myUser.salt, msg.text)
       .then((value) => {
-        msg.text = value;
-        return msg;
+		const myMsg = JSON.parse(JSON.stringify(msg));
+        myMsg.text = value;
+        return myMsg;
       })
-      .then((myMsg) => this.localdbService.storeMessage(myMsg))
-      .then(() =>
+      .then((myMsg) => {
+		  this.localdbService.storeMessage(myMsg);
+		  return myMsg;})
+      .then(myMsg => {
+		  if(msg.toId !== AiUserId) {
         this.addMessages().then(() => {
           this.syncMsgs();
           this.updateMessageInterval();
-        })
+        });
+        } else {
+			this.sendMessageToSam(msg, myMsg);
+		}
+		}
       );
+  }
+
+  sendMessageToSam(msg: Message, encMsg: Message): void {
+	  const aiMessage = {content: msg.text, messageType: MessageType.ASSISTANT, properties: new Map<string, object>()} as AiMessage;
+	  encMsg.send = true;
+      encMsg.timestamp = msg.timestamp;
+      const myPromise = this.localdbService.updateMessage(encMsg);
+	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(encMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => console.log(result));
+  }
+
+  private markMsgAsReceived(encMsg: Message, myPromise: PromiseLike<number>): void {
+	  myPromise.then(() => {
+		  encMsg.received = true;
+		  this.localdbService.updateMessage(encMsg);
+	  });
   }
 
   addNewContact(contact: Contact): void {
@@ -472,7 +496,7 @@ export class MainComponent
 	this.myUser = this.gamesService.myUser;
 	const myPromise = this.aiService.getAiConfig().toPromise().then(result => {
 		if(!!result.enabled) {
-		  this.contacts.push({base64Avatar: null, name: AiName.AiSam, publicKey: null, userId: '-1'} as Contact);	
+		  this.contacts.push({base64Avatar: null, name: AiName.AiSam, publicKey: this.myUser.publicKey, userId: AiUserId} as Contact);	
 		} 
 	}).then(() => {
 		if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {

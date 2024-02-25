@@ -15,47 +15,35 @@ package ch.xxx.messenger.domain.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.MessageType;
-
-public class AiMessage implements Message {
-	private String content;
+public class AiMessageDto {
+	private String content;	
 	private Map<String,Object> properties = new HashMap<>();
-	private MessageType messageType;
+	private String messageType;
 	
-	public AiMessage() {}
-	
-	public AiMessage(String content, Map<String,Object> properties, String messageType) {
-		this.content = content;
-		this.properties = properties != null ? properties : this.properties;
-		this.messageType = MessageType.fromValue(messageType);
-	}
+	public AiMessageDto() {}
 
 	public void setContent(String content) {
 		this.content = content;
 	}
 
-	public void setProperties(Map<String, Object> properties) {
-		this.properties = properties;
-	}
-
-	public void setMessageType(MessageType messageType) {
+	public void setMessageType(String messageType) {
 		this.messageType = messageType;
 	}
 
-	@Override
 	public String getContent() {
 		return this.content;
 	}
 
-	@Override
-	public Map<String, Object> getProperties() {
-		return this.properties;
+	public String getMessageType() {
+		return this.messageType;
 	}
 
-	@Override
-	public MessageType getMessageType() {
-		return this.messageType;
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, Object> properties) {
+		this.properties = properties;
 	}
 
 }

@@ -12,6 +12,8 @@
  */
 export enum AiName {AiSam = 'Ai Samantha'}
 
+export const AiUserId = '-1';
+
 export interface AiConfig {
 	enabled: boolean;
 	aiModel: string;

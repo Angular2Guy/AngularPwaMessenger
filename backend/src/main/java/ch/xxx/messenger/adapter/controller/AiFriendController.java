@@ -12,6 +12,8 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.domain.model.AiConfig;
 import ch.xxx.messenger.domain.model.AiMessage;
+import ch.xxx.messenger.domain.model.AiMessageDto;
 import ch.xxx.messenger.usecase.service.AiFriendService;
 import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/rest/aifriend")
 public class AiFriendController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AiFriendController.class);
 	private AiFriendService aiFriendService;
 	
 	public AiFriendController(AiFriendService aiFriendService) {
@@ -39,7 +43,7 @@ public class AiFriendController {
 	}
 	
 	@PostMapping("/talk")
-	public Flux<ChatResponse> talkToSam(@RequestBody AiMessage aiMessage) {
-		return this.aiFriendService.talkToSam(aiMessage);
-	}
+	public Flux<ChatResponse> talkToSam(@RequestBody AiMessageDto aiMessageDto) {		
+		return this.aiFriendService.talkToSam(new AiMessage(aiMessageDto.getContent(), aiMessageDto.getProperties(), aiMessageDto.getMessageType()));
+	}	
 }
