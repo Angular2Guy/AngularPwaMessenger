@@ -245,7 +245,13 @@ export class MainComponent
 	  encMsg.send = true;
       encMsg.timestamp = msg.timestamp;
       const myPromise = this.localdbService.updateMessage(encMsg);
-	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(encMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => console.log(result));
+	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(encMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => {
+		  //console.log(result);
+		  const myresult = result.map(value => !value?.result?.output?.content?.trim() ? '' : value?.result?.output?.content).join('').trim();
+		  console.log(myresult);
+		  const response = {fromId: AiUserId, received: true, send: true, toId: this.myUser.userId, text: myresult} as Message;
+		  this.storeAndShowMsg([response]);
+	  });
   }
 
   private markMsgAsReceived(encMsg: Message, myPromise: PromiseLike<number>): void {
@@ -293,7 +299,8 @@ export class MainComponent
               })
           );
         });
-        Promise.all(promises).then((myMsgs) => {
+        Promise.all(promises).then((myMsgs) => this.storeAndShowMsg(myMsgs) 
+        /*{
           const promises2: PromiseLike<number>[] = [];
           myMsgs.forEach((msg) =>
             promises2.push(
@@ -319,10 +326,35 @@ export class MainComponent
               }
             })
           );
-        });
+        }*/
+        );
       },
       (error) => console.log("findMessages failed." + error)
     );
+  }
+
+  private storeAndShowMsg(messages: Message[]): void {
+	  const promises2: PromiseLike<number>[] = [];
+          messages.forEach((msg) =>
+            promises2.push(
+              this.cryptoService
+                .encryptTextAes(
+                  this.myUser.password,
+                  this.myUser.salt,
+                  msg.text
+                )
+                .then((value) => {
+                  msg.text = value;
+                  return msg;
+                })
+                .then((myValue) => this.localdbService.storeMessage(myValue))
+                .then()
+            )
+          );
+
+          Promise.all(promises2).then((values) =>
+            Promise.all(values).then(() => this.addMessages())
+          );
   }
 
   private sendRemoteMsgs(syncMsgs1: SyncMsgs): void {
