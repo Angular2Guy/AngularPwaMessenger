@@ -12,12 +12,17 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
+import org.springframework.ai.chat.ChatResponse;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.domain.model.AiConfig;
+import ch.xxx.messenger.domain.model.AiMessage;
 import ch.xxx.messenger.usecase.service.AiFriendService;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/rest/aifriend")
@@ -28,9 +33,13 @@ public class AiFriendController {
 		this.aiFriendService = aiFriendService;
 	}
 	
-
 	@GetMapping("/config")
 	public AiConfig getAiConfig() {
 		return this.aiFriendService.createAiConfig();
+	}
+	
+	@PostMapping("/talk")
+	public Flux<ChatResponse> talkToSam(@RequestBody AiMessage aiMessage) {
+		return this.aiFriendService.talkToSam(aiMessage);
 	}
 }
