@@ -216,25 +216,24 @@ export class MainComponent
   }
 
   sendMessage(msg: Message): void {
-    msg.fromId = this.ownContact.userId;
+    msg.fromId = this.ownContact.userId;    
     this.cryptoService
       .encryptTextAes(this.myUser.password, this.myUser.salt, msg.text)
       .then((value) => {
-		const myMsg = JSON.parse(JSON.stringify(msg));
-        myMsg.text = value;
-        return myMsg;
+    	const encMsg = JSON.parse(JSON.stringify(msg));
+        encMsg.text = value;
+        return encMsg;
       })
-      .then((myMsg) => {
-		  this.localdbService.storeMessage(myMsg);
-		  return myMsg;})
-      .then(myMsg => {
+      .then(encMsg => this.localdbService.storeMessage(encMsg))
+      .then(encMsgId => this.localdbService.loadMessages(this.ownContact).then(myMsgs => myMsgs.filter(myMsg => myMsg.localId === encMsgId)[0]))
+      .then(myEncMsg => {
 		  if(msg.toId !== AiUserId) {
         this.addMessages().then(() => {
           this.syncMsgs();
           this.updateMessageInterval();
         });
         } else {
-			this.sendMessageToSam(msg, myMsg);
+			this.sendMessageToSam(msg, myEncMsg);
 		}
 		}
       );
@@ -244,11 +243,13 @@ export class MainComponent
 	  const aiMessage = {content: msg.text, messageType: MessageType.ASSISTANT, properties: new Map<string, object>()} as AiMessage;
 	  encMsg.send = true;
       encMsg.timestamp = msg.timestamp;
+      const myEncMsg = JSON.parse(JSON.stringify(encMsg));
+      //console.log(myEncMsg);
       const myPromise = this.localdbService.updateMessage(encMsg);
-	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(encMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => {
+	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(myEncMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => {
 		  //console.log(result);
 		  const myresult = result.map(value => !value?.result?.output?.content?.trim() ? '' : value?.result?.output?.content).join('').trim();
-		  console.log(myresult);
+		  //console.log(myresult);
 		  const response = {fromId: AiUserId, received: true, send: true, toId: this.myUser.userId, text: myresult} as Message;
 		  this.storeAndShowMsg([response]);
 	  });
@@ -257,8 +258,10 @@ export class MainComponent
   private markMsgAsReceived(encMsg: Message, myPromise: PromiseLike<number>): void {
 	  myPromise.then(() => {
 		  encMsg.received = true;
-		  this.localdbService.updateMessage(encMsg);
-	  });
+		  encMsg.send = true;
+		  //console.log(encMsg);
+		  return this.localdbService.updateMessage(encMsg);
+	  }).then(myId => console.log(myId));
   }
 
   addNewContact(contact: Contact): void {
