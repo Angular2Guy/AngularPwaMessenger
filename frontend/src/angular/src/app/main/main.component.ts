@@ -245,23 +245,24 @@ export class MainComponent
       encMsg.timestamp = msg.timestamp;
       const myEncMsg = JSON.parse(JSON.stringify(encMsg));
       //console.log(myEncMsg);
-      const myPromise = this.localdbService.updateMessage(encMsg);
+      const myPromise = this.localdbService.updateMessage(encMsg).then(() => this.addMessages()).then(x => {return x;});
 	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(myEncMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => {
 		  //console.log(result);
 		  const myresult = result.map(value => !value?.result?.output?.content?.trim() ? '' : value?.result?.output?.content).join('').trim();
 		  //console.log(myresult);
 		  const response = {fromId: AiUserId, received: true, send: true, toId: this.myUser.userId, text: myresult} as Message;
+		  
 		  this.storeAndShowMsg([response]);
 	  });
   }
 
-  private markMsgAsReceived(encMsg: Message, myPromise: PromiseLike<number>): void {
+  private markMsgAsReceived(encMsg: Message, myPromise: PromiseLike<Message[]>): void {
 	  myPromise.then(() => {
 		  encMsg.received = true;
 		  encMsg.send = true;
 		  //console.log(encMsg);
 		  return this.localdbService.updateMessage(encMsg);
-	  }).then(myId => console.log(myId));
+	  }).then(myId => this.addMessages());
   }
 
   addNewContact(contact: Contact): void {
