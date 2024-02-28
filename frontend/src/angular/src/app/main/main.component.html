@@ -97,6 +97,7 @@
       *ngIf="myUser !== null && selFeature === myFeature.chat"
       [messages]="messages"
       [receiver]="selectedContact"
+      [showSpinner]="samIsThinking"
       (sendMsg)="sendMessage($event)"
     ></app-messages>
     <app-voice

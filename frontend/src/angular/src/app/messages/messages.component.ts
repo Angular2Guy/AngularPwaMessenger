@@ -26,6 +26,8 @@ export class MessagesComponent implements OnInit {
   messages: Message[];
   @Input()
   receiver: Contact;
+  @Input()
+  showSpinner: boolean;
   @Output()
   sendMsg = new EventEmitter<Message>();
   protected readonly formKeyMessage = "message";

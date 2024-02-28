@@ -71,6 +71,7 @@ export class MainComponent
   protected myFeature = MyFeature;
   protected selFeature = MyFeature.chat;
   protected contactListMode: MatDrawerMode = "side";
+  protected samIsThinking = false;
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
   private interval: any;  
   private readonly destroy: DestroyRef = inject(DestroyRef);
@@ -245,14 +246,17 @@ export class MainComponent
       encMsg.timestamp = msg.timestamp;
       const myEncMsg = JSON.parse(JSON.stringify(encMsg));
       //console.log(myEncMsg);
-      const myPromise = this.localdbService.updateMessage(encMsg).then(() => this.addMessages()).then(x => {return x;});
+      const myPromise = this.localdbService.updateMessage(encMsg).then(() => this.addMessages()).then(x => {
+		  this.samIsThinking = true;
+		  return x;
+		  });
 	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(myEncMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => {
 		  //console.log(result);
 		  const myresult = result.map(value => !value?.result?.output?.content?.trim() ? '' : value?.result?.output?.content).join('').trim();
 		  //console.log(myresult);
-		  const response = {fromId: AiUserId, received: true, send: true, toId: this.myUser.userId, text: myresult} as Message;
-		  
+		  const response = {fromId: AiUserId, received: true, send: true, toId: this.myUser.userId, text: myresult} as Message;		  
 		  this.storeAndShowMsg([response]);
+		  this.samIsThinking = false;
 	  });
   }
 
