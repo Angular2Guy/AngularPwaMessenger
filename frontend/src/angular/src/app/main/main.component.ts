@@ -579,7 +579,7 @@ export class MainComponent
       this.messages.pop();
     }
     this.messages = values.map((msg) => {
-      if (Notification.permission === "granted") {
+      if (msg.fromId !== AiUserId && msg.toId !== AiUserId && Notification.permission === "granted") {
         new Notification(`Msg from: ${msg.fromId}`, { vibrate: 400 });
       }
       if (msg.filename) {
