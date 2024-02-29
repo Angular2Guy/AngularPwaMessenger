@@ -13,6 +13,6 @@
 import { Contact } from "./contact";
 
 export interface ContactUpdate {
-	userId: string;
-	contacts: Contact[];
+  userId: string;
+  contacts: Contact[];
 }

@@ -10,25 +10,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { AiConfig } from 'src/app/model/aiFriend/ai-config';
-import { AiMessage } from 'src/app/model/aiFriend/ai-message';
-import { AiResultDto } from 'src/app/model/aiFriend/ai-result';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { AiConfig } from "src/app/model/aiFriend/ai-config";
+import { AiMessage } from "src/app/model/aiFriend/ai-message";
+import { AiResultDto } from "src/app/model/aiFriend/ai-result";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AiFriendService {
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-  
   public getAiConfig(): Observable<AiConfig> {
-	  return this.http.get<AiConfig>('/rest/aifriend/config');
+    return this.http.get<AiConfig>("/rest/aifriend/config");
   }
-  
+
   public postTalkToSam(aiMessage: AiMessage): Observable<AiResultDto[]> {
-	  return this.http.post<AiResultDto[]>('/rest/aifriend/talk', aiMessage);
+    return this.http.post<AiResultDto[]>("/rest/aifriend/talk", aiMessage);
   }
 }

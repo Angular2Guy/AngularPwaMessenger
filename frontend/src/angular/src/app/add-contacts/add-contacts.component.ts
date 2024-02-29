@@ -57,7 +57,7 @@ export class AddContactsComponent implements OnInit {
       .pipe(
         debounceTime(400),
         distinctUntilChanged(),
-        takeUntilDestroyed(this.destroy),    
+        takeUntilDestroyed(this.destroy),
         tap(() => (this.contactsLoading = true)),
         switchMap((name) => this.contactService.findContacts(name)),
         map((contacts) => contacts.filter((con) => con.userId !== this.userId)),

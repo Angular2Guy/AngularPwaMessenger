@@ -89,9 +89,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.connected = this.netConnectionService.connetionStatus;
-    this.netConnectionService.connectionMonitor.pipe(takeUntilDestroyed(this.destroy)).subscribe(
-      (conn) => (this.connected = conn)
-    );
+    this.netConnectionService.connectionMonitor
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((conn) => (this.connected = conn));
   }
 
   validate(group: FormGroup) {
@@ -142,10 +142,13 @@ export class LoginComponent implements OnInit {
       )
       .then((myValue) => {
         myUser.salt = myValue.b;
-        this.authenticationService.postSignin(myUser).pipe(takeUntilDestroyed(this.destroy)).subscribe({
-		  next: (us) => this.signin(us),
-          error: (err) => console.log(err)
-        });
+        this.authenticationService
+          .postSignin(myUser)
+          .pipe(takeUntilDestroyed(this.destroy))
+          .subscribe({
+            next: (us) => this.signin(us),
+            error: (err) => console.log(err),
+          });
       });
   }
 
@@ -159,44 +162,49 @@ export class LoginComponent implements OnInit {
         .hashServerPW(this.loginForm.get(FormFields.password).value)
         .then((value) => {
           myUser.password = value;
-          this.authenticationService.postLogin(myUser).pipe(takeUntilDestroyed(this.destroy)).subscribe({
-            next: (us) => {
-              const myLocalUser: LocalUser = {
-                base64Avatar: null,
-                createdAt: null,
-                email: null,
-                hash: null,
-                publicKey: null,
-                privateKey: null,
-                salt: null,
-                username: us.username,
-                userId: null,
-              };
-              this.localdbService
-                .loadUser(myLocalUser)
-                .then((localUserList) => localUserList.toArray())
-                .then((localUserArray) => {
-                  if (localUserArray.length > 0) {
-                    us.password = this.loginForm.get(FormFields.password).value;
-                    this.login(us, localUserArray[0]);
-                  } else {
-                    this.createLocalUser(
-                      us,
-                      this.loginForm.get(FormFields.password).value
-                    ).then((result) => {
+          this.authenticationService
+            .postLogin(myUser)
+            .pipe(takeUntilDestroyed(this.destroy))
+            .subscribe({
+              next: (us) => {
+                const myLocalUser: LocalUser = {
+                  base64Avatar: null,
+                  createdAt: null,
+                  email: null,
+                  hash: null,
+                  publicKey: null,
+                  privateKey: null,
+                  salt: null,
+                  username: us.username,
+                  userId: null,
+                };
+                this.localdbService
+                  .loadUser(myLocalUser)
+                  .then((localUserList) => localUserList.toArray())
+                  .then((localUserArray) => {
+                    if (localUserArray.length > 0) {
                       us.password = this.loginForm.get(
                         FormFields.password
                       ).value;
-                      this.login(us, result);
-                    });
-                  }
-                });
-            },
-            error: () => {
-              myUser.password = this.loginForm.get(FormFields.password).value;
-              this.localLogin(myUser);
-            }
-          });
+                      this.login(us, localUserArray[0]);
+                    } else {
+                      this.createLocalUser(
+                        us,
+                        this.loginForm.get(FormFields.password).value
+                      ).then((result) => {
+                        us.password = this.loginForm.get(
+                          FormFields.password
+                        ).value;
+                        this.login(us, result);
+                      });
+                    }
+                  });
+              },
+              error: () => {
+                myUser.password = this.loginForm.get(FormFields.password).value;
+                this.localLogin(myUser);
+              },
+            });
         });
     } else {
       this.localLogin(myUser);

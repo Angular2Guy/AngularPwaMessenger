@@ -66,19 +66,19 @@ export class VoiceComponent implements OnInit, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-      this.webrtcService.offerMsgSubject
-        .pipe(
-          filter((offerMsg) => !!offerMsg.senderId && !!offerMsg.receiverId),
-          debounceTime(500),
-          takeUntilDestroyed(this.destroy)
-        )
-        .subscribe((offerMsg) => this.handleOfferMessage(offerMsg))
-      this.webrtcService.hangupMsgSubject
-        .pipe(debounceTime(500), takeUntilDestroyed(this.destroy))
-        .subscribe((hangupMsg) => this.handleHangupMessage(hangupMsg))    
-      this.webrtcService.remoteStreamSubject.pipe(takeUntilDestroyed(this.destroy)).subscribe((remoteStream) =>
-        this.handleRemoteStream(remoteStream)
+    this.webrtcService.offerMsgSubject
+      .pipe(
+        filter((offerMsg) => !!offerMsg.senderId && !!offerMsg.receiverId),
+        debounceTime(500),
+        takeUntilDestroyed(this.destroy)
       )
+      .subscribe((offerMsg) => this.handleOfferMessage(offerMsg));
+    this.webrtcService.hangupMsgSubject
+      .pipe(debounceTime(500), takeUntilDestroyed(this.destroy))
+      .subscribe((hangupMsg) => this.handleHangupMessage(hangupMsg));
+    this.webrtcService.remoteStreamSubject
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((remoteStream) => this.handleRemoteStream(remoteStream));
   }
 
   public async call(): Promise<void> {

@@ -11,14 +11,14 @@
    limitations under the License.
  */
 export enum MessageType {
-	USER = 'user',
-	ASSISTANT = 'assistant',
-	SYSTEM = 'system',
-	FUNCTION = 'function'
+  USER = "user",
+  ASSISTANT = "assistant",
+  SYSTEM = "system",
+  FUNCTION = "function",
 }
 
 export interface AiMessage {
-	content: string;
-	properties: Map<string,unknown>;
-	messageType: MessageType;
+  content: string;
+  properties: Map<string, unknown>;
+  messageType: MessageType;
 }

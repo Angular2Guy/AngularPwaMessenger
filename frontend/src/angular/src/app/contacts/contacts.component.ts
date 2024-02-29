@@ -38,5 +38,4 @@ export class ContactsComponent implements OnInit {
   select(contact: Contact) {
     this.selContact.emit(contact);
   }
-  
 }

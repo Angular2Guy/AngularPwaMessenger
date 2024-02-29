@@ -18,7 +18,7 @@ import { from, Observable } from "rxjs";
 import { ContactUpdate } from "../model/contact-update";
 
 interface ContactsIdRequest {
-	contactIds: string[];
+  contactIds: string[];
 }
 
 @Injectable({
@@ -46,7 +46,9 @@ export class ContactService {
   }
 
   loadContactsByIds(contactIds: string[]): Observable<Contact[]> {
-	  return this.http.post<Contact[]>(this.contactUrl + '/findcontactsbyIds', {contactIds: contactIds} as ContactsIdRequest);
+    return this.http.post<Contact[]>(this.contactUrl + "/findcontactsbyIds", {
+      contactIds: contactIds,
+    } as ContactsIdRequest);
   }
 
   findContacts(conName: string): Observable<Contact[]> {
@@ -58,8 +60,11 @@ export class ContactService {
     };
     return this.http.post<Contact[]>(this.contactUrl + "/findcontacts", con);
   }
-  
+
   updateContacts(contactUpdate: ContactUpdate): Observable<boolean> {
-	  return this.http.post<boolean>(this.contactUrl + '/updatecontacts', contactUpdate);
+    return this.http.post<boolean>(
+      this.contactUrl + "/updatecontacts",
+      contactUpdate
+    );
   }
 }

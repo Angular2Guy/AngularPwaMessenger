@@ -20,7 +20,7 @@ import { BingoGame } from "src/app/model/games/bingo-game";
 })
 export class BingoService {
   private readonly baseUrl = "/rest/games/bingo";
-  
+
   constructor(private http: HttpClient) {}
 
   newGame(userIds: string[]): Observable<BingoGame> {
@@ -43,8 +43,8 @@ export class BingoService {
       `${this.baseUrl}/checkwin/${gameUuid}/user/${userUuid}`
     );
   }
-  
+
   endGame(gameUuid: string): Observable<boolean> {
-	  return this.http.get<boolean>(`${this.baseUrl}/endgame/${gameUuid}`);
+    return this.http.get<boolean>(`${this.baseUrl}/endgame/${gameUuid}`);
   }
 }

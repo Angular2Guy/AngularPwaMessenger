@@ -42,10 +42,11 @@ export class LocaldbService extends Dexie {
   }
 
   loadContacts(contact: Contact): Promise<LocalContact[]> {
-    return this.transaction("r", this.contacts, () => 	
+    return this.transaction("r", this.contacts, () =>
       this.contacts
         .filter((con) => con.ownerId === contact.userId)
-        .sortBy("name"));
+        .sortBy("name")
+    );
   }
 
   storeMessage(message: Message): Promise<number> {

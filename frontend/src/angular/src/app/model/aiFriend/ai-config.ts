@@ -10,11 +10,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-export enum AiName {AiSam = 'Ai Samantha'}
+export enum AiName {
+  AiSam = "Ai Samantha",
+}
 
-export const AiUserId = '-1';
+export const AiUserId = "-1";
 
 export interface AiConfig {
-	enabled: boolean;
-	aiModel: string;
+  enabled: boolean;
+  aiModel: string;
 }

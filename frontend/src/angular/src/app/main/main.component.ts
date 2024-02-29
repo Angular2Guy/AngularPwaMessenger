@@ -73,7 +73,7 @@ export class MainComponent
   protected contactListMode: MatDrawerMode = "side";
   protected samIsThinking = false;
   private readonly componentKey = TranslationsService.MAIN_COMPONENT;
-  private interval: any;  
+  private interval: any;
   private readonly destroy: DestroyRef = inject(DestroyRef);
 
   constructor(
@@ -113,9 +113,9 @@ export class MainComponent
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.netConnectionService.connectionMonitor.pipe(takeUntilDestroyed(this.destroy)).subscribe(
-      (online) => this.onlineAgain(online)
-    );
+    this.netConnectionService.connectionMonitor
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((online) => this.onlineAgain(online));
   }
 
   ngAfterViewInit(): void {
@@ -125,7 +125,7 @@ export class MainComponent
   ngOnDestroy(): void {
     if (!!this.interval) {
       clearInterval(this.interval);
-    }    
+    }
   }
 
   get contactList() {
@@ -210,69 +210,109 @@ export class MainComponent
 
   selectContact(contact: Contact): void {
     this.selectedContact = contact;
-    if(!!contact) {
-    this.webrtcService.receiverId = this.selectedContact.name;
-    this.addMessages().then(() => this.syncMsgs());
+    if (!!contact) {
+      this.webrtcService.receiverId = this.selectedContact.name;
+      this.addMessages().then(() => this.syncMsgs());
     }
   }
 
   sendMessage(msg: Message): void {
-    msg.fromId = this.ownContact.userId;    
+    msg.fromId = this.ownContact.userId;
     this.cryptoService
       .encryptTextAes(this.myUser.password, this.myUser.salt, msg.text)
       .then((value) => {
-    	const encMsg = JSON.parse(JSON.stringify(msg));
+        const encMsg = JSON.parse(JSON.stringify(msg));
         encMsg.text = value;
         return encMsg;
       })
-      .then(encMsg => this.localdbService.storeMessage(encMsg))
-      .then(encMsgId => this.localdbService.loadMessages(this.ownContact).then(myMsgs => myMsgs.filter(myMsg => myMsg.localId === encMsgId)[0]))
-      .then(myEncMsg => {
-		  if(msg.toId !== AiUserId) {
-        this.addMessages().then(() => {
-          this.syncMsgs();
-          this.updateMessageInterval();
-        });
+      .then((encMsg) => this.localdbService.storeMessage(encMsg))
+      .then((encMsgId) =>
+        this.localdbService
+          .loadMessages(this.ownContact)
+          .then(
+            (myMsgs) => myMsgs.filter((myMsg) => myMsg.localId === encMsgId)[0]
+          )
+      )
+      .then((myEncMsg) => {
+        if (msg.toId !== AiUserId) {
+          this.addMessages().then(() => {
+            this.syncMsgs();
+            this.updateMessageInterval();
+          });
         } else {
-			this.sendMessageToSam(msg, myEncMsg);
-		}
-		}
-      );
+          this.sendMessageToSam(msg, myEncMsg);
+        }
+      });
   }
 
   sendMessageToSam(msg: Message, encMsg: Message): void {
-	  const aiMessage = {content: msg.text, messageType: MessageType.ASSISTANT, properties: new Map<string, object>()} as AiMessage;
-	  encMsg.send = true;
-      encMsg.timestamp = msg.timestamp;
-      const myEncMsg = JSON.parse(JSON.stringify(encMsg));
-      //console.log(myEncMsg);
-      const myPromise = this.localdbService.updateMessage(encMsg).then(() => this.addMessages()).then(x => {
-		  this.samIsThinking = true;
-		  return x;
-		  });
-	  this.aiService.postTalkToSam(aiMessage).pipe(tap(() => this.markMsgAsReceived(myEncMsg, myPromise)), takeUntilDestroyed(this.destroy)).subscribe(result => {
-		  //console.log(result);
-		  const myresult = result.map(value => !value?.result?.output?.content?.trim() ? '' : value?.result?.output?.content).join('').trim();
-		  //console.log(myresult);
-		  const response = {fromId: AiUserId, received: true, send: true, toId: this.myUser.userId, text: myresult} as Message;		  
-		  this.storeAndShowMsg([response]);
-		  this.samIsThinking = false;
-	  });
+    const aiMessage = {
+      content: msg.text,
+      messageType: MessageType.ASSISTANT,
+      properties: new Map<string, object>(),
+    } as AiMessage;
+    encMsg.send = true;
+    encMsg.timestamp = msg.timestamp;
+    const myEncMsg = JSON.parse(JSON.stringify(encMsg));
+    //console.log(myEncMsg);
+    const myPromise = this.localdbService
+      .updateMessage(encMsg)
+      .then(() => this.addMessages())
+      .then((x) => {
+        this.samIsThinking = true;
+        return x;
+      });
+    this.aiService
+      .postTalkToSam(aiMessage)
+      .pipe(
+        tap(() => this.markMsgAsReceived(myEncMsg, myPromise)),
+        takeUntilDestroyed(this.destroy)
+      )
+      .subscribe((result) => {
+        //console.log(result);
+        const myresult = result
+          .map((value) =>
+            !value?.result?.output?.content?.trim()
+              ? ""
+              : value?.result?.output?.content
+          )
+          .join("")
+          .trim();
+        //console.log(myresult);
+        const response = {
+          fromId: AiUserId,
+          received: true,
+          send: true,
+          toId: this.myUser.userId,
+          text: myresult,
+        } as Message;
+        this.storeAndShowMsg([response]);
+        this.samIsThinking = false;
+      });
   }
 
-  private markMsgAsReceived(encMsg: Message, myPromise: PromiseLike<Message[]>): void {
-	  myPromise.then(() => {
-		  encMsg.received = true;
-		  encMsg.send = true;
-		  //console.log(encMsg);
-		  return this.localdbService.updateMessage(encMsg);
-	  }).then(myId => this.addMessages());
+  private markMsgAsReceived(
+    encMsg: Message,
+    myPromise: PromiseLike<Message[]>
+  ): void {
+    myPromise
+      .then(() => {
+        encMsg.received = true;
+        encMsg.send = true;
+        //console.log(encMsg);
+        return this.localdbService.updateMessage(encMsg);
+      })
+      .then((myId) => this.addMessages());
   }
 
   addNewContact(contact: Contact): void {
     this.contacts.push(contact);
-    this.contactService.updateContacts({userId: this.myUser.userId, contacts: this.contacts} as ContactUpdate)
-    	.subscribe(result => console.log(result));
+    this.contactService
+      .updateContacts({
+        userId: this.myUser.userId,
+        contacts: this.contacts,
+      } as ContactUpdate)
+      .subscribe((result) => console.log(result));
     if (!this.selectedContact) {
       this.selectContact(contact);
     }
@@ -286,29 +326,33 @@ export class MainComponent
   }
 
   private receiveRemoteMsgs(syncMsgs1: SyncMsgs) {
-    this.messageService.findMessages(syncMsgs1).pipe(takeUntilDestroyed(this.destroy)).subscribe(
-      (msgs) => {
-        const promises: PromiseLike<Message>[] = [];
-        msgs = msgs.filter(
-          (msg) =>
-            syncMsgs1.lastUpdate.getTime() < new Date(msg.timestamp).getTime()
-        );
-        msgs.forEach((msg) => {
-          promises.push(
-            this.cryptoService
-              .decryptLargeText(
-                msg.text,
-                this.myUser.privateKey,
-                this.myUser.password
-              )
-              .then((value) => {
-                msg.text = value;
-                return msg;
-              })
+    this.messageService
+      .findMessages(syncMsgs1)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe(
+        (msgs) => {
+          const promises: PromiseLike<Message>[] = [];
+          msgs = msgs.filter(
+            (msg) =>
+              syncMsgs1.lastUpdate.getTime() < new Date(msg.timestamp).getTime()
           );
-        });
-        Promise.all(promises).then((myMsgs) => this.storeAndShowMsg(myMsgs) 
-        /*{
+          msgs.forEach((msg) => {
+            promises.push(
+              this.cryptoService
+                .decryptLargeText(
+                  msg.text,
+                  this.myUser.privateKey,
+                  this.myUser.password
+                )
+                .then((value) => {
+                  msg.text = value;
+                  return msg;
+                })
+            );
+          });
+          Promise.all(promises).then(
+            (myMsgs) => this.storeAndShowMsg(myMsgs)
+            /*{
           const promises2: PromiseLike<number>[] = [];
           myMsgs.forEach((msg) =>
             promises2.push(
@@ -335,34 +379,30 @@ export class MainComponent
             })
           );
         }*/
-        );
-      },
-      (error) => console.log("findMessages failed." + error)
-    );
+          );
+        },
+        (error) => console.log("findMessages failed." + error)
+      );
   }
 
   private storeAndShowMsg(messages: Message[]): void {
-	  const promises2: PromiseLike<number>[] = [];
-          messages.forEach((msg) =>
-            promises2.push(
-              this.cryptoService
-                .encryptTextAes(
-                  this.myUser.password,
-                  this.myUser.salt,
-                  msg.text
-                )
-                .then((value) => {
-                  msg.text = value;
-                  return msg;
-                })
-                .then((myValue) => this.localdbService.storeMessage(myValue))
-                .then()
-            )
-          );
+    const promises2: PromiseLike<number>[] = [];
+    messages.forEach((msg) =>
+      promises2.push(
+        this.cryptoService
+          .encryptTextAes(this.myUser.password, this.myUser.salt, msg.text)
+          .then((value) => {
+            msg.text = value;
+            return msg;
+          })
+          .then((myValue) => this.localdbService.storeMessage(myValue))
+          .then()
+      )
+    );
 
-          Promise.all(promises2).then((values) =>
-            Promise.all(values).then(() => this.addMessages())
-          );
+    Promise.all(promises2).then((values) =>
+      Promise.all(values).then(() => this.addMessages())
+    );
   }
 
   private sendRemoteMsgs(syncMsgs1: SyncMsgs): void {
@@ -374,14 +414,17 @@ export class MainComponent
             ownId: this.ownContact.userId,
             msgs: myMsgs,
           };
-          this.messageService.sendMessages(syncMsgs2).pipe(takeUntilDestroyed(this.destroy)).subscribe(
-            (myMsgs2) => {
-              this.sendMessages(msgs, oriMsgs, myMsgs2).then(() =>
-                this.addMessages()
-              );
-            },
-            (error) => console.log("sendRemoteMsgs failed." + error)
-          );
+          this.messageService
+            .sendMessages(syncMsgs2)
+            .pipe(takeUntilDestroyed(this.destroy))
+            .subscribe(
+              (myMsgs2) => {
+                this.sendMessages(msgs, oriMsgs, myMsgs2).then(() =>
+                  this.addMessages()
+                );
+              },
+              (error) => console.log("sendRemoteMsgs failed." + error)
+            );
         });
       });
     });
@@ -431,35 +474,38 @@ export class MainComponent
   }
 
   private storeReceivedMessages(): void {
-    this.messageService.findReceivedMessages(this.ownContact).pipe(takeUntilDestroyed(this.destroy)).subscribe({
-      next: (msgs) => {
-        if (msgs.length > 0) {
-          this.localdbService
-            .loadMessages(this.ownContact)
-            .then((localMsgs) => {
-              const msgsToStore: Message[] = [];
-              msgs.forEach((msg) =>
-                msgsToStore.push(
-                  localMsgs.filter(
-                    (localMsg) => localMsg.timestamp === msg.timestamp
-                  )[0]
-                )
-              );
-              msgsToStore.forEach((msg) => (msg.received = true));
-              return msgsToStore;
-            })
-            .then((msgsToStore) => {
-              const promises: PromiseLike<number>[] = [];
-              msgsToStore.forEach((msgToStore) =>
-                promises.push(this.localdbService.updateMessage(msgToStore))
-              );
-              return Promise.all(promises);
-            })
-            .then(() => this.addMessages());
-        }
-      },
-      error: (error) => console.log("storeReceivedMessages failed." + error),
-    });
+    this.messageService
+      .findReceivedMessages(this.ownContact)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe({
+        next: (msgs) => {
+          if (msgs.length > 0) {
+            this.localdbService
+              .loadMessages(this.ownContact)
+              .then((localMsgs) => {
+                const msgsToStore: Message[] = [];
+                msgs.forEach((msg) =>
+                  msgsToStore.push(
+                    localMsgs.filter(
+                      (localMsg) => localMsg.timestamp === msg.timestamp
+                    )[0]
+                  )
+                );
+                msgsToStore.forEach((msg) => (msg.received = true));
+                return msgsToStore;
+              })
+              .then((msgsToStore) => {
+                const promises: PromiseLike<number>[] = [];
+                msgsToStore.forEach((msgToStore) =>
+                  promises.push(this.localdbService.updateMessage(msgToStore))
+                );
+                return Promise.all(promises);
+              })
+              .then(() => this.addMessages());
+          }
+        },
+        error: (error) => console.log("storeReceivedMessages failed." + error),
+      });
   }
 
   private async syncMsgs(): Promise<void> {
@@ -532,39 +578,70 @@ export class MainComponent
   }
 
   protected afterContactsLoaded(): Promise<Message[]> {
-	//console.log(this.gamesService.myUser);	 
-	this.myUser = this.gamesService.myUser;
-	const myPromise = this.aiService.getAiConfig().toPromise().then(result => {
-		if(!!result.enabled) {
-		  this.contacts.push({base64Avatar: null, name: AiName.AiSam, publicKey: this.myUser.publicKey, userId: AiUserId} as Contact);	
-		} 
-	}).then(() => {
-		if(this.myUser?.contacts?.length > 0 && !!this.netConnectionService.connetionStatus) {
-		let contactMap = new Map<string, Contact>();
-		const myPromise2 = this.contactService.loadContactsByIds(this.myUser.contacts).pipe(takeUntilDestroyed(this.destroy))
-		  .toPromise().then(result => { 
-		  this.contacts.forEach(myContact => contactMap.set(myContact.userId, myContact));
-		  result.filter(myContact => this.contacts.filter(myContact1 => myContact.userId === myContact1.userId).length === 0)
-		  	.map(myContact =>  ({
-        		base64Avatar: myContact.base64Avatar,
-        		name: myContact.name,
-		        ownerId: myContact.userId,
-        		publicKey: myContact.publicKey,
-        		userId: myContact.userId,
-      		  } as LocalContact))
-      		  .forEach(myContact => this.localdbService.storeContact(myContact));		  
-		  result.forEach(myContact => contactMap.set(myContact.userId, myContact));
-		  this.contacts = [];
-		  contactMap.forEach((value,_) => this.contacts.push(value));		  
-		  if(this.contacts.length > 0) {
-			  this.selectContact(this.contacts[0]);
-		  }
-		  return result;		  
-		});	
-		return myPromise2;
-	} else {
-		return Promise.resolve([]);	
-	}});		
+    //console.log(this.gamesService.myUser);
+    this.myUser = this.gamesService.myUser;
+    const myPromise = this.aiService
+      .getAiConfig()
+      .toPromise()
+      .then((result) => {
+        if (!!result.enabled) {
+          this.contacts.push({
+            base64Avatar: null,
+            name: AiName.AiSam,
+            publicKey: this.myUser.publicKey,
+            userId: AiUserId,
+          } as Contact);
+        }
+      })
+      .then(() => {
+        if (
+          this.myUser?.contacts?.length > 0 &&
+          !!this.netConnectionService.connetionStatus
+        ) {
+          let contactMap = new Map<string, Contact>();
+          const myPromise2 = this.contactService
+            .loadContactsByIds(this.myUser.contacts)
+            .pipe(takeUntilDestroyed(this.destroy))
+            .toPromise()
+            .then((result) => {
+              this.contacts.forEach((myContact) =>
+                contactMap.set(myContact.userId, myContact)
+              );
+              result
+                .filter(
+                  (myContact) =>
+                    this.contacts.filter(
+                      (myContact1) => myContact.userId === myContact1.userId
+                    ).length === 0
+                )
+                .map(
+                  (myContact) =>
+                    ({
+                      base64Avatar: myContact.base64Avatar,
+                      name: myContact.name,
+                      ownerId: myContact.userId,
+                      publicKey: myContact.publicKey,
+                      userId: myContact.userId,
+                    } as LocalContact)
+                )
+                .forEach((myContact) =>
+                  this.localdbService.storeContact(myContact)
+                );
+              result.forEach((myContact) =>
+                contactMap.set(myContact.userId, myContact)
+              );
+              this.contacts = [];
+              contactMap.forEach((value, _) => this.contacts.push(value));
+              if (this.contacts.length > 0) {
+                this.selectContact(this.contacts[0]);
+              }
+              return result;
+            });
+          return myPromise2;
+        } else {
+          return Promise.resolve([]);
+        }
+      });
     return myPromise.then(() => this.addMessages());
   }
 
@@ -579,7 +656,11 @@ export class MainComponent
       this.messages.pop();
     }
     this.messages = values.map((msg) => {
-      if (msg.fromId !== AiUserId && msg.toId !== AiUserId && Notification.permission === "granted") {
+      if (
+        msg.fromId !== AiUserId &&
+        msg.toId !== AiUserId &&
+        Notification.permission === "granted"
+      ) {
         new Notification(`Msg from: ${msg.fromId}`, { vibrate: 400 });
       }
       if (msg.filename) {

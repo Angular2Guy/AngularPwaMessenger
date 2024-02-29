@@ -1,6 +1,12 @@
 <div class="container" [ngStyle]="{ 'height.px': gamesService.windowHeight }">
   <div class="header-cell" i18n="@@bingoHeading">Lets play Bingo</div>
-  <div class="header-cell" *ngIf="gameUuid && !bingoResult" i18n="@@bingoNewNumber">New Number:</div>
+  <div
+    class="header-cell"
+    *ngIf="gameUuid && !bingoResult"
+    i18n="@@bingoNewNumber"
+  >
+    New Number:
+  </div>
   <div class="header-cell" *ngIf="!gameUuid || bingoResult">
     <button
       mat-raised-button
@@ -11,7 +17,9 @@
       Start
     </button>
   </div>
-  <div class="header-cell">{{ bingoNumber > 0 && !bingoResult ? bingoNumber : "-" }}</div>
+  <div class="header-cell">
+    {{ bingoNumber > 0 && !bingoResult ? bingoNumber : "-" }}
+  </div>
   <div *ngIf="bingoResult" class="game-won">Won</div>
   <div class="header-cell" *ngIf="!bingoResult && bingoNumber <= 0"></div>
   <div class="header-cell" *ngIf="!bingoResult && bingoNumber > 0">

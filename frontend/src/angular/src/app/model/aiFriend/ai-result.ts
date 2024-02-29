@@ -11,44 +11,43 @@
    limitations under the License.
  */
 export interface AiResultDto {
-	result: AiResult;
-	results: Array<AiResult>;
-	metadata: AiMetadata;
+  result: AiResult;
+  results: Array<AiResult>;
+  metadata: AiMetadata;
 }
 
 export interface AiResult {
-	metadata: AiMetadata;
-	output: AiOutput;
+  metadata: AiMetadata;
+  output: AiOutput;
 }
 
-export interface AiOutput { 
-	content: string;
-	messageType: string;
-	
+export interface AiOutput {
+  content: string;
+  messageType: string;
 }
 
 export interface ResultMetadata {
-	contentFilterMetadata: unknown;
-	finishReason: unknown;
+  contentFilterMetadata: unknown;
+  finishReason: unknown;
 }
 
 export interface AiMetadata {
-	promptMetadata: Array<unknown>;
-	rateLimit: RateLimit;
-	usage: Usage;
+  promptMetadata: Array<unknown>;
+  rateLimit: RateLimit;
+  usage: Usage;
 }
 
 export interface RateLimit {
-	requestsLimit: number;
-	requestsRemaining: number;
-	requestsReset: string;
-	tokensLimit: number;
-	tokensRemaining: number;
-	tokensReset: string;
+  requestsLimit: number;
+  requestsRemaining: number;
+  requestsReset: string;
+  tokensLimit: number;
+  tokensRemaining: number;
+  tokensReset: string;
 }
 
 export interface Usage {
-	generationTokens: number;
-	promptTokens: number;
-	totalTokens: number;
-} 
+  generationTokens: number;
+  promptTokens: number;
+  totalTokens: number;
+}
