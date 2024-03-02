@@ -35,6 +35,7 @@ export interface AiMetadata {
   promptMetadata: Array<unknown>;
   rateLimit: RateLimit;
   usage: Usage;
+  finishReason?: string;
 }
 
 export interface RateLimit {

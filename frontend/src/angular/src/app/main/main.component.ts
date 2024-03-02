@@ -271,11 +271,15 @@ export class MainComponent
       .subscribe((result) => {
         //console.log(result);
         const myresult = result
-          .map((value) =>
-            !value?.result?.output?.content?.trim()
-              ? ""
-              : value?.result?.output?.content
-          )
+          .map((value) => {
+          //console.log(value);
+          //console.log(value.result.metadata?.finishReason);
+          const defaultResult = !!value.result.metadata?.finishReason && value.result.metadata?.finishReason === 'unknown' 
+            ? $localize `:@@IdontKnow:I am sorry. I do not have an answer.` : '';
+          return  !value?.result?.output?.content?.trim()
+              ? defaultResult 
+              : value?.result?.output?.content;
+          })
           .join("")
           .trim();
         //console.log(myresult);
