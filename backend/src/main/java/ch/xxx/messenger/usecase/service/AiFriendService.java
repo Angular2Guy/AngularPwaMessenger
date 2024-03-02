@@ -12,6 +12,10 @@
  */
 package ch.xxx.messenger.usecase.service;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -21,9 +25,11 @@ import org.springframework.stereotype.Service;
 import ch.xxx.messenger.domain.model.AiConfig;
 import ch.xxx.messenger.domain.model.AiMessage;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class AiFriendService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AiFriendService.class);
 	@Value("${spring.profiles.active:}")
 	private String activeProfile;
 	@Value("${spring.ai.ollama.chat.model:}")
@@ -40,7 +46,10 @@ public class AiFriendService {
 	
 	public Flux<ChatResponse> talkToSam(AiMessage statement) {
 		Prompt prompt = new Prompt(statement);
-		return this.streamingChatClient.stream(prompt);
+		return this.streamingChatClient.stream(prompt).onErrorResume(ex -> {
+			LOGGER.warn("talkToSam(...) failed.", ex);
+			return Mono.just(new ChatResponse(List.of()));	
+		});
 	}
 	
 }
