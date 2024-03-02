@@ -36,6 +36,7 @@
     "mainLogin": "Login",
     "mainLogout": "Logout",
     "mainLoginMessage": "{$START_TAG_DIV}Please Login{$CLOSE_TAG_DIV}",
+    "samIsThinking": "Samantha is thinking.",
     "onlineAgainMsg": "You are online again and your token is expired. To reconnect please logout and login again.",
     "voiceLandscapeNotSupported": "Landscape orientation not supported on small devices.",
     "voiceRemote": "Remote",
