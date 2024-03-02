@@ -30,6 +30,9 @@ The video calls are done with WebRtc in the Angular frontend in the browser and 
 
 The application has been extended to provide a bingo game. The Frontend is implemented in Angular lazy loaded standalone components and the backend is done in Spring Boot with reactive Controllers/Services/Repositories. 
 
+### AI friend available as new contact
+The application has been extended to provide an AI friend that can can provide companionship. It uses Spring AI to call a Ollama model that is trained with psychological/philosophical data. To enable it the application has to be started with the 'ollama' profile and Ollama has to be installed or run in a docker container. The needed commands for the docker container can be found in this [file](https://github.com/Angular2Guy/AngularPwaMessenger/blob/master/runOllama.sh).
+
 ## C4 Architecture Diagrams
 The project has a [System Context Diagram](structurizr/diagrams/structurizr-1-SystemContext.svg), a [Container Diagram](structurizr/diagrams/structurizr-1-Containers.svg) and a [Component Diagram](structurizr/diagrams/structurizr-1-Components.svg). The Diagrams have been created with Structurizr. The file runStructurizr.sh contains the commands to use Structurizr and the directory structurizr contains the dsl file.
 
