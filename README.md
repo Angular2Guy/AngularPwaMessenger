@@ -5,6 +5,7 @@ Author: Sven Loesekann
 Technologies: PWA, WebRtc, WebSocket(Frontend, Backend), Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
 ## Articles
+* [Do you need a friend in a Messenger?](https://angular2guy.wordpress.com/2024/03/03/do-you-need-an-ai-friend-in-a-messenger/)
 * [Multiplayer Bingo Games with Angular and Spring Boot Part1](https://angular2guy.wordpress.com/2023/10/06/multiplayer-bingo-games-with-angular-and-spring-boot-part1/)
 * [Spring Boot 3 update experience](https://angular2guy.wordpress.com/2022/11/15/spring-boot-3-update-experience/)
 * [Videocalls in the AngularPwaMessenger Part2](https://angular2guy.wordpress.com/2022/08/04/videocalls-in-the-angularpwamessenger-part2/)
