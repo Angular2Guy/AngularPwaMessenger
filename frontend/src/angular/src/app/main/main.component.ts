@@ -248,7 +248,7 @@ export class MainComponent
   sendMessageToSam(msg: Message, encMsg: Message): void {
     const aiMessage = {
       content: msg.text,
-      messageType: MessageType.ASSISTANT,
+      messageType: MessageType.USER,
       properties: new Map<string, object>(),
     } as AiMessage;
     encMsg.send = true;
