@@ -269,26 +269,21 @@ export class MainComponent
         takeUntilDestroyed(this.destroy)
       )
       .subscribe((result) => {
-        //console.log(result);
-        const myresult = result
-          .map((value) => {
+        //console.log(result);                  
           //console.log(value);
           //console.log(value.result.metadata?.finishReason);
-          const defaultResult = !!value.result.metadata?.finishReason && value.result.metadata?.finishReason === 'unknown' 
+          const defaultResult = !!result.result.metadata?.finishReason && result.result.metadata?.finishReason === 'unknown'   
             ? $localize `:@@IdontKnow:I am sorry. I do not have an answer.` : '';
-          return  !value?.result?.output?.content?.trim()
+          const myResult = !result?.result?.output?.content?.trim()
               ? defaultResult 
-              : value?.result?.output?.content;
-          })
-          .join("")
-          .trim();
+              : result?.result?.output?.content?.trim();          
         //console.log(myresult);
         const response = {
           fromId: AiUserId,
           received: true,
           send: true,
           toId: this.myUser.userId,
-          text: myresult,
+          text: myResult,
         } as Message;
         this.storeAndShowMsg([response]);
         this.samIsThinking = false;

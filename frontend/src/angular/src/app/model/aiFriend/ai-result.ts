@@ -23,6 +23,7 @@ export interface AiResult {
 
 export interface AiOutput {
   content: string;
+  properties?: object;
   messageType: string;
 }
 
@@ -32,9 +33,10 @@ export interface ResultMetadata {
 }
 
 export interface AiMetadata {
-  promptMetadata: Array<unknown>;
+  contentFilterMetadata: Usage;
   rateLimit: RateLimit;
   usage: Usage;
+  promptMetadata?: string[];
   finishReason?: string;
 }
 

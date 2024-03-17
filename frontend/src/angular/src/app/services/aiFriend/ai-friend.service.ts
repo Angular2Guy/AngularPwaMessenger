@@ -27,7 +27,7 @@ export class AiFriendService {
     return this.http.get<AiConfig>("/rest/aifriend/config");
   }
 
-  public postTalkToSam(aiMessage: AiMessage): Observable<AiResultDto[]> {
-    return this.http.post<AiResultDto[]>("/rest/aifriend/talk", aiMessage);
+  public postTalkToSam(aiMessage: AiMessage): Observable<AiResultDto> {
+    return this.http.post<AiResultDto>("/rest/aifriend/talk", aiMessage);
   }
 }

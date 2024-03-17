@@ -12,19 +12,16 @@
  */
 package ch.xxx.messenger.usecase.service;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ch.xxx.messenger.domain.model.AiConfig;
 import ch.xxx.messenger.domain.model.AiMessage;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -34,22 +31,19 @@ public class AiFriendService {
 	private String activeProfile;
 	@Value("${spring.ai.ollama.chat.model:}")
 	private String aiModel;
-	private final StreamingChatClient streamingChatClient;
+	private final ChatClient chatClient;
 	
-	public AiFriendService(StreamingChatClient streamingChatClient) {
-		this.streamingChatClient = streamingChatClient;
+	public AiFriendService(ChatClient chatClient) {
+		this.chatClient = chatClient;
 	}
 	
 	public AiConfig createAiConfig() {
 		return new AiConfig(this.activeProfile.contains("ollama"), this.aiModel);
 	}
 	
-	public Flux<ChatResponse> talkToSam(AiMessage statement) {
+	public Mono<ChatResponse> talkToSam(AiMessage statement) {
 		Prompt prompt = new Prompt(statement);
-		return this.streamingChatClient.stream(prompt).onErrorResume(ex -> {
-			LOGGER.warn("talkToSam(...) failed.", ex);
-			return Mono.just(new ChatResponse(List.of()));	
-		});
+		return Mono.just(this.chatClient.call(prompt));
 	}
 	
 }
