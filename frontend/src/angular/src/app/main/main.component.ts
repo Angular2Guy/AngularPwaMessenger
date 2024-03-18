@@ -269,15 +269,18 @@ export class MainComponent
         takeUntilDestroyed(this.destroy)
       )
       .subscribe((result) => {
-        //console.log(result);                  
+        //console.log(result);
+        let myResult = result
+          .map((value) => {
           //console.log(value);
           //console.log(value.result.metadata?.finishReason);
-          const defaultResult = !!result.result.metadata?.finishReason && result.result.metadata?.finishReason === 'unknown'   
-            ? $localize `:@@IdontKnow:I am sorry. I do not have an answer.` : '';
-          const myResult = !result?.result?.output?.content?.trim()
-              ? defaultResult 
-              : result?.result?.output?.content?.trim();          
-        //console.log(myresult);
+          return value?.result?.output?.content;
+          })
+          .join("")
+          .trim();
+          //console.log(myResult);
+          myResult = !!myResult ? myResult : $localize `:@@IdontKnow:I am sorry. I do not have an answer.`;
+        //console.log(myResult);
         const response = {
           fromId: AiUserId,
           received: true,

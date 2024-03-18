@@ -25,7 +25,7 @@ import ch.xxx.messenger.domain.model.AiConfig;
 import ch.xxx.messenger.domain.model.AiMessage;
 import ch.xxx.messenger.domain.model.AiMessageDto;
 import ch.xxx.messenger.usecase.service.AiFriendService;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/rest/aifriend")
@@ -43,7 +43,7 @@ public class AiFriendController {
 	}
 	
 	@PostMapping("/talk")
-	public Mono<ChatResponse> talkToSam(@RequestBody AiMessageDto aiMessageDto) {		
+	public Flux<ChatResponse> talkToSam(@RequestBody AiMessageDto aiMessageDto) {		
 		return this.aiFriendService.talkToSam(new AiMessage(aiMessageDto.getContent(), aiMessageDto.getProperties(), aiMessageDto.getMessageType()));
 	}	
 }
