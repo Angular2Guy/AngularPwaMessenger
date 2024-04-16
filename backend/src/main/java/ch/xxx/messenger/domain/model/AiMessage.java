@@ -13,8 +13,10 @@
 package ch.xxx.messenger.domain.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 
@@ -22,6 +24,7 @@ public class AiMessage implements Message {
 	private String content;
 	private Map<String,Object> properties = new HashMap<>();
 	private MessageType messageType;
+	private List<Media> media = List.of();
 	
 	public AiMessage() {}
 	
@@ -56,6 +59,11 @@ public class AiMessage implements Message {
 	@Override
 	public MessageType getMessageType() {
 		return this.messageType;
+	}
+
+	@Override
+	public List<Media> getMedia() {
+		return this.media;
 	}
 
 }

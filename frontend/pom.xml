@@ -54,9 +54,6 @@
 								<argument>install</argument>
 							</arguments>
 							<workingDirectory>src/angular</workingDirectory>
-							<target>
-								<echo message="Npm install" />
-							</target>
 						</configuration>
 					</execution>
 					<execution>
@@ -97,7 +94,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<artifactId>lifecycle-mapping</artifactId>

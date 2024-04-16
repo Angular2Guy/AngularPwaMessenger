@@ -144,7 +144,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<dependency>
 				<groupId>org.springframework.ai</groupId>
 				<artifactId>spring-ai-bom</artifactId>
-				<version>0.8.0</version>
+				<version>0.8.1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -196,7 +196,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<artifactId>lifecycle-mapping</artifactId>
