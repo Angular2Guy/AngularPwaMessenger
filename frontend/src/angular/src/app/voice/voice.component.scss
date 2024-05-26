@@ -2,7 +2,7 @@
 
 $called-palette: mat.$blue-palette;
 
-$caller-palette: mat.$lime-palette;
+$caller-palette: mat.$green-palette;
 
 .landscape-orientation {
   visibility: visible;
@@ -34,14 +34,26 @@ $caller-palette: mat.$lime-palette;
   align-items: stretch;
   height: 100%;
   //@debug mat.get-color-from-palette($called-palette, 50);
-  background-color: mat.get-color-from-palette($called-palette, 50);
+  $theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: $called-palette,
+  )
+));
+  background-color: mat.get-theme-color($theme, primary, 70);
 }
 
 .local {
   flex: 0 0 auto;
   height: fit-content;
   width: 200px;
-  background-color: mat.get-color-from-palette($caller-palette, 100);
+  $theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: $caller-palette,
+  )
+));
+  background-color: mat.get-theme-color($theme, primary, 70);
 }
 
 .video-button {

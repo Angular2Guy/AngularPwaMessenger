@@ -663,7 +663,7 @@ export class MainComponent
         msg.toId !== AiUserId &&
         Notification.permission === "granted"
       ) {
-        new Notification(`Msg from: ${msg.fromId}`, { vibrate: 400 });
+        new Notification(`Msg from: ${msg.fromId}`, { vibrate: 400 } as NotificationOptions);
       }
       if (msg.filename) {
         msg.text = atob(msg.text.split("base64,")[1]);

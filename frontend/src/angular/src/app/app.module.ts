@@ -12,7 +12,7 @@
  */
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule, forwardRef } from "@angular/core";
-import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
@@ -40,47 +40,41 @@ import { FileuploadComponent } from "./fileupload/fileupload.component";
 import { TokenInterceptor } from "./services/token.interceptor";
 import { VoiceComponent } from "./voice/voice.component";
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    MainComponent,
-    MessagesComponent,
-    LoginComponent,
-    AddContactsComponent,
-    CameraComponent,
-    FileuploadComponent,
-    VoiceComponent,
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatTabsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatInputModule,
-    BrowserAnimationsModule,
-    MatFormFieldModule,
-    MatListModule,
-    MatAutocompleteModule,
-    MatProgressSpinnerModule,
-    forwardRef(() => ContactsComponent),
-    ServiceWorkerModule.register("ngsw-worker.js", {
-      enabled: environment.production,
-    }),
-  ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpProfileInterceptor,
-      multi: true,
-    },
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        MainComponent,
+        MessagesComponent,
+        LoginComponent,
+        AddContactsComponent,
+        CameraComponent,
+        FileuploadComponent,
+        VoiceComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppRoutingModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatTabsModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatInputModule,
+        BrowserAnimationsModule,
+        MatFormFieldModule,
+        MatListModule,
+        MatAutocompleteModule,
+        MatProgressSpinnerModule,
+        forwardRef(() => ContactsComponent),
+        ServiceWorkerModule.register("ngsw-worker.js", {
+            enabled: environment.production,
+        })], providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpProfileInterceptor,
+            multi: true,
+        },
+        { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
