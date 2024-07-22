@@ -151,7 +151,7 @@ export class MainComponent
 
   openFileuploadDialog(): void {
     const dialogRef = this.dialog.open(FileuploadComponent, {
-      width: "500px",
+      width: "500px",      
       data: { receiver: this.selectedContact },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -177,6 +177,8 @@ export class MainComponent
   openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginComponent, {
       width: "600px",
+      disableClose: true,
+      hasBackdrop: true,
       data: { myUser: this.myUser },
     });
 

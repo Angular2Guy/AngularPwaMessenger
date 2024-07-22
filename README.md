@@ -4,6 +4,8 @@ Author: Sven Loesekann
 
 Technologies: PWA, WebRtc, WebSocket(Frontend, Backend), Angular, Angular-Cli, Angular-Material, Typescript, Spring Boot, Java, Spring Webflux, MongoDB, Maven, Docker
 
+[![CodeQL](https://github.com/Angular2Guy/AngularPwaMessenger/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Angular2Guy/AngularPwaMessenger/actions/workflows/codeql-analysis.yml)
+
 ## Articles
 * [Do you need a friend in a Messenger?](https://angular2guy.wordpress.com/2024/03/03/do-you-need-an-ai-friend-in-a-messenger/)
 * [Multiplayer Bingo Games with Angular and Spring Boot Part1](https://angular2guy.wordpress.com/2023/10/06/multiplayer-bingo-games-with-angular-and-spring-boot-part1/)
