@@ -47,12 +47,11 @@ interface CheckForWinResult {
 }
 
 @Component({
-  standalone: true,
-  selector: "app-bingo",
-  templateUrl: "./bingo.component.html",
-  styleUrls: ["./bingo.component.scss"],
-  providers: [BingoService],
-  imports: [CommonModule, MatButtonModule],
+    selector: "app-bingo",
+    templateUrl: "./bingo.component.html",
+    styleUrls: ["./bingo.component.scss"],
+    providers: [BingoService],
+    imports: [CommonModule, MatButtonModule]
 })
 export class BingoComponent implements OnInit {
   protected bingoCells: BingoCell[] = [];

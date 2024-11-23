@@ -17,9 +17,10 @@ import { Contact } from "../model/contact";
 import { Message } from "../model/message";
 
 @Component({
-  selector: "app-fileupload",
-  templateUrl: "./fileupload.component.html",
-  styleUrls: ["./fileupload.component.scss"],
+    selector: "app-fileupload",
+    templateUrl: "./fileupload.component.html",
+    styleUrls: ["./fileupload.component.scss"],
+    standalone: false
 })
 export class FileuploadComponent implements OnInit {
   protected currentFile: File;

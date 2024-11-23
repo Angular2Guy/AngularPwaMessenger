@@ -16,11 +16,10 @@ import { CommonModule } from "@angular/common";
 import { AiName } from "../model/aiFriend/ai-config";
 
 @Component({
-  standalone: true,
-  selector: "app-contacts",
-  templateUrl: "./contacts.component.html",
-  styleUrls: ["./contacts.component.scss"],
-  imports: [CommonModule],
+    selector: "app-contacts",
+    templateUrl: "./contacts.component.html",
+    styleUrls: ["./contacts.component.scss"],
+    imports: [CommonModule]
 })
 export class ContactsComponent implements OnInit {
   AiName = AiName;

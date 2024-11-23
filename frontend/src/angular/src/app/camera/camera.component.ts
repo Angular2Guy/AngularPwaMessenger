@@ -12,9 +12,10 @@ import { Contact } from "../model/contact";
 import { Message } from "../model/message";
 
 @Component({
-  selector: "app-camera",
-  templateUrl: "./camera.component.html",
-  styleUrls: ["./camera.component.scss"],
+    selector: "app-camera",
+    templateUrl: "./camera.component.html",
+    styleUrls: ["./camera.component.scss"],
+    standalone: false
 })
 export class CameraComponent implements OnInit {
   @ViewChild("videoElement", { static: true }) videoElement: ElementRef;

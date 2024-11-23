@@ -32,18 +32,17 @@ import { Message } from "src/app/model/message";
 import { GamesService } from "../services/games/games.service";
 
 @Component({
-  standalone: true,
-  selector: "app-games",
-  templateUrl: "./games.component.html",
-  styleUrls: ["./games.component.scss"],
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    ContactsComponent,
-  ],
+    selector: "app-games",
+    templateUrl: "./games.component.html",
+    styleUrls: ["./games.component.scss"],
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatSidenavModule,
+        ContactsComponent,
+    ]
 })
 export class GamesComponent
   extends BaseComponent

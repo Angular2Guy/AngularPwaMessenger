@@ -34,9 +34,10 @@ import { LocalContact } from "../model/local-contact";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: "app-add-contacts",
-  templateUrl: "./add-contacts.component.html",
-  styleUrls: ["./add-contacts.component.scss"],
+    selector: "app-add-contacts",
+    templateUrl: "./add-contacts.component.html",
+    styleUrls: ["./add-contacts.component.scss"],
+    standalone: false
 })
 export class AddContactsComponent implements OnInit {
   @Output() addNewContact = new EventEmitter<Contact>();

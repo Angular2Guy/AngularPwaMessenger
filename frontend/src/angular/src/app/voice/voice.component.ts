@@ -36,9 +36,10 @@ const offerOptions = {
 };
 
 @Component({
-  selector: "app-voice",
-  templateUrl: "./voice.component.html",
-  styleUrls: ["./voice.component.scss"],
+    selector: "app-voice",
+    templateUrl: "./voice.component.html",
+    styleUrls: ["./voice.component.scss"],
+    standalone: false
 })
 export class VoiceComponent implements OnInit, AfterViewInit {
   @ViewChild("local_video") localVideo: ElementRef;

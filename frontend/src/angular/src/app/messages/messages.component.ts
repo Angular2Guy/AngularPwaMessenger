@@ -17,9 +17,10 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Constants } from "../common/constants";
 
 @Component({
-  selector: "app-messages",
-  templateUrl: "./messages.component.html",
-  styleUrls: ["./messages.component.scss"],
+    selector: "app-messages",
+    templateUrl: "./messages.component.html",
+    styleUrls: ["./messages.component.scss"],
+    standalone: false
 })
 export class MessagesComponent implements OnInit {
   @Input()
