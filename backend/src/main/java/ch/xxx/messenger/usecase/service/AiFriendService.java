@@ -14,14 +14,14 @@ package ch.xxx.messenger.usecase.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.StreamingChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ch.xxx.messenger.domain.model.AiConfig;
-import ch.xxx.messenger.domain.model.AiMessage;
 import reactor.core.publisher.Flux;
 
 @Service
@@ -31,9 +31,9 @@ public class AiFriendService {
 	private String activeProfile;
 	@Value("${spring.ai.ollama.chat.model:}")
 	private String aiModel;
-	private final StreamingChatClient streamingChatClient;
+	private final StreamingChatModel streamingChatClient;
 	
-	public AiFriendService(StreamingChatClient streamingChatClient) {
+	public AiFriendService(StreamingChatModel streamingChatClient) {
 		this.streamingChatClient = streamingChatClient;
 	}
 	
@@ -41,7 +41,7 @@ public class AiFriendService {
 		return new AiConfig(this.activeProfile.contains("ollama"), this.aiModel);
 	}
 	
-	public Flux<ChatResponse> talkToSam(AiMessage statement) {
+	public Flux<ChatResponse> talkToSam(UserMessage statement) {
 		Prompt prompt = new Prompt(statement);
 		return this.streamingChatClient.stream(prompt);
 	}

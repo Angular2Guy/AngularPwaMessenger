@@ -12,9 +12,12 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.xxx.messenger.domain.model.AiConfig;
-import ch.xxx.messenger.domain.model.AiMessage;
 import ch.xxx.messenger.domain.model.AiMessageDto;
 import ch.xxx.messenger.usecase.service.AiFriendService;
 import reactor.core.publisher.Flux;
@@ -44,6 +46,6 @@ public class AiFriendController {
 	
 	@PostMapping("/talk")
 	public Flux<ChatResponse> talkToSam(@RequestBody AiMessageDto aiMessageDto) {		
-		return this.aiFriendService.talkToSam(new AiMessage(aiMessageDto.getContent(), aiMessageDto.getProperties(), aiMessageDto.getMessageType()));
+		return this.aiFriendService.talkToSam(new UserMessage(aiMessageDto.getContent(), List.of(), aiMessageDto.getProperties()));
 	}	
 }

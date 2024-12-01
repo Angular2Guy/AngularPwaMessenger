@@ -28,10 +28,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -52,7 +52,7 @@ public class MessageControllerTest {
 	private static final String TOKEN_KEY = "-naK4ey61mAnF7sYgmT9BDXxqJnYaaPRlCKgbgua77AlwE82_UcE27hCClkiyoaUJUB3g7__0mTkyIpagusnLnZaSVJ--Qh"
 			+ "Z4QQF93Tw59tai4JDHf0F8kFvK6XH3pPCMEH15T9GDjoSUMMMoJmI8ErVewJlkczOQANMcNCa1MTfoto1Y2Hi5GvSo2muazKNkM6Rv8tJwI_xBJjWeY3QcR9Pgp08a"
 			+ "k5ATXy4D-9X_pA_TtrR2UAqkOu6q2INcixonOvRCW3xgDwj9fO246DYetlHBV6ClLhv1xDnlX86Vi7Bopt7DbmNRyNILUlBmI3zqaFh4rgSQJGvIyRiliQbqg==";
-	@MockBean
+	@MockitoBean
 	private MessageService messageService;
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
