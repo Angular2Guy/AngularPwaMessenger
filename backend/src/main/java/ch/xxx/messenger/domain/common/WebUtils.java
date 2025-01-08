@@ -71,15 +71,15 @@ public class WebUtils {
 		return "";
 	}
 
-	public static Tuple<String, String> getTokenUserRoles(Map<String, String> headers,
+	public static TokenSubjectRoles getTokenUserRoles(Map<String, String> headers,
 			JwtTokenProvider jwtTokenProvider) {
 		Optional<String> tokenStr = extractToken(headers);
 		Optional<Jws<Claims>> claims = jwtTokenProvider.getClaims(tokenStr);
 		if (claims.isPresent() && new Date().before(claims.get().getBody().getExpiration())) {
-			return new Tuple<String, String>(claims.get().getBody().getSubject(),
+			return new TokenSubjectRoles(claims.get().getBody().getSubject(),
 					claims.get().getBody().get(TOKENAUTHKEY).toString());
 		}
-		return new Tuple<String, String>(null, null);
+		return new TokenSubjectRoles(null, null);
 	}
 
 	public static boolean checkToken(HttpServletRequest request, JwtTokenProvider jwtTokenProvider) {

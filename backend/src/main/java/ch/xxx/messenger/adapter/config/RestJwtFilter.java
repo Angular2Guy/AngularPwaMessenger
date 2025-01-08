@@ -17,6 +17,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import ch.xxx.messenger.domain.common.JwtTokenProvider;
+import ch.xxx.messenger.domain.common.Role;
+import ch.xxx.messenger.domain.common.WebUtils;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,15 +31,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import ch.xxx.messenger.domain.common.JwtTokenProvider;
-import ch.xxx.messenger.domain.common.Role;
-import ch.xxx.messenger.domain.common.Tuple;
-import ch.xxx.messenger.domain.common.WebUtils;
 
 @Component
 public class RestJwtFilter implements Filter {
@@ -49,8 +47,8 @@ public class RestJwtFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest httpReq = (HttpServletRequest) request;
 		if (httpReq.getRequestURI().contains("/rest") && !httpReq.getRequestURI().contains("/rest/auth")) {			
-			Tuple<String, String> tokenTuple = WebUtils.getTokenUserRoles(createHeaderMap(request), jwtTokenProvider);
-			if (tokenTuple.getB() == null || !tokenTuple.getB().contains(Role.USERS.name())) {
+			var tokenTuple = WebUtils.getTokenUserRoles(createHeaderMap(request), jwtTokenProvider);
+			if (tokenTuple.roles() == null || !tokenTuple.roles().contains(Role.USERS.name())) {
 				HttpServletResponse httpRes = (HttpServletResponse) response;
 				httpRes.setStatus(401);
 				LOG.info("Request denied: ",httpReq.getRequestURL().toString());
