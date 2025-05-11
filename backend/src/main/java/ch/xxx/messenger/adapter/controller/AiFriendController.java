@@ -12,7 +12,7 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
-import java.util.List;
+import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/rest/aifriend")
 public class AiFriendController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AiFriendController.class);
-	private AiFriendService aiFriendService;
+	private final AiFriendService aiFriendService;
 	
 	public AiFriendController(AiFriendService aiFriendService) {
 		this.aiFriendService = aiFriendService;
@@ -46,6 +46,10 @@ public class AiFriendController {
 	
 	@PostMapping("/talk")
 	public Flux<ChatResponse> talkToSam(@RequestBody AiMessageDto aiMessageDto) {		
-		return this.aiFriendService.talkToSam(new UserMessage(aiMessageDto.getContent(), List.of(), aiMessageDto.getProperties()));
+		var userMessage = UserMessage.builder().text(aiMessageDto.getContent())
+				.metadata(aiMessageDto.getProperties())
+				.media(Collections.emptyList())
+				.build();
+		return this.aiFriendService.talkToSam(userMessage);
 	}	
 }
