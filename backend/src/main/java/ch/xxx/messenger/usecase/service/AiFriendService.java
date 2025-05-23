@@ -29,7 +29,7 @@ public class AiFriendService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AiFriendService.class);
 	@Value("${spring.profiles.active:}")
 	private String activeProfile;
-	@Value("${spring.ai.ollama.chat.model:}")
+	@Value("${spring.ai.ollama.chat.options.model:}")
 	private String aiModel;
 	private final StreamingChatModel streamingChatClient;
 	
@@ -42,6 +42,7 @@ public class AiFriendService {
 	}
 	
 	public Flux<ChatResponse> talkToSam(UserMessage statement) {
+		//LOGGER.info(this.streamingChatClient.stream(statement.getText()).reduce("", (acc, value) -> acc+value).block());
 		Prompt prompt = new Prompt(statement);
 		return this.streamingChatClient.stream(prompt);
 	}

@@ -277,7 +277,7 @@ export class MainComponent
           .map((value) => {
           //console.log(value);
           //console.log(value.result.metadata?.finishReason);
-          return value?.result?.output?.content;
+          return value?.result?.output?.text;
           })
           .join("")
           .trim();

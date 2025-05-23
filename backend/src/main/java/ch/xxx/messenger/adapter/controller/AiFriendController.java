@@ -12,8 +12,6 @@
  */
 package ch.xxx.messenger.adapter.controller;
 
-import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -46,10 +44,7 @@ public class AiFriendController {
 	
 	@PostMapping("/talk")
 	public Flux<ChatResponse> talkToSam(@RequestBody AiMessageDto aiMessageDto) {		
-		var userMessage = UserMessage.builder().text(aiMessageDto.getContent())
-				.metadata(aiMessageDto.getProperties())
-				.media(Collections.emptyList())
-				.build();
+		var userMessage = new UserMessage(aiMessageDto.getContent());	
 		return this.aiFriendService.talkToSam(userMessage);
 	}	
 }

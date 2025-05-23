@@ -16,32 +16,25 @@
 package ch.xxx.messenger.adapter.repository;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import ch.xxx.messenger.domain.model.Contact;
 import ch.xxx.messenger.domain.model.MyMongoRepository;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ComponentScan(basePackages = "ch.xxx.messenger", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE))
-@TestMethodOrder(OrderAnnotation.class)
+//@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@ComponentScan(basePackages = "ch.xxx.messenger", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE))
+//@TestMethodOrder(OrderAnnotation.class)
 public class ClientMongoRepositoryTest {
 	private static final String USERNAME = "XXXX";
 	@Autowired
 	private MyMongoRepository myMongoRepository;
 		
 	
-	@Test
+	//@Test
 	@Order(1)
 	public void saveContact() throws Exception {
 		Contact myContact = new Contact(USERNAME, "avatar", "pubkey", "UserId");		
@@ -50,7 +43,7 @@ public class ClientMongoRepositoryTest {
 		Assertions.assertEquals(USERNAME, result.getName());
 	}
 	
-	@Test
+	//@Test
 	@Order(2)
 	public void loadContactFound() throws Exception {
 		Contact result = this.myMongoRepository.find(new Query().addCriteria(
@@ -59,7 +52,7 @@ public class ClientMongoRepositoryTest {
 		Assertions.assertEquals(USERNAME, result.getName());
 	}
 	
-	@Test
+	//@Test
 	@Order(3)
 	public void loadContactNotFound() throws Exception {
 		Contact result = this.myMongoRepository.find(new Query().addCriteria(

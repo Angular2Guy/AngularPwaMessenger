@@ -16,15 +16,32 @@ export interface AiResultDto {
   metadata: AiMetadata;
 }
 
+export interface AiResults {
+	metadata: ResultsMetadata;
+	output: AiOutput;
+}
+
 export interface AiResult {
   metadata: AiMetadata;
   output: AiOutput;
 }
 
 export interface AiOutput {
-  content: string;
-  properties?: object;
   messageType: string;
+  text: string;
+  metadata: OutputMetadata;
+  toolCalls: string[];
+  media: string[];  
+}
+
+export interface OutputMetadata {
+	messageType: string;
+}
+
+export interface ResultsMetadata {
+	finishReason: string;
+	contentFilters: string[];
+	empty: boolean;
 }
 
 export interface ResultMetadata {
@@ -33,11 +50,12 @@ export interface ResultMetadata {
 }
 
 export interface AiMetadata {
-  contentFilterMetadata: Usage;
+  id: string;
+  model: string;
   rateLimit: RateLimit;
   usage: Usage;
-  promptMetadata?: string[];
-  finishReason?: string;
+  promptMetadata: string[];    
+  empty: boolean;
 }
 
 export interface RateLimit {
@@ -50,7 +68,7 @@ export interface RateLimit {
 }
 
 export interface Usage {
-  generationTokens: number;
+  completionTokens: number;
   promptTokens: number;
   totalTokens: number;
 }
