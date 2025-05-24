@@ -8,7 +8,9 @@
         {
             "type": "jdk",
             "request": "launch",
-            "name": "Launch Java App"
+            "name": "Launch Java App",
+            "mainClass": "ch.xxx.messenger.MessengerApplication",
+            "args": "--spring.profiles.active=ollama"
         }
     ]
 }
