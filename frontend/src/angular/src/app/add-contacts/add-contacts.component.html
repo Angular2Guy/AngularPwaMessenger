@@ -1,11 +1,13 @@
 <div class="container">
-  <div class="spinner" *ngIf="contactsLoading">
-    <mat-progress-spinner
-      diameter="50"
-      color="accent"
-      mode="indeterminate"
-    ></mat-progress-spinner>
-  </div>
+  @if (contactsLoading) {
+    <div class="spinner">
+      <mat-progress-spinner
+        diameter="50"
+        color="accent"
+        mode="indeterminate"
+      ></mat-progress-spinner>
+    </div>
+  }
   <mat-form-field class="input-style">
     <input
       type="text"
@@ -15,15 +17,16 @@
       [formControl]="myControl"
       [matAutocomplete]="auto"
       (keyup.enter)="addContact()"
-    />
+      />
     <mat-autocomplete #auto="matAutocomplete">
-      <mat-option
-        *ngFor="let option of filteredOptions"
-        [value]="option.name"
-        (click)="addContact()"
-      >
-        {{ option.name }}
-      </mat-option>
+      @for (option of filteredOptions; track option) {
+        <mat-option
+          [value]="option.name"
+          (click)="addContact()"
+          >
+          {{ option.name }}
+        </mat-option>
+      }
     </mat-autocomplete>
   </mat-form-field>
 </div>

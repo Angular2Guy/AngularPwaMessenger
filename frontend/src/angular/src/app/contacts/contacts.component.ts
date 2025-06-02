@@ -12,14 +12,14 @@
  */
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { Contact } from "../model/contact";
-import { CommonModule } from "@angular/common";
+
 import { AiName } from "../model/aiFriend/ai-config";
 
 @Component({
     selector: "app-contacts",
     templateUrl: "./contacts.component.html",
     styleUrls: ["./contacts.component.scss"],
-    imports: [CommonModule]
+    imports: []
 })
 export class ContactsComponent implements OnInit {
   AiName = AiName;

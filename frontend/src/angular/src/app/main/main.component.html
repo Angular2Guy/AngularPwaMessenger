@@ -3,81 +3,94 @@
     <div i18n="@@mainMessenger">Messenger</div>
     <div class="example-fill-remaining-space"></div>
     <div>
-      <div *ngIf="myUser !== null" class="login-logout">
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="showGames()"
-          i18n="@@mainGames"
-        >
+      @if (myUser !== null) {
+        <div class="login-logout">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="showGames()"
+            i18n="@@mainGames"
+            >
           Games
         </button>
-      </div>
+        </div>
+      }
     </div>
-    <div class="icon-bar" *ngIf="myUser !== null">
-      <div
-        *ngIf="contactListMode === 'over'"
-        class="icon"
-        (click)="contactList.toggle()"
-      >
-        <span class="icon-container material-icons">group</span>
+    @if (myUser !== null) {
+      <div class="icon-bar">
+        @if (contactListMode === 'over') {
+          <div
+            class="icon"
+            (click)="contactList.toggle()"
+            >
+            <span class="icon-container material-icons">group</span>
+          </div>
+        }
+        @if (selFeature === myFeature.chat) {
+          <div
+            class="icon"
+            (click)="switchContent()"
+            >
+            <span class="icon-container material-icons">phone</span>
+          </div>
+        }
+        @if (selFeature === myFeature.phone) {
+          <div
+            class="icon"
+            (click)="switchContent()"
+            >
+            <span class="icon-container material-icons">chat_bubble_outline</span>
+          </div>
+        }
+        <div class="icon" (click)="openFileuploadDialog()">
+          <span class="icon-container material-icons">attachment_alt</span>
+        </div>
+        <div class="icon" (click)="openCameraDialog()">
+          <span class="material-icons">camera_alt</span>
+        </div>
       </div>
-      <div
-        *ngIf="selFeature === myFeature.chat"
-        class="icon"
-        (click)="switchContent()"
-      >
-        <span class="icon-container material-icons">phone</span>
+    }
+    @if (myUser !== null) {
+      <div class="people-button">
+        <app-add-contacts
+          [userId]="myUser.userId"
+          [myContacts]="contacts"
+          (addNewContact)="addNewContact($event)"
+        ></app-add-contacts>
       </div>
-      <div
-        *ngIf="selFeature === myFeature.phone"
-        class="icon"
-        (click)="switchContent()"
-      >
-        <span class="icon-container material-icons">chat_bubble_outline</span>
-      </div>
-      <div class="icon" (click)="openFileuploadDialog()">
-        <span class="icon-container material-icons">attachment_alt</span>
-      </div>
-      <div class="icon" (click)="openCameraDialog()">
-        <span class="material-icons">camera_alt</span>
-      </div>
-    </div>
-    <div class="people-button" *ngIf="myUser !== null">
-      <app-add-contacts
-        [userId]="myUser.userId"
-        [myContacts]="contacts"
-        (addNewContact)="addNewContact($event)"
-      ></app-add-contacts>
-    </div>
+    }
     <div class="people-button">
-      <div *ngIf="myUser === null" class="login-logout">
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="openLoginDialog()"
-          i18n="@@mainLogin"
-        >
+      @if (myUser === null) {
+        <div class="login-logout">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="openLoginDialog()"
+            i18n="@@mainLogin"
+            >
           Login
         </button>
-      </div>
-      <div *ngIf="myUser !== null" class="login-logout">
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="logout()"
-          i18n="@@mainLogout"
-        >
+        </div>
+      }
+      @if (myUser !== null) {
+        <div class="login-logout">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="logout()"
+            i18n="@@mainLogout"
+            >
           Logout
         </button>
-      </div>
+        </div>
+      }
     </div>
   </div>
 </mat-toolbar>
 <mat-sidenav-container
   class="container"
   [ngStyle]="{ 'height.px': windowHeight }"
->
+  >
   <mat-sidenav #contact_list [mode]="contactListMode" class="contact-list">
     <app-contacts
       [selectedContact]="selectedContact"
@@ -86,24 +99,27 @@
     ></app-contacts>
   </mat-sidenav>
   <mat-sidenav-content class="mat-drawer-container">
-    <div
-      class="login-message-container mat-headline-5"
-      *ngIf="myUser === null"
-      i18n="@@mainLoginMessage"
-    >
+    @if (myUser === null) {
+      <div
+        class="login-message-container mat-headline-5"
+        i18n="@@mainLoginMessage"
+        >
       <div class="login-message">Please Login</div>
     </div>
-    <app-messages
-      *ngIf="myUser !== null && selFeature === myFeature.chat"
-      [messages]="messages"
-      [receiver]="selectedContact"
-      [showSpinner]="samIsThinking"
-      (sendMsg)="sendMessage($event)"
-    ></app-messages>
-    <app-voice
-      *ngIf="myUser !== null && selFeature === myFeature.phone"
-      [sender]="ownContact"
-      [receiver]="selectedContact"
-    ></app-voice>
+    }
+    @if (myUser !== null && selFeature === myFeature.chat) {
+      <app-messages
+        [messages]="messages"
+        [receiver]="selectedContact"
+        [showSpinner]="samIsThinking"
+        (sendMsg)="sendMessage($event)"
+      ></app-messages>
+    }
+    @if (myUser !== null && selFeature === myFeature.phone) {
+      <app-voice
+        [sender]="ownContact"
+        [receiver]="selectedContact"
+      ></app-voice>
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

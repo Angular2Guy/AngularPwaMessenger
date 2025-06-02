@@ -1,45 +1,55 @@
 <div class="container" [ngStyle]="{ 'height.px': gamesService.windowHeight }">
   <div class="header-cell" i18n="@@bingoHeading">Lets play Bingo</div>
-  <div
-    class="header-cell"
-    *ngIf="gameUuid && !bingoResult"
-    i18n="@@bingoNewNumber"
-  >
+  @if (gameUuid && !bingoResult) {
+    <div
+      class="header-cell"
+      i18n="@@bingoNewNumber"
+      >
     New Number:
   </div>
-  <div class="header-cell" *ngIf="!gameUuid || bingoResult">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="startGame()"
-      i18n="@@bingoStart"
-    >
+  }
+  @if (!gameUuid || bingoResult) {
+    <div class="header-cell">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="startGame()"
+        i18n="@@bingoStart"
+        >
       Start
     </button>
-  </div>
+    </div>
+  }
   <div class="header-cell">
     {{ bingoNumber > 0 && !bingoResult ? bingoNumber : "-" }}
   </div>
-  <div *ngIf="bingoResult" class="game-won">Won</div>
-  <div class="header-cell" *ngIf="!bingoResult && bingoNumber <= 0"></div>
-  <div class="header-cell" *ngIf="!bingoResult && bingoNumber > 0">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="stopGame()"
-      i18n="@@bingoStop"
-    >
+  @if (bingoResult) {
+    <div class="game-won">Won</div>
+  }
+  @if (!bingoResult && bingoNumber <= 0) {
+    <div class="header-cell"></div>
+  }
+  @if (!bingoResult && bingoNumber > 0) {
+    <div class="header-cell">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="stopGame()"
+        i18n="@@bingoStop"
+        >
       Stop
     </button>
-  </div>
+    </div>
+  }
   <div></div>
-  <div
-    *ngFor="let bingoCell of bingoCells"
-    class="bingo-cell"
-    [class.bingo-cell-selected]="bingoCell.hit && !bingoCell.bingo"
-    [class.bingo-cell-bingo]="bingoCell.hit && bingoCell.bingo"
-    (click)="switchBingoCell(bingoCell)"
-  >
-    {{ bingoCell.value }}
-  </div>
+  @for (bingoCell of bingoCells; track bingoCell) {
+    <div
+      class="bingo-cell"
+      [class.bingo-cell-selected]="bingoCell.hit && !bingoCell.bingo"
+      [class.bingo-cell-bingo]="bingoCell.hit && bingoCell.bingo"
+      (click)="switchBingoCell(bingoCell)"
+      >
+      {{ bingoCell.value }}
+    </div>
+  }
 </div>

@@ -31,12 +31,12 @@ describe("CryptoService", () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it("should be created", () => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     expect(service).toBeTruthy();
   });
 
   it("keys should be created", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.generateKeys(privateKeyPwd).then((value) => {
       expect(value.a).toBeDefined("value.a missing");
       expect(value.b).toBeDefined("value.b missing");
@@ -47,7 +47,7 @@ describe("CryptoService", () => {
   });
 
   it("encrypt text", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.encryptText("testText", publicKey).then((value) => {
       expect(value).toBeDefined("encryption failed");
       expect(value.length > 0).toBeTruthy("encryption failed");
@@ -57,7 +57,7 @@ describe("CryptoService", () => {
   });
 
   it("decrypt text", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.decryptText(encText, privateKey, privateKeyPwd).then((value) => {
       expect(value).toBeDefined("decryption failed");
       expect(value).toBe("testText", "text not the same");
@@ -66,7 +66,7 @@ describe("CryptoService", () => {
   });
 
   it("encrypt text2", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.encryptLargeText("testText", publicKey).then((value) => {
       expect(value).toBeDefined("encryption failed");
       expect(value.length > 0).toBeTruthy("encryption failed");
@@ -76,7 +76,7 @@ describe("CryptoService", () => {
   });
 
   it("decrypt text2", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service
       .decryptLargeText(encText, privateKey, privateKeyPwd)
       .then((value) => {
@@ -87,7 +87,7 @@ describe("CryptoService", () => {
   });
 
   it("encrypt image", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.encryptLargeText(base64Image, publicKey).then((value) => {
       expect(value).toBeDefined("encryption failed");
       expect(value.length > 0).toBeTruthy("encryption failed");
@@ -97,7 +97,7 @@ describe("CryptoService", () => {
   });
 
   it("decrypt image", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service
       .decryptLargeText(encText, privateKey, privateKeyPwd)
       .then((value) => {
@@ -108,7 +108,7 @@ describe("CryptoService", () => {
   });
 
   it("login check", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     const password = "hallo123";
     let pwHash: string = null;
     service
@@ -126,7 +126,7 @@ describe("CryptoService", () => {
   });
 
   it("aes encrypt", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     const password = "hallo123";
     const text = "testText";
     service.encryptTextAes(password, loginSalt, text).then((value) => {
@@ -137,7 +137,7 @@ describe("CryptoService", () => {
   });
 
   it("aes decrypt", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     const password = "hallo123";
     const text = encText;
     service.decryptTextAes(password, loginSalt, text).then((value) => {
@@ -148,7 +148,7 @@ describe("CryptoService", () => {
   });
 
   it("password hash1", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.hashPW("hallo123").then((value) => {
       expect(value).toBe(
         "8MPNb8SyPq6V453hlDeS9izO/YNxWLacY6668wQe00U=",
@@ -159,7 +159,7 @@ describe("CryptoService", () => {
   });
 
   it("password hash2", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.hashPW("hallo1234").then((value) => {
       expect(value).toBe(
         "s+GkvLqE+vsSGJP5x7jdLHM1msXVS8UnYPK/NZ8+kBc=",
@@ -170,7 +170,7 @@ describe("CryptoService", () => {
   });
 
   it("password server hash1", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.hashServerPW("hallo123").then((value) => {
       expect(value).toBe(
         "Y5rm5bpbv43q+B3BspCfTS1heE8/BtVBnb85wckVYHZwumxYZjQduOErDfGinZKI",
@@ -181,7 +181,7 @@ describe("CryptoService", () => {
   });
 
   it("password server hash2", (done: DoneFn) => {
-    const service: CryptoService = TestBed.get(CryptoService);
+    const service: CryptoService = TestBed.inject(CryptoService);
     service.hashServerPW("hallo1234").then((value) => {
       expect(value).toBe(
         "a8rPRtpfbK1rkwWo7UeKmpgrubSjifgj2Kh+b0KIs90cBZuj9TbZyJXz9dngat+C",

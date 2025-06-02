@@ -1,51 +1,64 @@
-<div *ngFor="let message of messages">
-  <div
-    *ngIf="receiver !== null"
-    [class.receiver]="message.fromId === receiver.userId"
-    [class.sender]="message.toId === receiver.userId"
-  >
-    <span>
-      <span *ngIf="!isImageMsg(message) && !message.filename">{{
-        message.text
-      }}</span>
-      <img *ngIf="isImageMsg(message)" [src]="message.text" />
-      <span *ngIf="message.filename"
-        ><a [href]="message.url" download target="_blank">{{
-          message.filename
-        }}</a></span
-      >
-      <i
-        *ngIf="
-          message.toId === receiver.userId && message.send && !message.received
-        "
-        class="material-icons"
-        >done_alt</i
-      >
-      <i
-        *ngIf="
-          message.toId === receiver.userId && message.send && message.received
-        "
-        class="material-icons"
-        >done_all_alt</i
-      >
-    </span>
-  </div>
-</div>
-<div class="spinner" *ngIf="showSpinner">
-  <mat-spinner diameter="30"></mat-spinner>
-  <span i18n="@@samIsThinking">Samantha is thinking.</span>
-</div>
-<form [formGroup]="messageForm" novalidate>
-  <mat-form-field class="message-input">
-    <div class="myInput">
-      <textarea
-        matInput
-        placeholder="Your Message"
-        formControlName="{{ formKeyMessage }}"
-      ></textarea>
-      <div class="send-icon" (click)="sendMessage()">
-        <i class="material-icons">send_alt</i>
+@for (message of messages; track message) {
+  <div>
+    @if (receiver !== null) {
+      <div
+        [class.receiver]="message.fromId === receiver.userId"
+        [class.sender]="message.toId === receiver.userId"
+        >
+        <span>
+          @if (!isImageMsg(message) && !message.filename) {
+            <span>{{
+              message.text
+            }}</span>
+          }
+          @if (isImageMsg(message)) {
+            <img [src]="message.text" />
+          }
+          @if (message.filename) {
+            <span
+              ><a [href]="message.url" download target="_blank">{{
+              message.filename
+            }}</a></span
+            >
+          }
+          @if (
+            message.toId === receiver.userId && message.send && !message.received
+            ) {
+            <i
+              class="material-icons"
+              >done_alt</i
+              >
+            }
+            @if (
+              message.toId === receiver.userId && message.send && message.received
+              ) {
+              <i
+                class="material-icons"
+                >done_all_alt</i
+                >
+              }
+            </span>
+          </div>
+        }
       </div>
-    </div>
-  </mat-form-field>
-</form>
+    }
+    @if (showSpinner) {
+      <div class="spinner">
+        <mat-spinner diameter="30"></mat-spinner>
+        <span i18n="@@samIsThinking">Samantha is thinking.</span>
+      </div>
+    }
+    <form [formGroup]="messageForm" novalidate>
+      <mat-form-field class="message-input">
+        <div class="myInput">
+          <textarea
+            matInput
+            placeholder="Your Message"
+            formControlName="{{ formKeyMessage }}"
+          ></textarea>
+          <div class="send-icon" (click)="sendMessage()">
+            <i class="material-icons">send_alt</i>
+          </div>
+        </div>
+      </mat-form-field>
+    </form>

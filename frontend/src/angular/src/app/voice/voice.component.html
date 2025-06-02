@@ -13,46 +13,50 @@
           class="call-video landscape-orientation"
         ></video>
         <div class="landscape-orientation">
-          <button
-            mat-button
-            class="video-button"
-            *ngIf="!inCall"
-            [disabled]="!receiver && !onLocalhost"
-            (click)="call()"
-            i18n="@@voiceCall"
-          >
+          @if (!inCall) {
+            <button
+              mat-button
+              class="video-button"
+              [disabled]="!receiver && !onLocalhost"
+              (click)="call()"
+              i18n="@@voiceCall"
+              >
             Call
           </button>
-          <button
-            mat-button
-            class="video-button"
-            *ngIf="inCall"
-            [disabled]="!receiver && !onLocalhost"
-            (click)="hangUp()"
-            i18n="@@voiceHangup"
-          >
+          }
+          @if (inCall) {
+            <button
+              mat-button
+              class="video-button"
+              [disabled]="!receiver && !onLocalhost"
+              (click)="hangUp()"
+              i18n="@@voiceHangup"
+              >
             Hangup
           </button>
-          <button
-            mat-button
-            class="video-button"
-            *ngIf="!remoteMuted"
-            [disabled]="!receiver && !onLocalhost"
-            (click)="remoteMuted = true"
-            i18n="@@voiceMute"
-          >
+          }
+          @if (!remoteMuted) {
+            <button
+              mat-button
+              class="video-button"
+              [disabled]="!receiver && !onLocalhost"
+              (click)="remoteMuted = true"
+              i18n="@@voiceMute"
+              >
             Mute
           </button>
-          <button
-            mat-button
-            class="video-button"
-            *ngIf="remoteMuted"
-            [disabled]="!receiver && !onLocalhost"
-            (click)="remoteMuted = false"
-            i18n="@@voiceUnmute"
-          >
+          }
+          @if (remoteMuted) {
+            <button
+              mat-button
+              class="video-button"
+              [disabled]="!receiver && !onLocalhost"
+              (click)="remoteMuted = false"
+              i18n="@@voiceUnmute"
+              >
             Unmute
           </button>
+          }
         </div>
       </div>
     </div>
@@ -65,42 +69,46 @@
         class="local-video landscape-orientation"
       ></video>
       <div class="landscape-orientation">
-        <button
-          mat-button
-          class="video-button"
-          *ngIf="!localVideoActivated"
-          (click)="startLocalVideo()"
-          i18n="@@voiceActivateCallerVideo"
-        >
+        @if (!localVideoActivated) {
+          <button
+            mat-button
+            class="video-button"
+            (click)="startLocalVideo()"
+            i18n="@@voiceActivateCallerVideo"
+            >
           Activate
         </button>
-        <button
-          mat-button
-          class="video-button"
-          *ngIf="localVideoActivated"
-          (click)="stopLocalVideo()"
-          i18n="@@voiceDeactivateCallerVideo"
-        >
+        }
+        @if (localVideoActivated) {
+          <button
+            mat-button
+            class="video-button"
+            (click)="stopLocalVideo()"
+            i18n="@@voiceDeactivateCallerVideo"
+            >
           Deactivate
         </button>
-        <button
-          mat-button
-          class="video-button"
-          *ngIf="!localMuted"
-          (click)="localMuted = true"
-          i18n="@@voiceMute"
-        >
+        }
+        @if (!localMuted) {
+          <button
+            mat-button
+            class="video-button"
+            (click)="localMuted = true"
+            i18n="@@voiceMute"
+            >
           Mute
         </button>
-        <button
-          mat-button
-          class="video-button"
-          *ngIf="localMuted"
-          (click)="localMuted = false"
-          i18n="@@voiceUnmute"
-        >
+        }
+        @if (localMuted) {
+          <button
+            mat-button
+            class="video-button"
+            (click)="localMuted = false"
+            i18n="@@voiceUnmute"
+            >
           Unmute
         </button>
+        }
       </div>
     </div>
   </div>

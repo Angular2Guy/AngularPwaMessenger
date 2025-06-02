@@ -11,7 +11,7 @@
                 placeholder="Username"
                 tabindex="1"
                 formControlName="{{ formFields.username }}"
-              />
+                />
             </mat-form-field>
           </li>
           <li>
@@ -23,12 +23,14 @@
                 tabindex="2"
                 formControlName="{{ formFields.password }}"
                 type="password"
-              />
+                />
             </mat-form-field>
           </li>
-          <li *ngIf="loginFailed" i18n="@@loginLoginFailed" class="error-text">
+          @if (loginFailed) {
+            <li i18n="@@loginLoginFailed" class="error-text">
             Login Failed
           </li>
+          }
           <li>
             <button
               mat-button
@@ -36,7 +38,7 @@
               [disabled]="!loginForm.valid"
               tabindex="-1"
               i18n="@@loginOk"
-            >
+              >
               Ok
             </button>
             <button
@@ -44,7 +46,7 @@
               (click)="onCancelClick()"
               tabindex="-1"
               i18n="@@loginCancel"
-            >
+              >
               Cancel
             </button>
           </li>
@@ -62,7 +64,7 @@
                 placeholder="Username"
                 tabindex="1"
                 formControlName="{{ formFields.username }}"
-              />
+                />
             </mat-form-field>
           </li>
           <li>
@@ -74,7 +76,7 @@
                 tabindex="2"
                 formControlName="{{ formFields.password }}"
                 type="password"
-              />
+                />
             </mat-form-field>
             <mat-form-field class="spacer-left">
               <input
@@ -84,16 +86,17 @@
                 tabindex="3"
                 formControlName="{{ formFields.password2 }}"
                 type="password"
-              />
+                />
             </mat-form-field>
           </li>
-          <li
-            *ngIf="!pwMatching"
-            i18n="@@loginPasswordNotMatch"
-            class="error-text"
-          >
+          @if (!pwMatching) {
+            <li
+              i18n="@@loginPasswordNotMatch"
+              class="error-text"
+              >
             Passwords do not match
           </li>
+          }
           <li>
             <mat-form-field>
               <input
@@ -102,16 +105,17 @@
                 placeholder="Email"
                 tabindex="4"
                 formControlName="{{ formFields.email }}"
-              />
+                />
             </mat-form-field>
           </li>
-          <li
-            *ngIf="signinFailed"
-            i18n="@@loginSinginFailed"
-            class="error-text"
-          >
+          @if (signinFailed) {
+            <li
+              i18n="@@loginSinginFailed"
+              class="error-text"
+              >
             Signin Failed
           </li>
+          }
           <li class="space-below">
             <p class="space-below" i18n="@@loginCreateRandomPassword">
               Create a secure random/long password. It needs to be pasted into a
@@ -122,7 +126,7 @@
               (click)="onCreatePwClick()"
               tabindex="5"
               i18n="@@loginCreatePassword"
-            >
+              >
               Create Password
             </button>
           </li>
@@ -133,7 +137,7 @@
               [disabled]="!signinForm.valid"
               tabindex="-1"
               i18n="@@loginOk"
-            >
+              >
               Ok
             </button>
             <button
@@ -141,7 +145,7 @@
               (click)="onCancelClick()"
               tabindex="-1"
               i18n="@@loginCancel"
-            >
+              >
               Cancel
             </button>
           </li>
