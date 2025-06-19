@@ -14,11 +14,13 @@ package ch.xxx.messenger.usecase.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.StreamingChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ch.xxx.messenger.domain.model.AiConfig;
@@ -32,9 +34,11 @@ public class AiFriendService {
 	@Value("${spring.ai.ollama.chat.options.model:}")
 	private String aiModel;
 	private final StreamingChatModel streamingChatClient;
-	
-	public AiFriendService(StreamingChatModel streamingChatClient) {
+	private final ChatMemory chatMemory;
+
+	public AiFriendService(StreamingChatModel streamingChatClient, ChatMemory chatMemory) {
 		this.streamingChatClient = streamingChatClient;
+		this.chatMemory = chatMemory;		
 	}
 	
 	public AiConfig createAiConfig() {
@@ -43,7 +47,9 @@ public class AiFriendService {
 	
 	public Flux<ChatResponse> talkToSam(UserMessage statement) {
 		//LOGGER.info(this.streamingChatClient.stream(statement.getText()).reduce("", (acc, value) -> acc+value).block());
-		Prompt prompt = new Prompt(statement);
+		var conversationId = SecurityContextHolder.getContext().getAuthentication().getName();
+		this.chatMemory.add(conversationId,statement);
+		Prompt prompt = new Prompt(this.chatMemory.get(conversationId));
 		return this.streamingChatClient.stream(prompt);
 	}
 	
