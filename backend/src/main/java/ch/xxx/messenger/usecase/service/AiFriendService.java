@@ -47,7 +47,7 @@ public class AiFriendService {
 	
 	public Flux<ChatResponse> talkToSam(UserMessage statement) {
 		//LOGGER.info(this.streamingChatClient.stream(statement.getText()).reduce("", (acc, value) -> acc+value).block());
-		var conversationId = SecurityContextHolder.getContext().getAuthentication().getName();
+		var conversationId = "" + SecurityContextHolder.getContext().getAuthentication().getName();
 		this.chatMemory.add(conversationId,statement);
 		Prompt prompt = new Prompt(this.chatMemory.get(conversationId));
 		return this.streamingChatClient.stream(prompt);
