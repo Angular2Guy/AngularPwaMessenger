@@ -33,6 +33,8 @@ public class AiFriendService {
 	private String activeProfile;
 	@Value("${spring.ai.ollama.chat.options.model:}")
 	private String aiModel;
+	@Value("${spring.ai.use-chatmemory:true}")
+	private boolean useChatMemory;
 	private final StreamingChatModel streamingChatClient;
 	private final ChatMemory chatMemory;
 
@@ -49,9 +51,8 @@ public class AiFriendService {
 		//LOGGER.info(this.streamingChatClient.stream(statement.getText()).reduce("", (acc, value) -> acc+value).block());
 		var conversationId = "" + SecurityContextHolder.getContext().getAuthentication().getName();
 		this.chatMemory.add(conversationId,statement);
-		Prompt prompt = new Prompt(this.chatMemory.get(conversationId));
-		LOGGER.info("ConverstionId: "+conversationId);
-		LOGGER.info("Prompt.getContent(): "+prompt.getContents());		
+		var prompt = this.useChatMemory ? new Prompt(this.chatMemory.get(conversationId)) : new Prompt(statement);		
+		LOGGER.info("ConversationId: "+conversationId+ ", Prompt.getContent(): "+prompt.getContents());		
 		return this.streamingChatClient.stream(prompt);
 	}
 	
