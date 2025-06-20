@@ -50,6 +50,8 @@ public class AiFriendService {
 		var conversationId = "" + SecurityContextHolder.getContext().getAuthentication().getName();
 		this.chatMemory.add(conversationId,statement);
 		Prompt prompt = new Prompt(this.chatMemory.get(conversationId));
+		LOGGER.info("ConverstionId: "+conversationId);
+		LOGGER.info("Prompt.getContent(): "+prompt.getContents());		
 		return this.streamingChatClient.stream(prompt);
 	}
 	
