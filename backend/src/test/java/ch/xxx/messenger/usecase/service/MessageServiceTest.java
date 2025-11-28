@@ -28,8 +28,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ch.xxx.messenger.domain.model.Message;
 import ch.xxx.messenger.domain.model.MyMongoRepository;
@@ -37,7 +37,7 @@ import ch.xxx.messenger.domain.model.SyncMsgs;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class MessageServiceTest {
 	@Mock
 	private MyMongoRepository myMongoRepository;
@@ -60,8 +60,7 @@ public class MessageServiceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void findMessagesNotFound() throws Exception {		
-		Mockito.when(this.myMongoRepository.find(isA(Query.class), any(Class.class))).thenReturn(Flux.fromIterable(List.of()));
-		Mockito.when(this.myMongoRepository.save(isA(Message.class))).thenReturn(Mono.empty());
+		Mockito.when(this.myMongoRepository.find(isA(Query.class), any(Class.class))).thenReturn(Flux.fromIterable(List.of()));		
 		SyncMsgs mySyncMsgs = this.createSyncMsgs();
 		List<Message> messages = this.messageService.findMessages(mySyncMsgs).collectList().block();
 		Assertions.assertTrue(messages.isEmpty());

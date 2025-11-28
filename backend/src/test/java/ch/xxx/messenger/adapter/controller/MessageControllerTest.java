@@ -27,15 +27,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.xxx.messenger.adapter.config.WebSecurityConfig;
 import ch.xxx.messenger.domain.common.JwtTokenProvider;
@@ -45,6 +43,7 @@ import ch.xxx.messenger.domain.model.Message;
 import ch.xxx.messenger.domain.model.SyncMsgs;
 import ch.xxx.messenger.usecase.service.MessageService;
 import reactor.core.publisher.Flux;
+import tools.jackson.databind.json.JsonMapper;
 
 @WebMvcTest(controllers = MessageController.class, includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
 		WebSecurityConfig.class, JwtTokenProvider.class }))
@@ -57,7 +56,7 @@ public class MessageControllerTest {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 	@Autowired
-	private ObjectMapper objectMapper;
+	private JsonMapper objectMapper;
 	@Autowired
 	private MockMvc mockMvc;
 

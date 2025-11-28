@@ -12,10 +12,8 @@
  */
 package ch.xxx.messenger.adapter.config;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,13 +21,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import ch.xxx.messenger.domain.common.JwtTokenProvider;
 import ch.xxx.messenger.domain.common.Role;
 
 @Configuration
-@Order(SecurityProperties.DEFAULT_FILTER_ORDER)
 public class WebSecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
@@ -43,9 +40,9 @@ public class WebSecurityConfig {
 		JwtTokenFilter customFilter = new JwtTokenFilter(jwtTokenProvider);
 		HttpSecurity httpSecurity = http
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(AntPathRequestMatcher.antMatcher("/rest/auth/**")).permitAll()
-						.requestMatchers(AntPathRequestMatcher.antMatcher("/rest/**")).hasAuthority(Role.USERS.toString())
-						.requestMatchers(AntPathRequestMatcher.antMatcher("/**")).permitAll())
+						.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/rest/auth/**")).permitAll()
+						.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/rest/**")).hasAuthority(Role.USERS.toString())
+						.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/**")).permitAll())
 				.csrf(myCsrf -> myCsrf.disable())
 				.sessionManagement(mySm -> mySm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.headers(myHeaders -> myHeaders.contentSecurityPolicy(myCsp -> myCsp.policyDirectives(

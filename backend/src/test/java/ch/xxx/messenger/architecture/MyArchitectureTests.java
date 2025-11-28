@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.boot.webflux.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
