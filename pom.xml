@@ -28,7 +28,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.build.finalName>AngularPwaMessenger</project.build.finalName>
 		<java.version>25</java.version>		
-		<spring-ai.version>1.0.0</spring-ai.version>
+		<spring-ai.version>1.1.0</spring-ai.version>
 		<docker.image.prefix>angular2guy</docker.image.prefix>
 		<!-- <npm.test.script>test-chromium</npm.test.script> -->
 		<npm.test.script>test</npm.test.script>
