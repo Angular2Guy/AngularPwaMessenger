@@ -31,7 +31,7 @@
     "@angular/material": "^20.0.1",
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
-    "@angular/pwa": "^20.0.0",
+    "@angular/pwa": "^21.0.0",
     "@angular/router": "^20.0.0",
     "@angular/service-worker": "^20.0.0",
     "dexie": "^3.2.2",
