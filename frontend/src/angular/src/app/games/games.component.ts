@@ -74,8 +74,8 @@ export class GamesComponent
   }
 
   @HostListener("window:resize", ["$event"])
-  myResize(event: MyEvent): void {
-    super.onResize(event);
+  myResize(event: unknown): void {
+    super.onResize(event as MyEvent);
   }
 
   get contactList() {
